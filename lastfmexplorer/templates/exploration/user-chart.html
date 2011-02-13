@@ -1,0 +1,35 @@
+
+{% extends 'exploration/base.html' %}
+
+{% block content %}
+    <div class="itemofinterest">
+        <div class="itemtitle">
+            <h2>Chart</h2>
+            <hr/>
+        </div>
+        <div class="itemcontent">
+{% if isWeek %}
+            <div id="weeklinks"> 
+                <span id="previousweek">
+    {% if prevW > 0 %}
+                <a href="{% url lastfmexplorer.views.user_week_chart context.user prevW %}">Previous</a>
+    {% else %}
+                Previous
+    {% endif %}
+                </span>
+                <span id="nextweek"><a href="{% url lastfmexplorer.views.user_week_chart context.user nextW %}">Next</a></span>
+            </div>
+{% endif %}
+            <ol>
+{% for artist, count, max in chart %}
+                <li class="barchart" >
+                    <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                    <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                        <span class='barchart_num'>{{ count }}</span>
+                    </div>
+                </li>
+{% endfor %}
+            </ol>
+        </div>
+    </div>
+{% endblock %}

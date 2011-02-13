@@ -1,0 +1,55 @@
+{% extends 'root.html' %}
+{% load reversetag %}
+{% block ttle %}Last.fm Explorer{% endblock %}
+{% block body %}
+    <div id="top">
+        <div id="datesandmenu">
+            <h1>Last.fm Explorer &mdash; {{ context.user }}</h1> 
+            <span id="dates">{{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}</span>
+            {% comment %}{% include 'date-selector.html' %}{% endcomment %}
+            <ul id="topmenu" class="inlinedlist slashseparated">
+                <li><a href="{% url lastfmexplorer.views.overview context.user context.start context.end %}">An overview</a></li>
+                <li><a href="{% url lastfmexplorer.views.user_chart context.user context.start context.end %}">Chart</a></li>
+                <li><a href="{% url lastfmexplorer.views.user_new_artists_in_period context.user context.start context.end %}">New artists chart</a></li>
+                <li class="last"><a href="{% url lastfmexplorer.views.who context.user %}">Who</a></li>
+            </ul>
+        </div>
+
+{% if not context.template.skipped_dates %}
+        <div id="dateform">
+            <form id="datechanger" method="get" action="#">
+                <fieldset>
+                    <legend>Change dates</legend>
+                    <!-- <label for="username">User</label> -->
+                    <input type="hidden" name="username" value="{{ context.user }}"/>
+                    <label for="start-date">Start:</label><input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}"/>
+                    <label for="end-date">End:</label><input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}"/>
+                    <input type="submit" value="Update"/>
+                    <div class="inlinedlistpara">
+                        <p>Or choose:</p>
+                        <ul class="commaseparated">
+    {% for name, s, e in context.template.year_shortcuts %}
+                            {% if forloop.last %}<li class="last">{% else %}<li>{% endif %}
+                            <a href="{% reverse context.template.active_view context.user s e %}">{{ name }}</a></li>
+    {% endfor %}
+                        </ul>
+                        <br/>
+                        <p>or the last</p>
+                        <ul class="commaseparated">
+    {% for name, s, e in context.template.shortcuts %}
+                            {% if forloop.last %}<li class="last">{% else %}<li>{% endif %}
+                            <a href="{% reverse context.template.active_view context.user s e %}">{{ name }}</a></li>
+    {% endfor %}
+                        </ul>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+{% endif %}
+    </div>
+
+    <div id="allcontent">
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}

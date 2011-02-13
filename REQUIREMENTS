@@ -1,0 +1,14 @@
+anyjson              pip
+celery               pip
+django-celery        pip
+django-reversetag    pip
+libapache2-mod-wsgi  aptitude
+memcached            aptitude
+psycopg2
+python-memcached     pip
+python-tk            aptitude
+python2.6-matplotlib aptitude
+rabbitmq-server      aptitude
+
+
+chgrp -R www-data lastfmexplorer

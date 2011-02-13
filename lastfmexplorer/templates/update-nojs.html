@@ -1,0 +1,30 @@
+{% extends 'root.html' %}
+{% block title %}Last.fm Explorer Update -- {{ username }}{% endblock %}
+{% block body %}
+    <div id="allcontent">
+        <h1>Updating data</h1>
+{% if skipped %}
+        <p>Hey, {{ username }}, looks like you're up to date.  
+        <a href="{% url lastfmexplorer.views.overview username %}">Get exploring</a>!</p>
+{% else %}
+        {% comment %}<p>Hey, {{ username }}, looks like you have Javascript disabled.</p>{% endcomment %}
+        <p>Hey, {{ username }}.  There's:</p>
+        <ul>
+    {% if piq %}
+            <li><b>{{ piq }}</b> {% if piq == 1 %}person{% else %}people{% endif %} ahead of you in the queue; and</li>
+    {% else %}
+            <li><b>Nobody</b> ahead of you in the queue &mdash; you're running now &mdash;; and</li>
+    {% endif %}
+            <li><b>{{ num_requests }}</b> requests to Last.fm to be made.</li>
+        </ul>
+        <p>Expect to wait about <b>{{ eta }}</b> for your update to complete.</p>
+
+        <p>If others are ahead of you in the queue occasionally refreshing this page should update those numbers. 
+        If you've used this before you can 
+        <a href="{% url lastfmexplorer.views.overview username %}">explore</a>
+        up to when you last updated, otherwise you'll have to wait.  
+        Perhaps have a cup of tea?</p>
+{% endif %}
+    </div>
+{% endblock %}
+

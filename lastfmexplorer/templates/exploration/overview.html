@@ -1,0 +1,117 @@
+{% extends 'exploration/base.html' %}
+
+{% block content %}
+
+    <div class="itemofinterest">
+        <div class="itemtitle"><h2>Vital Stats</h2><hr/></div>
+        <div class="itemcontent">
+            <ul>
+            {% for item in vitals %}
+                <li>{{ item }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="itemofinterest">
+        <div class="itemtitle"><h2>Weekly Playcounts</h2><hr/></div>
+        <div class="itemcontent">
+            <p><b><span class="blue">blue</span></b>: number of songs played in a week, 
+                <b><span class="green">green</span></b>: onrunning average</p>
+            <div style="width:1000pxx; height: 150px;" id="weekly_js"></div>
+        </div>
+        <div class="itemcontent">
+            <div style="float:left;">
+                <h3>Monthly track totals</h3>
+                <div style="width:430px; height: 300px; margin-bottom:2em;" id="monthly_js"></div>
+            </div>
+            <div style="float:right;">
+                <h3>Histogram of weekly track totals</h3>
+                <img src="{{ wpc_hist }}" />
+            </div>
+        </div>
+    </div>
+
+    <div class="itemofinterest">
+        <div class="itemtitle"><h2>Record Weeks</h2><hr/></div>
+        <div class="itemcontent">
+            <div class="halfbox" />
+                <h3>Most plays of one artist in a week</h3>
+                <ol>
+                    {% for item, date in rwas %}
+                    <li><a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">
+                        {{ date|date:"d/m/Y" }}</a>: 
+                    <b>{{ item.plays }}</b> - {{ item.artist }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="halfbox" />
+                <h3>Most songs played in a single week</h3>
+                <ol>
+                    {% for idx, date, plays in rwps %}
+                    <li><a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">
+                        {{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b> </li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="itemofinterest">
+        <div class="itemtitle"><h2>Chart</h2><hr/></div>
+        <div class="itemcontent">
+            <ol>
+                {% for artist, count, max in chart %}
+                <li class="barchart">
+                    <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                    <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                        <span class='barchart_num'>{{ count }}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/external/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/flot-charts.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        monthly_data = [];
+        month_ticks = [];
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+{% comment %} Get some data! {% endcomment %}
+{% for count in mcjs %} 
+        monthly_data.push([{{ forloop.counter0 }}, {{ count }}]);
+        month_ticks.push([{{ forloop.counter0 }}, months[{{ forloop.counter0 }}]]);
+{% endfor %}
+
+        {% comment %} Plot the graphs. {% endcomment %}
+        $.plot($("#monthly_js"), [{data : monthly_data, color: "#00f"}], {
+            bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
+            xaxis: { ticks: month_ticks },
+            grid:  { hoverable: true }
+        });
+        bindTooltip("#monthly_js");
+
+        weekly_data = [];
+        averages = [];
+
+{% comment %} Get some data! {% endcomment %}
+{% for dte, playcount, average in wpcjs %} 
+        weekly_data.push([{{ dte }}, {{ playcount }}]); averages.push([{{ dte }}, {{ average }}]); {% endfor %}
+
+        plot_line_chart("#weekly_js", 
+            [ {data : weekly_data, color: "#00f"}, 
+              {data: averages, color: "#007f02"} ]);
+    });
+    </script>
+
+{% endblock %}
+
+
