@@ -20,7 +20,7 @@ from django.core.cache import cache
 
 import ldates 
 from models import Artist, User, WeekData, Updates, Tag, ArtistTags
-from settings import LASTFM_SECRET_KEY, LASTFM_API_KEY
+from twothreefall.settings import LASTFM_SECRET_KEY, LASTFM_API_KEY
 
 logging.basicConfig(level=logging.DEBUG)
 
