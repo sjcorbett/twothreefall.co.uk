@@ -172,6 +172,9 @@ def fetch_week(user, start, end):
         except KeyError:
             logging.error("fetch_week caught KeyError, attempt %d" % (attempt,))
             attempt += 1
+        except SyntaxError:
+            logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
+            incomplete = False
 
     if data:
         for artist, plays, rank in data:
