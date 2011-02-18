@@ -167,10 +167,10 @@ def fetch_week(user, start, end):
             data = week_data(user.username, start, end)
             incomplete = False
         except BadStatusLine:
-            logging.error("fetch_week caught BadStatusLine, attempt %d" % (attempt,))
+            logging.warn("fetch_week caught BadStatusLine, attempt %d" % (attempt,))
             attempt += 1
         except KeyError:
-            logging.error("fetch_week caught KeyError, attempt %d" % (attempt,))
+            logging.warn("fetch_week caught KeyError, attempt %d" % (attempt,))
             attempt += 1
         except SyntaxError:
             logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
@@ -179,8 +179,12 @@ def fetch_week(user, start, end):
     if data:
         for artist, plays, rank in data:
             a, _ = Artist.objects.get_or_create(name=artist)
-            WeekData.objects.create(user_id=user.id, artist_id=a.id, \
-                    week_idx=week_idx, plays=plays, rank=rank)
+            try:
+                WeekData.objects.create(user_id=user.id, artist_id=a.id, \
+                        week_idx=week_idx, plays=plays, rank=rank)
+            except IntegrityError:
+                logging.error("IntegrityError creating weekdata object: " + \
+                        "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d" % (user.id, a.id, week_idx, user, start, end)) 
     else:
         result['success'] = False
 
