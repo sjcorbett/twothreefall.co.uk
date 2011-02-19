@@ -15,7 +15,7 @@ from httplib import BadStatusLine
 from celery.task.sets import TaskSet, subtask
 from celery.decorators import task
 
-from django.db import connection, transaction
+from django.db import connection, transaction, IntegrityError
 from django.core.cache import cache
 
 import ldates 
@@ -183,8 +183,18 @@ def fetch_week(user, start, end):
                 WeekData.objects.create(user_id=user.id, artist_id=a.id, \
                         week_idx=week_idx, plays=plays, rank=rank)
             except IntegrityError:
-                logging.error("IntegrityError creating weekdata object: " + \
-                        "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d" % (user.id, a.id, week_idx, user, start, end)) 
+                # Has truncating this artist's name caused the problem?  
+                # Add the playcount to that entry.
+                try:
+                    wd = WeekData.objects.get(user=user.id, week_idx=week_idx, artist=a.id)
+                    wd.plays += plays
+                    wd.save()
+                except Exception:
+                    logging.error("Failed to recover from IntegrityError creating weekdata object: " + \
+                            "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d\nartist: %s\nartisttrunc: %s" % (user.id, a.id, week_idx, user, start, end, artist, a.name)) 
+                    logging.error(__url_for_request("user.getweeklyartistchart", {'user':user, 'from':start, 'to':end}))
+
+
     else:
         result['success'] = False
 
@@ -245,6 +255,10 @@ def __parse_tags(xml):
 ########## HTTP requests ######################################################
 # TODO: Better error handling
 # TODO: Handle HTTP 503s.
+def __url_for_request(method, extras):
+    args = urlencode(extras) if extras else ""
+    return "%s?method=%s&api_key=%s&%s" % (_API_BASE, method, LASTFM_API_KEY, args)
+
 def __request(method, extras=None):
     """
     Requests data from Last.fm.  
@@ -252,10 +266,9 @@ def __request(method, extras=None):
       extras: any arguments, whether required or optional.
     """
 
-    args = urlencode(extras) if extras else ""
-    query = "%s?method=%s&api_key=%s&%s" % (_API_BASE, method, LASTFM_API_KEY, args)
-
+    query = __url_for_request(method, extras)
     logging.info(query)
+
     req = urllib2.Request(query)
     req.add_header('Accept-encoding', 'gzip')
     req.add_header('User-agent', 'Last.fm Explorer')

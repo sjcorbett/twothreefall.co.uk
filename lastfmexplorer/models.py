@@ -488,13 +488,17 @@ class UserArtistWeekDataManager(UserWeekDataManager):
 
 class WeekData(models.Model):
     user   = models.ForeignKey(User)
-    week_idx = models.PositiveSmallIntegerField()
+    week_idx = models.PositiveSmallIntegerField(db_index=True)
     artist = models.ForeignKey(Artist)
     plays  = models.PositiveIntegerField()
     rank   = models.PositiveIntegerField()
 
     objects = UserWeekDataManager()
     artists = UserArtistWeekDataManager()
+
+    def __unicode__(self):
+        return "<WeekData: %s/%d/%s/%d>" % \
+                (self.user.username, self.week_idx, self.artist.name, self.plays)
 
     class Meta:
         ordering = ['user', 'week_idx', 'plays', 'artist']
