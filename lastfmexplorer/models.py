@@ -17,7 +17,7 @@ matplotlib.use("Agg")
 from matplotlib.pyplot import hist, figure
 
 _BASE_URL  = "http://www.last.fm"
-USER_REGEX = r'(?P<username>[a-zA-Z][a-zA-Z0-9_ ]{1,14})'
+USER_REGEX = r'(?P<username>[a-zA-Z][a-zA-Z0-9_ -]{1,14})'
 
 ###############################################################################
 
