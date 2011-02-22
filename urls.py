@@ -1,10 +1,12 @@
 from django.conf.urls.defaults import *
+from django.contrib import admin
 from django.views.generic.simple import direct_to_template
 from django.views.decorators.cache import cache_page
 
 import settings
 import twothreefall.views
 
+admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', cache_page(direct_to_template, settings.CACHE_DATA_TIMEOUT), {'template': 'landing.html'}),
@@ -14,6 +16,8 @@ urlpatterns = patterns('',
     (r'^status/cache/$', twothreefall.views.memcached_status),
 
     # (r'^twothreefall/', include('twothreefall.foo.urls')),
+
+    (r'^admin/', include(admin.site.urls)),
 
 )
 
