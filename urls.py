@@ -21,10 +21,10 @@ urlpatterns = patterns('',
 
 )
 
-# local media content and memcached stats
+# local media content
 if settings.DEV:
+    from django.views.static import serve
     urlpatterns += patterns('',
-        (r'^.*/?(media/img/.*)', twothreefall.views.load_image),
-        (r'^.*media/style.css', twothreefall.views.stylesheet),
-        (r'^.*/?media/js/([\w\d./-]*)$', twothreefall.views.javascript))
-
+        (r'^media/(?P<path>.*)$', serve, {'document_root':
+            settings.MEDIA_ROOT}),
+    )

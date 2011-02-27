@@ -12,25 +12,6 @@ basic_context = { 'template' :
                     { 'MEDIA_URL' : settings.MEDIA_URL,
                       'DEV' : settings.DEV } }
 
-
-###############################################################################
-# Local media stuff.
-
-def load_image(request, image_name):
-    #logging.info("IMG: " + image_name)
-    img = open(image_name, "rb").read()
-    return HttpResponse(img, mimetype=mimetypes.guess_type(image_name))
-
-# I expect there's a better way to do this, findable with an internet connection..
-def stylesheet(request):
-    s = open('media/style.css', "r").read()
-    return HttpResponse(s, mimetype="text/css")
-
-def javascript(request, file):
-    #logging.info(file)
-    s = open('media/js/' + file, "r").read()
-    return HttpResponse(s, mimetype="text/javascipt")
-
 ###############################################################################
 # Memcached status
 
