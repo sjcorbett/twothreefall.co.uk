@@ -187,7 +187,10 @@ def staged(target_view, skip_date_shortcuts=False):
             2. Are the start and end dates sensible?
             3. Did they submit the date change form?
             """
-            user = get_object_or_404(User, username=username)
+            try:
+                user = User.objects.get(username=username)
+            except ObjectDoesNotExist:
+                return redirect(update, username)
 
             # Never updated their data?
             faw = WeekData.objects.first_available_week(user)
