@@ -71,7 +71,7 @@ def first_sunday_on_or_after(d):
 def first_sunday_on_or_before(d):
     """Returns the index of the first Sunday before the given date, inclusive."""
     if d < the_beginning:
-        raise ValueError("No dates before 13/02/2005!")
+        return 0
     return __weeks_to(d)
 
 fsooa = first_sunday_on_or_after
@@ -79,22 +79,11 @@ fsoob = first_sunday_on_or_before
 
 idx_last_sunday = first_sunday_on_or_before(today)
 
-def page_shortcuts():
-    """
-    Return year_shortcuts, months and years_ago.
-    """
-    pass
+def years_to_today():
+    return xrange(2005, date.today().year + 1)
 
-year_shortcuts = [
-    ('2005', 0, fsooa(date(2005,12,31))),
-    ('2006', fsoob(date(2006,1,1)), fsooa(date(2006,12,31))),
-    ('2007', fsoob(date(2007,1,1)), fsooa(date(2007,12,31))),
-    ('2008', fsoob(date(2008,1,1)), fsooa(date(2008,12,31))),
-    ('2009', fsoob(date(2009,1,1)), fsooa(date(2009,12,31))),
-    ('2010', fsoob(date(2010,1,1)), fsooa(date(2010,12,31))),
-    ('2011', fsoob(date(2011,1,1)), fsooa(date(2011,12,31))),
-    ('All',  0, idx_last_sunday)
-]
+def indicies_of_year(year):
+    return (fsoob(date(year, 1, 1)), fsooa(date(year, 12, 31)))
 
 def __months_to_indices(num):
     return ("%d months" % (num,) if num > 1 else "month",

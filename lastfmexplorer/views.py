@@ -181,7 +181,7 @@ def poll_task_status(request):
 def staged(target_view, skip_date_shortcuts=False):
     def inner(fn):
         @cache_page(settings.CACHE_USER_TIMEOUT)
-        def cleansed(request, username, start=None, end=None, **kwargs):
+        def cleansed(request, username, year=None, start=None, end=None, **kwargs):
             """
             1. Does the user exist?
             2. Are the start and end dates sensible?
@@ -197,8 +197,12 @@ def staged(target_view, skip_date_shortcuts=False):
             if not isinstance(faw, int):
                 raise Http404
 
-            start = int(start) if (start and int(start) > faw) else faw
-            end   = min(int(end) if end else ldates.fsoob(user.last_updated), 
+            if year:
+                year = int(year)
+                start, end = ldates.indicies_of_year(year)
+            else:
+                start = int(start) if (start and int(start) > faw) else faw
+                end   = min(int(end) if end else ldates.fsoob(user.last_updated), 
                           ldates.idx_last_sunday)
 
             # Do this or just fail to 'no data in this range page?'
@@ -209,6 +213,7 @@ def staged(target_view, skip_date_shortcuts=False):
                 return __date_redirection(request, cleansed, start, end)
 
             context = { 'user' : user, 
+                        'year' : year,
                         'start' : start,
                         'end' : end,
                         'template' : {
@@ -225,7 +230,7 @@ def staged(target_view, skip_date_shortcuts=False):
             
             # shortcuts for links to and presentation of dates.
             if not skip_date_shortcuts:
-                context['template']['year_shortcuts'] = ldates.year_shortcuts
+                context['template']['year_shortcuts'] = ldates.years_to_today()
                 context['template']['shortcuts'] = ldates.months + ldates.years_ago
 
             # Fail if there's definitely no data for this range.
