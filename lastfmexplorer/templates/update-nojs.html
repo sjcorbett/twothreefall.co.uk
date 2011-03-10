@@ -3,10 +3,6 @@
 {% block body %}
     <div id="allcontent">
         <h1>Updating data</h1>
-{% if skipped %}
-        <p>Hey, {{ username }}, looks like you're up to date.  
-        <a href="{% url lastfmexplorer.views.overview username %}">Get exploring</a>!</p>
-{% else %}
         {% comment %}<p>Hey, {{ username }}, looks like you have Javascript disabled.</p>{% endcomment %}
         <p>Hey, {{ username }}.  There's:</p>
         <ul>
@@ -24,7 +20,6 @@
         <a href="{% url lastfmexplorer.views.overview username %}">explore</a>
         up to when you last updated, otherwise you'll have to wait.  
         Perhaps have a cup of tea?</p>
-{% endif %}
     </div>
 {% endblock %}
 
