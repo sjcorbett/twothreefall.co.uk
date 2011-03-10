@@ -99,9 +99,7 @@ def update(request, username):
     """
     
     user = tasks.get_or_add_user(username)
-    template_vars = { \
-            'username' : username, 
-            'skipped' : True } 
+    template_vars = { 'username' : username } 
 
     # Check updates table to see if update is already in progress.
     update = None
@@ -112,13 +110,15 @@ def update(request, username):
             update = __init_update(user, template_vars)
 
     if update:
-        template_vars['skipped'] = False
         piq, total = update.place_in_queue_and_eta()
         eta = utils.nicetime(total / 5)
         template_vars.update([('piq', piq - 1), ('num_requests', total), ('eta', eta)])
 
-    return render_to_response('update-nojs.html', template_vars,
-                              context_instance=RequestContext(request))
+        return render_to_response('update-nojs.html', template_vars,
+                                  context_instance=RequestContext(request))
+    else:
+        return redirect(overview, user)
+
 
 def __init_update(user, template_vars):
     # weeks previously fetched
