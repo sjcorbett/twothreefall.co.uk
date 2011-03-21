@@ -1,4 +1,6 @@
 {% extends 'root.html' %}
+{% block title %}Last.fm Explorer{% endblock %}
+{% block javascript %}<script type="text/javascript" src="{{ MEDIA_URL }}js/update-polling.js"></script>{% endblock %}
 {% block body %}
 
 <br/> <br/> <br/> <br/> <br/> <br/> <br/>
@@ -12,10 +14,11 @@
         <input type="submit" value="Go" id="submit" />
 {% if feedback.errmessage %}
         <div class="errordiv">
-             <p><img src="{{ context.template.MEDIA_URL }}img/error.gif"/>
+             <p><img src="{{ MEDIA_URL }}img/site/error.gif"/>
              {{ feedback.errmessage }}</p>
         </div>
 {% endif %}
+        <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
     </fieldset>
 </form>
 

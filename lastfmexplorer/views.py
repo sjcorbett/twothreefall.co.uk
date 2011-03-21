@@ -154,23 +154,31 @@ def __init_update(user, template_vars):
     else:
         return None
 
-def poll_task_status(request):
+def poll_update_status(request):
 
     if not 'username' in request.POST:
         raise Http404
 
     username = request.POST['username']
-    user   = User.objects.get(username=user)
-    update = get_object_or_404(Updates.objects.get(user=user))
+    user   = get_object_or_404(User, username=username)
+    update = get_object_or_404(Updates, user=user)
 
     # use task id to get status, report back a progress of no. completed.
     pending = cache.get(tasks.user_update_key(username), 0)
-    result = { 'pending' : pending }
 
     # all complete.  delete from update table.
-    if not pending: # == 0
+    if not update or not pending: # == 0
         result['alldone'] = True
         cache.delete(tasks.user_update_key(username))
+    else:
+        piq, total = update.place_in_queue_and_eta()
+        eta = utils.nicetime(total / 5)
+
+        result = { 'pending' : pending,
+                   'piq' : piq - 1,
+                   'num_requests' : total,
+                   'eta' : eta }
+
 
     return HttpResponse(anyjson.serialize(result), mimetype="application/json")
 

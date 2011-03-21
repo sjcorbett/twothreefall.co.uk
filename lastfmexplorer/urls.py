@@ -22,9 +22,8 @@ urlpatterns = patterns('',
     (r'^$', views.start),
 
     # updates
-    # (r'^update$', views.update), # would need to include GET params in redirect .. is this possible?
     (__user_base + 'update$', views.update),
-    (r'^poll-update$', views.poll_task_status),
+    (r'^poll-update$', views.poll_update_status),
 
     # plain user overview, first between two dates, second all time.
     (__user_base + __date_matcher, views.overview),
