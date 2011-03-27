@@ -1,5 +1,5 @@
 {% extends 'root.html' %}
-{% block title %}Last.fm Explorer{% endblock %}
+{% block ttle %}Last.fm Explorer{% endblock %}
 {% block javascript %}<script type="text/javascript" src="{{ MEDIA_URL }}js/update-polling.js"></script>{% endblock %}
 {% block body %}
 
@@ -21,6 +21,5 @@
         <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
     </fieldset>
 </form>
-
 
 {% endblock %}
