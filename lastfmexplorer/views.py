@@ -7,13 +7,11 @@ from django.views.decorators.cache import cache_page
 from django.template import RequestContext
 
 from datetime import date, timedelta
-from time import strptime
 import logging
 import mimetypes
 import os
 import re
 import anyjson
-import time
 
 import twothreefall.lastfmexplorer.tasks as tasks
 import ldates 
@@ -179,7 +177,6 @@ def poll_update_status(request):
                    'num_requests' : total,
                    'eta' : eta }
 
-
     return HttpResponse(anyjson.serialize(result), mimetype="application/json")
 
 
@@ -217,7 +214,7 @@ def staged(target_view, skip_date_shortcuts=False):
             if start > end: temp = end; end = start; start = end
 
             # has the user submitted the change date form?
-            if request.GET: # != {}
+            if 'username' in request.GET: 
                 return __date_redirection(request, cleansed, start, end)
 
             context = { 'user' : user, 
@@ -241,6 +238,13 @@ def staged(target_view, skip_date_shortcuts=False):
                 context['template']['year_shortcuts'] = ldates.years_to_today()
                 context['template']['shortcuts'] = ldates.months + ldates.years_ago
 
+            if 'count' in request.GET:
+                try:
+                    c = int(request.GET['count'])
+                    context['count'] = c
+                except:
+                    pass
+
             # Fail if there's definitely no data for this range.
             try:
                 WeekData.objects.user_weeks_between(user, start, end)[0]
@@ -249,18 +253,15 @@ def staged(target_view, skip_date_shortcuts=False):
                                           { 'context' : context },
                                           context_instance=RequestContext(request))
 
-            # are these times anywhere near accurate?  querysets are lazily evaluated
-            # and most of the functions in models return generators.
-            a = time.time()
-            # fn should return a dictionary, or similar.
             result = fn(request, context)
-            b = time.time()
-            logging.info("Execution of %s for %s took %.2fms." % \
-                    (fn.__name__, user, (b - a) * 1000))
 
             return render_to_response(target_view, result,
                     context_instance=RequestContext(request))
         
+        cleansed.__name__ = fn.__name__
+        cleansed.__dict__ = fn.__dict__
+        cleansed.__doc__  = fn.__doc__
+
         return cleansed
     return inner
 
@@ -328,10 +329,11 @@ def user_chart(request, context):
     Creates a standard chart.
     """
     start = context.get('start')
-    end = context.get('end')
+    end   = context.get('end')
+    count = context.get('count', 100)
 
     isWeek = start == end
-    chart  = WeekData.objects.chart(context.get('user'), start, end, count=100)
+    chart  = WeekData.objects.chart(context.get('user'), start, end, count=count)
     back   = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek }
 
     if isWeek:
@@ -346,8 +348,12 @@ def user_new_artists_in_period(request, context):
     """
     Returns artists first listened to in the period between start and end.
     """
+    start = context.get('start')
+    end   = context.get('end')
+    count = context.get('count', 100)
+
     artists = WeekData.objects.new_artists_in_timeframe(context.get('user'), 
-                context.get('start'), context.get('end'))
+                start, end, count)
     return { 'context' : context, 'artists' : artists }
 
 
@@ -355,7 +361,7 @@ def user_top_n_history(request, username):
     """
     I haven't decided this yet.
     """
-    pass
+    raise Exception()
     # f, start, end = formalities(request, username, start, end)
     # WeekData.objects.top_n_history(f['user'], start, end)
     # return render_to_response('exploration/top-n-history.html', locals())
