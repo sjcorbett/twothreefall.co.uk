@@ -2,9 +2,8 @@
 {% block title %}Last.fm Explorer Update -- {{ username }}{% endblock %}
 {% block body %}
     <div id="allcontent">
-        <h1>Updating data</h1>
-        {% comment %}<p>Hey, {{ username }}, looks like you have Javascript disabled.</p>{% endcomment %}
-        <p>Hey, {{ username }}.  There's:</p>
+        <h1>Hey, {{ username }}</h1>
+        <p>There's:</p>
         <ul>
     {% if piq %}
             <li><b>{{ piq }}</b> {% if piq == 1 %}person{% else %}people{% endif %} ahead of you in the queue; and</li>

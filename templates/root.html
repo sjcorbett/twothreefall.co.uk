@@ -2,17 +2,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <!-- <link href='http://fonts.googleapis.com/css?family=OFL+Sorts+Mill+Goudy+TT&subset=latin' rel='stylesheet' type='text/css'> -->
         <title>{% block ttle %}Twothreefall{% endblock %}</title>
         <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}style.css" />
-
-        {% comment %} jquery {% endcomment %}
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
-{% comment %} each page can include its own section of javascript {% endcomment %}
 {% block javascript %}{% endblock %}
-
-{% comment %} Google Analytics only if not on DEV. {% endcomment %}
 {% if not DEV %}
         <script type="text/javascript">
 
@@ -25,7 +18,6 @@
             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
           })();
-
         </script>
 {% endif %}
     </head>

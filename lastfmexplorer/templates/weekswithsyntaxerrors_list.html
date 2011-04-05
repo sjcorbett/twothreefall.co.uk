@@ -1,0 +1,5 @@
+<ul>
+{% for week in object_list %}
+    <li>{{ week.user }}: <a href="{{ week.get_absolute_url }}">{{ week }}</a></li>   
+{% endfor %}
+</ul>

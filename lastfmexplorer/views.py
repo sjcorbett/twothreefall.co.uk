@@ -3,17 +3,16 @@ from django.http import Http404
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.cache import cache_page
 from django.template import RequestContext
+from django.views.decorators.cache import cache_page
+from django.views.generic.list_detail import object_list
 
 from datetime import date, timedelta
-from time import strptime
 import logging
 import mimetypes
 import os
 import re
 import anyjson
-import time
 
 import twothreefall.lastfmexplorer.tasks as tasks
 import ldates 
@@ -154,23 +153,30 @@ def __init_update(user, template_vars):
     else:
         return None
 
-def poll_task_status(request):
+def poll_update_status(request):
 
     if not 'username' in request.POST:
         raise Http404
 
     username = request.POST['username']
-    user   = User.objects.get(username=user)
-    update = get_object_or_404(Updates.objects.get(user=user))
+    user   = get_object_or_404(User, username=username)
+    update = get_object_or_404(Updates, user=user)
 
     # use task id to get status, report back a progress of no. completed.
     pending = cache.get(tasks.user_update_key(username), 0)
-    result = { 'pending' : pending }
 
     # all complete.  delete from update table.
-    if not pending: # == 0
+    if not update or not pending: # == 0
         result['alldone'] = True
         cache.delete(tasks.user_update_key(username))
+    else:
+        piq, total = update.place_in_queue_and_eta()
+        eta = utils.nicetime(total / 5)
+
+        result = { 'pending' : pending,
+                   'piq' : piq - 1,
+                   'num_requests' : total,
+                   'eta' : eta }
 
     return HttpResponse(anyjson.serialize(result), mimetype="application/json")
 
@@ -209,7 +215,7 @@ def staged(target_view, skip_date_shortcuts=False):
             if start > end: temp = end; end = start; start = end
 
             # has the user submitted the change date form?
-            if request.GET: # != {}
+            if 'username' in request.GET: 
                 return __date_redirection(request, cleansed, start, end)
 
             context = { 'user' : user, 
@@ -233,6 +239,13 @@ def staged(target_view, skip_date_shortcuts=False):
                 context['template']['year_shortcuts'] = ldates.years_to_today()
                 context['template']['shortcuts'] = ldates.months + ldates.years_ago
 
+            if 'count' in request.GET:
+                try:
+                    c = int(request.GET['count'])
+                    context['count'] = c
+                except:
+                    pass
+
             # Fail if there's definitely no data for this range.
             try:
                 WeekData.objects.user_weeks_between(user, start, end)[0]
@@ -241,18 +254,15 @@ def staged(target_view, skip_date_shortcuts=False):
                                           { 'context' : context },
                                           context_instance=RequestContext(request))
 
-            # are these times anywhere near accurate?  querysets are lazily evaluated
-            # and most of the functions in models return generators.
-            a = time.time()
-            # fn should return a dictionary, or similar.
             result = fn(request, context)
-            b = time.time()
-            logging.info("Execution of %s for %s took %.2fms." % \
-                    (fn.__name__, user, (b - a) * 1000))
 
             return render_to_response(target_view, result,
                     context_instance=RequestContext(request))
         
+        cleansed.__name__ = fn.__name__
+        cleansed.__dict__ = fn.__dict__
+        cleansed.__doc__  = fn.__doc__
+
         return cleansed
     return inner
 
@@ -320,10 +330,11 @@ def user_chart(request, context):
     Creates a standard chart.
     """
     start = context.get('start')
-    end = context.get('end')
+    end   = context.get('end')
+    count = context.get('count', 100)
 
     isWeek = start == end
-    chart  = WeekData.objects.chart(context.get('user'), start, end, count=100)
+    chart  = WeekData.objects.chart(context.get('user'), start, end, count=count)
     back   = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek }
 
     if isWeek:
@@ -338,8 +349,12 @@ def user_new_artists_in_period(request, context):
     """
     Returns artists first listened to in the period between start and end.
     """
+    start = context.get('start')
+    end   = context.get('end')
+    count = context.get('count', 100)
+
     artists = WeekData.objects.new_artists_in_timeframe(context.get('user'), 
-                context.get('start'), context.get('end'))
+                start, end, count)
     return { 'context' : context, 'artists' : artists }
 
 
@@ -347,7 +362,7 @@ def user_top_n_history(request, username):
     """
     I haven't decided this yet.
     """
-    pass
+    raise Exception()
     # f, start, end = formalities(request, username, start, end)
     # WeekData.objects.top_n_history(f['user'], start, end)
     # return render_to_response('exploration/top-n-history.html', locals())
@@ -381,3 +396,8 @@ def user_and_artist(request, context):
     return { 'context' : context, 'weekly_plays' : weekly_plays, \
              'array_counter' : xrange(len(weekly_plays)) }
 
+
+def list_bad_xml_files(request):
+    bad_weeks = WeeksWithSyntaxErrors.objects.all()
+    return object_list(request, queryset=bad_weeks,
+            template_name='weekswithsyntaxerrors_list.html')

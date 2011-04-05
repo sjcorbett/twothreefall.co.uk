@@ -4,7 +4,6 @@ Retrieve data from database and fetch it from last.fm when necessary.
 import StringIO
 import datetime as dt
 import gzip
-import itertools
 import logging
 import tempfile, os
 import urllib2
@@ -19,7 +18,7 @@ from django.db import connection, transaction, IntegrityError
 from django.core.cache import cache
 
 import ldates 
-from models import Artist, User, WeekData, Updates, Tag, ArtistTags
+from models import *
 from twothreefall.settings import LASTFM_SECRET_KEY, LASTFM_API_KEY
 
 logging.basicConfig(level=logging.DEBUG)
@@ -47,66 +46,19 @@ def __elem(el, n):
 
 
 ###############################################################################
-########## Retrieving available weekly charts #################################
-
-def chart_list(user):
-    """
-    Fetches the list of available charts for user.  Returns a generator 
-    providing (from, to) timestamp tuples.
-    """
-    return __available_charts( \
-             __request('user.getweeklychartlist', {'user':user})['data'])
-
-def __available_charts(xml):
-    """
-     Parses XML of form:
-        <chart from="1108296002" to="1108900802"/>
-        <chart from="1108900801" to="1109505601"/>
-
-     Returns generator providing (from, to) tuples.
-    """
-    weeks = __iter_over_field(xml, 'chart')
-
-    for w in weeks:
-        yield (int(__attr(w, 'from')), int(__attr(w, 'to')))
-
-
-###############################################################################
-########## Retrieving one week's data #########################################
-
-def week_data(user, start, end, kind='artist'):
-    """
-    Fetches one week's worth of data from Last.fm (using start and end).  kind 
-    controls the kind of chart fetched.  Returns a generator over (name, 
-    playcount, rank).
-    """
-    method = "user.getweekly%schart" % (kind,)
-    return __parse_week_data( \
-             __request(method, {'user':user, 'from':start, 'to':end})['data'])
-
-def __parse_week_data(xml):
-    """
-    Parses XML of form:
-       <artist rank="1">
-         <name>Fleet Foxes</name>
-         <mbid>..</mbid>
-         <playcount>20</playcount>
-         <url>http://www.last.fm/music/Fleet+Foxes</url>
-       </artist>
-
-    Returns generator over (name, playcount, rank).
-    """
-    for d in __iter_over_field(xml, 'artist'):
-        yield (__elem(d, 'name'),
-         int(__elem(d, 'playcount')),
-         int(__attr(d, 'rank')))
-
-
-###############################################################################
-########## Handling users #####################################################
+########## Exceptions #########################################################
 
 class GetUserFailed(Exception):
     pass
+
+class GetAvailableChartsFailed(Exception):
+    pass
+
+class GetWeekFailed(Exception):
+    pass
+
+###############################################################################
+########## Handling users #####################################################
 
 def get_or_add_user(user):
     """
@@ -147,6 +99,92 @@ def user_chart_updates(username, weeks):
     return ts.apply_async()
 
 
+###############################################################################
+########## Retrieving available weekly charts #################################
+
+def chart_list(user):
+    """
+    Fetches the list of available charts for user.  Returns a generator 
+    providing (from, to) timestamp tuples.
+    """
+    return __available_charts( \
+             __request('user.getweeklychartlist', {'user':user})['data'])
+
+def __available_charts(xml):
+    """
+     Parses XML of form:
+        <chart from="1108296002" to="1108900802"/>
+        <chart from="1108900801" to="1109505601"/>
+
+     Returns generator providing (from, to) tuples.
+    """
+    weeks = __iter_over_field(xml, 'chart')
+
+    for w in weeks:
+        yield (int(__attr(w, 'from')), int(__attr(w, 'to')))
+
+
+###############################################################################
+########## Retrieving one week's data #########################################
+
+def week_data(user, start, end, kind='artist'):
+    """
+    Fetches one week's worth of data from Last.fm (using start and end).  kind 
+    controls the kind of chart fetched.  Returns a generator over (name, 
+    playcount, rank).
+    """
+
+    method = "user.getweekly%schart" % (kind,)
+    response = __request(method, {'user':user, 'from':start, 'to':end})
+    if response['success']:
+        return __parse_week_data(response['data']) 
+    else:
+        raise GetWeekFailed(response['error']['message'])
+
+def __parse_week_data(xml):
+    """
+    Parses XML of form:
+       <artist rank="1">
+         <name>Fleet Foxes</name>
+         <mbid>..</mbid>
+         <playcount>20</playcount>
+         <url>http://www.last.fm/music/Fleet+Foxes</url>
+       </artist>
+
+    Returns dictionary with key artist id, value (plays, rank)
+    """
+    data = {}
+    for d in __iter_over_field(xml, 'artist'):
+        artist = __elem(d, 'name')
+        pc     = int(__elem(d, 'playcount'))
+        rank   = int(__attr(d, 'rank'))
+        a, _ = Artist.objects.get_or_create(name=artist)
+
+        # Truncating this artist's name could cause a key clash
+        # Add the playcount to that entry.
+        if a.id in data:
+            othercount, rank = data[a.id]
+            pc += othercount
+        data[a.id] = (pc, rank)
+
+    return data
+
+
+@transaction.commit_manually
+def __save_week_data(user_id, week_idx, wd):
+    try:
+        for artistid, (plays, rank) in wd.iteritems():
+            WeekData.objects.create(user_id=user_id, artist_id=artistid, \
+                    week_idx=week_idx, plays=plays, rank=rank)
+        transaction.commit()
+    except Exception as instance:
+        transaction.rollback()
+        # TODO: Improve logging
+        logging.error("Failed to save week. user: %d, week: %d" % (user_id, week_idx))
+        # "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d\nartist: %s\nartisttrunc: %s" % (user_id, aid, week_idx, user, start, end, artist, a.name)) 
+        # logging.error(__url_for_request("user.getweeklyartistchart", {'user':user, 'from':start, 'to':end}))
+
+
 @task(ignore_result=True)
 def fetch_week(user, start, end):
 
@@ -156,49 +194,17 @@ def fetch_week(user, start, end):
     cache.decr(user_update_key(str(user.username)))
 
     week_idx = ldates.index_of_timestamp(start)
-    result = {'success' : True, 'week_idx' : week_idx}
-    
-    incomplete = True
-    max_retries = 2
-    attempt = 0
-    data = None
-    while incomplete and attempt < max_retries:
-        try:
-            data = week_data(user.username, start, end)
-            incomplete = False
-        except BadStatusLine:
-            logging.warn("fetch_week caught BadStatusLine, attempt %d" % (attempt,))
-            attempt += 1
-        except KeyError:
-            logging.warn("fetch_week caught KeyError, attempt %d" % (attempt,))
-            attempt += 1
-        except SyntaxError:
-            logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
-            incomplete = False
 
-    if data:
-        for artist, plays, rank in data:
-            a, _ = Artist.objects.get_or_create(name=artist)
-            try:
-                WeekData.objects.create(user_id=user.id, artist_id=a.id, \
-                        week_idx=week_idx, plays=plays, rank=rank)
-            except IntegrityError:
-                # Has truncating this artist's name caused the problem?  
-                # Add the playcount to that entry.
-                try:
-                    wd = WeekData.objects.get(user=user.id, week_idx=week_idx, artist=a.id)
-                    wd.plays += plays
-                    wd.save()
-                except Exception:
-                    logging.error("Failed to recover from IntegrityError creating weekdata object: " + \
-                            "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d\nartist: %s\nartisttrunc: %s" % (user.id, a.id, week_idx, user, start, end, artist, a.name)) 
-                    logging.error(__url_for_request("user.getweeklyartistchart", {'user':user, 'from':start, 'to':end}))
-
-
-    else:
-        result['success'] = False
-
-    return result
+    try:
+        wd = week_data(user, start, end)
+        __save_week_data(user.id, week_idx, wd)
+    except GetWeekFailed, e:
+        # Save to DB
+        pass
+    except SyntaxError:
+        # Save to DB
+        logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
+        WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx);
 
 
 @task(ignore_result=True)
@@ -253,7 +259,6 @@ def __parse_tags(xml):
 
 ###############################################################################
 ########## HTTP requests ######################################################
-# TODO: Better error handling
 # TODO: Handle HTTP 503s.
 def __url_for_request(method, extras):
     args = urlencode(extras) if extras else ""
@@ -273,21 +278,33 @@ def __request(method, extras=None):
     req.add_header('Accept-encoding', 'gzip')
     req.add_header('User-agent', 'Last.fm Explorer')
 
-    result = { 'success' : True }
+    result = { 'success' : False }
 
-    try:
-        r = urllib2.urlopen(req, timeout=60).read()
-        result['data'] = __unzip(r)
+    max_retries = 2
+    attempt     = 0
 
-    except urllib2.HTTPError, e:
-        logging.error("Error accessing " + query + " - " + str(e.code))
-        result['success'] = False
-        result['error'] = { 'code' : e.code, 'message' : e.msg }
-        
-    except urllib2.URLError, e:
-        logging.error("Failed to fetch " + query + ' - URLError.')
-        result['success'] = False
-        result['error'] = { 'message' : e.reason }
+    while not result['success'] and attempt < max_retries:
+        attempt += 1
+        try:
+            r = urllib2.urlopen(req, timeout=60).read()
+            result['data'] = __unzip(r)
+            result['success'] = True
+
+        except urllib2.HTTPError, e:
+            logging.error("Error accessing " + query + " - " + str(e.code))
+            result['error'] = { 'code' : e.code, 'message' : e.msg }
+            
+        except urllib2.URLError, e:
+            logging.error("Failed to fetch " + query + ' - URLError.')
+            result['error'] = { 'message' : e.reason }
+
+        except BadStatusLine:
+            logging.error("fetch_week caught BadStatusLine, attempt %d" % (attempt,))
+            result['error'] = { 'message' : "Request gave BadStatusLine" }
+
+        except Exception as instance:
+            logging.error("Exception for request " + query + " - " + str(type(instance)))
+            result['error'] = { 'messasge' : "Unknown problem" }
 
     return result
 

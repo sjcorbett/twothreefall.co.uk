@@ -16,10 +16,14 @@ import matplotlib.cbook    # placates something or other.
 matplotlib.use("Agg")
 from matplotlib.pyplot import hist, figure
 
-_BASE_URL  = "http://www.last.fm"
-USER_REGEX = r'(?P<username>[a-zA-Z0-9_ -]{2,15})'
+_LASTFM  = "http://www.last.fm"
+_LASTFM_EXAMPLE_API_KEY = "b25b959554ed76058ac220b7b2e0a026"
+
+USER_REGEX = r'(?P<username>[a-zA-Z][a-zA-Z0-9_ -]{1,14})'
 
 ###############################################################################
+
+MAX_ARTIST_NAME_LENGTH = 75
 
 class TruncatingCharField(models.CharField):
     def get_prep_value(self, value):
@@ -29,13 +33,13 @@ class TruncatingCharField(models.CharField):
         return value
 
 class Artist(models.Model):
-    name = TruncatingCharField(max_length=75)
+    name = TruncatingCharField(max_length=MAX_ARTIST_NAME_LENGTH)
 
     def __unicode__(self):
         return self.name
 
     def get_absolute_url(self):
-        return "%s/music/%s" % (_BASE_URL, self.name)
+        return "%s/music/%s" % (_LASTFM, self.name)
 
     class Meta:
         unique_together = ('name',)
@@ -51,7 +55,7 @@ class Album(models.Model):
         return "%s - %s" % (self.artist, self.title)
 
     def get_absolute_url(self):
-        return "%s/music/%s/%s" % (_BASE_URL, self.artist, self.title)
+        return "%s/music/%s/%s" % (_LASTFM, self.artist, self.title)
 
     class Meta:
         unique_together = ('artist', 'title')
@@ -64,7 +68,7 @@ class Track(models.Model):
 
     def get_absolute_url(self):
         filler = self.album.title if self.album else "_"
-        return "%s/music/%s/%s/%s" % (_BASE_URL, self.artist, filler, self.title)
+        return "%s/music/%s/%s/%s" % (_LASTFM, self.artist, filler, self.title)
 
     def __unicode__(self):
         return self.title
@@ -101,7 +105,7 @@ class User(models.Model):
     validity   = UserManager()
 
     def get_absolute_url(self):
-        return "%s/user/%s" % (_BASE_URL, self.username)
+        return "%s/user/%s" % (_LASTFM, self.username)
 
     def __unicode__(self):
         return self.username
@@ -530,3 +534,21 @@ class ArtistTags(models.Model):
     score  = models.PositiveSmallIntegerField()
     class Meta:
         unique_together = ('artist', 'tag')
+
+
+###############################################################################
+
+class WeeksWithSyntaxErrors(models.Model):
+    user = models.ForeignKey(User)
+    week_idx = models.PositiveSmallIntegerField(db_index=True)
+
+    def __unicode__(self):
+        start = ldates.string_of_index(self.week_idx)
+        end   = ldates.string_of_index(self.week_idx + 1)
+        return "%s to %s" % (start, end)
+
+    def get_absolute_url(self):
+        sts = ldates.timestamp_of_index(self.week_idx)
+        ets = ldates.timestamp_of_index(self.week_idx + 1)
+        return "http://ws.audioscrobbler.com/2.0/?method=user.getweeklyartistchart&user=%s&api_key=%s&from=%d&to=%d" % \
+                (self.user.username, _LASTFM_EXAMPLE_API_KEY, sts, ets)
