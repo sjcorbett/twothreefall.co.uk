@@ -1,6 +1,9 @@
 {% extends 'root.html' %}
 {% block ttle %}Last.fm Explorer{% endblock %}
+{% comment %}
 {% block javascript %}<script type="text/javascript" src="{{ MEDIA_URL }}js/update-polling.js"></script>{% endblock %}
+        <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
+{% endcomment %}
 {% block body %}
 
 <br/> <br/> <br/> <br/> <br/> <br/> <br/>
@@ -18,7 +21,6 @@
              {{ feedback.errmessage }}</p>
         </div>
 {% endif %}
-        <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
     </fieldset>
 </form>
 
