@@ -3,8 +3,9 @@ from django.http import Http404
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.cache import cache_page
 from django.template import RequestContext
+from django.views.decorators.cache import cache_page
+from django.views.generic.list_detail import object_list
 
 from datetime import date, timedelta
 import logging
@@ -395,3 +396,8 @@ def user_and_artist(request, context):
     return { 'context' : context, 'weekly_plays' : weekly_plays, \
              'array_counter' : xrange(len(weekly_plays)) }
 
+
+def list_bad_xml_files(request):
+    bad_weeks = WeeksWithSyntaxErrors.objects.all()
+    return object_list(request, queryset=bad_weeks,
+            template_name='weekswithsyntaxerrors_list.html')

@@ -18,7 +18,7 @@ from django.db import connection, transaction, IntegrityError
 from django.core.cache import cache
 
 import ldates 
-from models import Artist, User, WeekData, Updates, Tag, ArtistTags
+from models import *
 from twothreefall.settings import LASTFM_SECRET_KEY, LASTFM_API_KEY
 
 logging.basicConfig(level=logging.DEBUG)
@@ -204,7 +204,7 @@ def fetch_week(user, start, end):
     except SyntaxError:
         # Save to DB
         logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
-        pass
+        WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx);
 
 
 @task(ignore_result=True)

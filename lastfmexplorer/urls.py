@@ -25,6 +25,9 @@ urlpatterns = patterns('',
     (__user_base + 'update$', views.update),
     (r'^poll-update$', views.poll_update_status),
 
+    # invalid XML
+    (r'^bad-weeks$', views.list_bad_xml_files),
+
     # plain user overview, first between two dates, second all time.
     (__user_base + __date_matcher, views.overview),
     (__user_base + __year_matcher, views.overview),

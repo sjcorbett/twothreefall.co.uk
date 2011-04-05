@@ -53,13 +53,19 @@ def js_timestamp_of_index(idx):
     """Javascript represents timestamps in milliseconds."""
     return timestamp_of_index(idx) * 1000
 
-def __weeks_to(x):
-    return (x - the_beginning).days / 7
-
 def index_of_sunday(d):
     if d.isoweekday() != 7:
         raise ValueError("date passed to index_of_sunday must be a Sunday")
     return first_sunday_on_or_before(d)
+
+def string_of_date(d):
+    return date.strftime(d, "%Y-%m-%d")
+
+def string_of_index(idx):
+    return string_of_date(date_of_index(idx))
+
+def __weeks_to(x):
+    return (x - the_beginning).days / 7
 
 def first_sunday_on_or_after(d):
     """Returns the index of the first Sunday from the given date inclusive."""
