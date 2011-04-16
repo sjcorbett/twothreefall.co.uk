@@ -322,7 +322,8 @@ def overview(request, context):
 
 def user_week_chart(request, username, start):
     """ Create a chart for a single week.  """
-    return user_chart(request, username, start, start)
+    return user_chart(request, username, start=start, end=start)
+
 
 @staged('exploration/user-chart.html')
 def user_chart(request, context):
