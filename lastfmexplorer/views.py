@@ -358,7 +358,8 @@ def user_chart(request, context):
     else:
         chart = WeekData.objects.chart(context.get('user'), start, end, count=count)
 
-    back = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek, 'only_new': only_new }
+    back = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek, \
+             'only_new': only_new, 'count' : count }
 
     if isWeek:
         back['prevW'] = start - 1

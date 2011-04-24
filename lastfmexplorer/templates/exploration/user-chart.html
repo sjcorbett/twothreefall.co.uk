@@ -3,6 +3,9 @@
 {% block lex_page_config %}
     <label for="newmusic">Only show new artists:</label>
     <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
+
+    <label for="count">Items in chart:</label>
+    <input id="count" name="count" type="input" {% if count %}value="{{ count }}"{% endif %}/>
     <br/>
     {% comment %}
     <label for="exclude_months">Exclude artists listened to in the last</label>
