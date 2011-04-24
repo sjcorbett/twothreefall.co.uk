@@ -194,7 +194,7 @@ def poll_update_status(request):
 
 def staged(target_view, skip_date_shortcuts=False):
     def inner(fn):
-        # @cache_page(settings.CACHE_USER_TIMEOUT)
+        @cache_page(settings.CACHE_USER_TIMEOUT)
         def cleansed(request, username, year=None, start=None, end=None, **kwargs):
             """
             1. Does the user exist?

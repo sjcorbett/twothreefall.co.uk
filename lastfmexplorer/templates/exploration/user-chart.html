@@ -4,9 +4,7 @@
     <label for="newmusic">Only show new artists:</label>
     <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
 
-    <br/>
-    OR
-    <br/>
+    <strong>OR</strong>
     <label for="exclude_months">Exclude artists scrobbled in the last</label>
     <input id="exclude_months" name="exclude_months" type="input" 
         {% if exclude_months %}value="{{ exclude_months }}"{% endif %}/>
