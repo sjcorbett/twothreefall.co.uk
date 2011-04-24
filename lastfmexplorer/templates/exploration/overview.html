@@ -1,5 +1,6 @@
 {% extends 'exploration/base.html' %}
 
+{% block lextitle %}{{ context.user }} - {% if context.year %}{{ context.year }} - {% endif %}{% endblock %}
 {% block content %}
 
     <div class="itemofinterest">

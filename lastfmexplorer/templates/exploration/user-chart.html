@@ -1,12 +1,21 @@
-
 {% extends 'exploration/base.html' %}
+{% block lextitle %}{{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} Chart - {% endblock %}
+{% block lex_page_config %}
+    <label for="newmusic">Only show new artists:</label>
+    <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
+    <br/>
+    {% comment %}
+    <label for="exclude_months">Exclude artists listened to in the last</label>
+    <input id="exclude_months" name="newmusic" type="input" 
+        {% if exclude_months %}value="{{ exclude_months }}"{% endif %}
+        {% if only_new %}checked="checked"{% endif %}/>
+    months
+    <br/>
+    {% endcomment %}
+{% endblock %}
 
 {% block content %}
     <div class="itemofinterest">
-        <div class="itemtitle">
-            <h2>Chart</h2>
-            <hr/>
-        </div>
         <div class="itemcontent">
 {% if isWeek %}
             <div id="weeklinks"> 

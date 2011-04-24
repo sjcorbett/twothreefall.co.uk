@@ -12,8 +12,8 @@ import djcelery.views
 __user_base     = '^user/' + USER_REGEX + '/' 
 
 # match week indexes
-__date_matcher  = r'(?P<start>\d+)-(?P<end>\d+)$'
-__year_matcher  = r'(?P<year>\d{4})$'
+__date_matcher  = r'(?P<start>\d+)-(?P<end>\d+)/$'
+__year_matcher  = r'(?P<year>\d{4})/$'
 __default_dates = { 'start' : ldates.idx_beginning,
                     'end'   : ldates.idx_last_sunday }
 
@@ -22,7 +22,7 @@ urlpatterns = patterns('',
     (r'^$', views.start),
 
     # updates
-    (__user_base + 'update$', views.update),
+    (__user_base + 'update/$', views.update),
     (r'^poll-update$', views.poll_update_status),
 
     # invalid XML
@@ -31,20 +31,15 @@ urlpatterns = patterns('',
     # plain user overview, first between two dates, second all time.
     (__user_base + __date_matcher, views.overview),
     (__user_base + __year_matcher, views.overview),
-    (__user_base + r'$', views.overview, __default_dates),
+    (__user_base + '$', views.overview, __default_dates),
 
     # single week chart
-    (__user_base + r'chart/week/(?P<start>\d*)$', views.user_week_chart),
+    (__user_base + r'chart/week/(?P<start>\d*)/$', views.user_week_chart),
 
     # top artist charts
     (__user_base + r'chart/' + __date_matcher, views.user_chart),
     (__user_base + r'chart/' + __year_matcher, views.user_chart),
     (__user_base + r'chart/$', views.user_chart, __default_dates),
-
-    # new music
-    (__user_base + r'new-music/$', views.user_new_artists_in_period, __default_dates),
-    (__user_base + r'new-music/' + __date_matcher, views.user_new_artists_in_period),
-    (__user_base + r'new-music/' + __year_matcher, views.user_new_artists_in_period),
 
     # suggest a listen
     (__user_base + r'who/$', views.who),

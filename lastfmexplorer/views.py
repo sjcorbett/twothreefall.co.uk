@@ -3,6 +3,7 @@ from django.http import Http404
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.views.generic.list_detail import object_list
@@ -49,7 +50,7 @@ def start(request):
 ###############################################################################
 # Formalities for every page
 
-def __date_redirection(request, target, start=None, end=None):
+def __date_redirection(request, target):
     """
     Uses given user/start/end in request.GET to redirect the user to target
     page.  Old start and end are given as placeholders in case they're missing
@@ -86,7 +87,14 @@ def __date_redirection(request, target, start=None, end=None):
     start = ldates.fsoob(start)
     end   = ldates.fsooa(end)
 
-    return redirect(target, user, start, end)
+    url = reverse(target, args=[user, start, end])
+
+    ignored = ('username', 'start', 'end', 'original_start', 'original_end')
+    params = "&".join("%s=%s" % (k,v) if v else k for k,v in GET.iteritems() if k not in ignored)
+    if params:
+        url += "?" + params
+
+    return redirect(url)
 
 
 ###############################################################################
@@ -215,10 +223,17 @@ def staged(target_view, skip_date_shortcuts=False):
             if start > end: temp = end; end = start; start = end
 
             # has the user submitted the change date form?
-            if 'username' in request.GET: 
-                return __date_redirection(request, cleansed, start, end)
+            G = request.GET
+            if ('original_start' in G) and \
+                    (G.get('original_start', start) != start or \
+                     G.get('original_end', end) != end):
+                return __date_redirection(request, cleansed)
+
+            qs = request.META['QUERY_STRING']
+            getq = '?' + qs if qs else ''
 
             context = { 'user' : user, 
+                        'request' : request,
                         'year' : year,
                         'start' : start,
                         'end' : end,
@@ -229,6 +244,7 @@ def staged(target_view, skip_date_shortcuts=False):
                             'skipped_dates' : skip_date_shortcuts,
                             'dstart' : ldates.date_of_index(start),
                             'dend' : ldates.date_of_index(end),
+                            'getq' : getq
                         }}
 
             for key, val in kwargs.iteritems():
@@ -239,9 +255,9 @@ def staged(target_view, skip_date_shortcuts=False):
                 context['template']['year_shortcuts'] = ldates.years_to_today()
                 context['template']['shortcuts'] = ldates.months + ldates.years_ago
 
-            if 'count' in request.GET:
+            if 'count' in G:
                 try:
-                    c = int(request.GET['count'])
+                    c = int(G['count'])
                     context['count'] = c
                 except:
                     pass
@@ -335,8 +351,14 @@ def user_chart(request, context):
     count = context.get('count', 100)
 
     isWeek = start == end
-    chart  = WeekData.objects.chart(context.get('user'), start, end, count=count)
-    back   = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek }
+    only_new = 'newmusic' in request.GET
+
+    if only_new:
+        chart = WeekData.objects.new_artists_in_timeframe(context.get('user'), start, end, count)
+    else:
+        chart = WeekData.objects.chart(context.get('user'), start, end, count=count)
+
+    back = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek, 'only_new': only_new }
 
     if isWeek:
         back['prevW'] = start - 1
@@ -345,23 +367,9 @@ def user_chart(request, context):
     return back
 
 
-@staged('exploration/new-artists-in-timeframe.html')
-def user_new_artists_in_period(request, context):
-    """
-    Returns artists first listened to in the period between start and end.
-    """
-    start = context.get('start')
-    end   = context.get('end')
-    count = context.get('count', 100)
-
-    artists = WeekData.objects.new_artists_in_timeframe(context.get('user'), 
-                start, end, count)
-    return { 'context' : context, 'artists' : artists }
-
-
 def user_top_n_history(request, username):
     """
-    I haven't decided this yet.
+    Undecided.
     """
     raise Exception()
     # f, start, end = formalities(request, username, start, end)

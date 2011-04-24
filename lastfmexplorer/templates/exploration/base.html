@@ -1,6 +1,6 @@
 {% extends 'root.html' %}
 {% load reversetag %}
-{% block ttle %}Last.fm Explorer{% endblock %}
+{% block ttle %}{% block lextitle %}{% endblock %}Last.fm Explorer{% endblock %}
 {% block body %}
     <div id="top">
         <div id="datesandmenu">
@@ -10,12 +10,10 @@
             <ul id="topmenu" class="inlinedlist slashseparated">
 {% if context.year %} 
                 <li><a href="{% url lastfmexplorer.views.overview context.user context.year %}">An overview</a></li>
-                <li><a href="{% url lastfmexplorer.views.user_chart context.user context.year %}">Chart</a></li>
-                <li class="last"><a href="{% url lastfmexplorer.views.user_new_artists_in_period context.user context.year %}">New artists chart</a></li>
+                <li class="last"><a href="{% url lastfmexplorer.views.user_chart context.user context.year %}">Charts</a></li>
 {% else %}
                 <li><a href="{% url lastfmexplorer.views.overview context.user context.start context.end %}">An overview</a></li>
-                <li><a href="{% url lastfmexplorer.views.user_chart context.user context.start context.end %}">Chart</a></li>
-                <li class="last"><a href="{% url lastfmexplorer.views.user_new_artists_in_period context.user context.start context.end %}">New artists chart</a></li>
+                <li class="last"><a href="{% url lastfmexplorer.views.user_chart context.user context.start context.end %}">Chart</a></li>
 {% endif %}
                 <!-- <li class="last"><a href="{% url lastfmexplorer.views.who context.user %}">Who</a></li> -->
             </ul>
@@ -25,28 +23,31 @@
         <div id="dateform">
             <form id="datechanger" method="get" action="#">
                 <fieldset>
-                    <legend>Change dates</legend>
+                    <legend>Configure</legend>
                     <input type="hidden" name="username" value="{{ context.user }}"/>
+                    <input type="hidden" name="original_start" value="{{ context.start }} "/>
+                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
                     <label for="start-date">Start:</label><input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}"/>
                     <label for="end-date">End:</label><input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}"/>
-                    <input type="submit" value="Update"/>
                     <div class="inlinedlistpara">
                         <p>Or choose:</p>
                         <ul class="commaseparated">
     {% for year in context.template.year_shortcuts %}
-                            <li><a href="{% reverse context.template.active_view context.user year %}">{{ year }}</a></li>
+                            <li><a href="{% reverse context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a></li>
     {% endfor %}
-                            <li class="last"><a href="{% reverse context.template.active_view context.user %}">All</a></li>
+                            <li class="last"><a href="{% reverse context.template.active_view context.user %}{{ context.template.getq }}">All</a></li>
                         </ul>
                         <br/>
                         <p>or the last</p>
                         <ul class="commaseparated">
     {% for name, s, e in context.template.shortcuts %}
                             {% if forloop.last %}<li class="last">{% else %}<li>{% endif %}
-                            <a href="{% reverse context.template.active_view context.user s e %}">{{ name }}</a></li>
+                            <a href="{% reverse context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a></li>
     {% endfor %}
                         </ul>
                     </div>
+                    {% block lex_page_config %}{% endblock %}
+                    <input type="submit" value="Update"/>
                 </fieldset>
             </form>
         </div>
