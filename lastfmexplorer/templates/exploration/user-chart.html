@@ -4,17 +4,17 @@
     <label for="newmusic">Only show new artists:</label>
     <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
 
+    <br/>
+    OR
+    <br/>
+    <label for="exclude_months">Exclude artists scrobbled in the last</label>
+    <input id="exclude_months" name="exclude_months" type="input" 
+        {% if exclude_months %}value="{{ exclude_months }}"{% endif %}/>
+    months
+    <br/>
     <label for="count">Items in chart:</label>
     <input id="count" name="count" type="input" {% if count %}value="{{ count }}"{% endif %}/>
     <br/>
-    {% comment %}
-    <label for="exclude_months">Exclude artists listened to in the last</label>
-    <input id="exclude_months" name="newmusic" type="input" 
-        {% if exclude_months %}value="{{ exclude_months }}"{% endif %}
-        {% if only_new %}checked="checked"{% endif %}/>
-    months
-    <br/>
-    {% endcomment %}
 {% endblock %}
 
 {% block content %}

@@ -194,7 +194,7 @@ def poll_update_status(request):
 
 def staged(target_view, skip_date_shortcuts=False):
     def inner(fn):
-        @cache_page(settings.CACHE_USER_TIMEOUT)
+        # @cache_page(settings.CACHE_USER_TIMEOUT)
         def cleansed(request, username, year=None, start=None, end=None, **kwargs):
             """
             1. Does the user exist?
@@ -349,17 +349,26 @@ def user_chart(request, context):
     start = context.get('start')
     end   = context.get('end')
     count = context.get('count', 100)
+    user  = context.get('user')
 
     isWeek = start == end
     only_new = 'newmusic' in request.GET
+    exclude_months = 'exclude_months' in request.GET
+    exclusion = 0
 
     if only_new:
-        chart = WeekData.objects.new_artists_in_timeframe(context.get('user'), start, end, count)
+        chart = WeekData.objects.new_artists_in_timeframe(user, start, end, count)
+    elif exclude_months:
+        try:
+            exclusion = int(request.GET['exclude_months'])
+        except:
+            pass
+        chart = WeekData.objects.chart_without_last_n_months(user, exclusion, start, end, count)
     else:
-        chart = WeekData.objects.chart(context.get('user'), start, end, count=count)
+        chart = WeekData.objects.chart(user, start, end, count=count)
 
     back = { 'context' : context, 'chart' : chart, 'isWeek' : isWeek, \
-             'only_new': only_new, 'count' : count }
+             'only_new': only_new, 'count' : count, 'exclude_months': exclusion }
 
     if isWeek:
         back['prevW'] = start - 1

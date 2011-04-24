@@ -301,37 +301,47 @@ class UserWeekDataManager(models.Manager):
             last_avg = average
             yield (ldates.js_timestamp_of_index(date_idx), wpc, average)
 
-
-    def new_artists_in_timeframe(self, user, start, end, count=200):
-
-        # return artist id
-        def id(item): return item['artist']
-
-        # every artist listened to between the beginning and the end, NO playcounts
-        all_to_end = self.user_weeks_between(user, ldates.idx_beginning, start) \
-                         .values('artist')
-
-        # set of ids
-        ate = set(map(id, all_to_end))
-        del all_to_end
-
+    def __chart_excluding(self, user, excluded, start, end, count):
+        """
+        Return generator for chart between dates excluding all items in given set.
+        """
         # every artist listened to between start and end, with playcounts
         start_to_end = self.user_weeks_between(user, start, end) \
                          .values('artist')                       \
                          .annotate(Sum('plays'))                 \
                          .order_by('-plays__sum')
 
-        # find items in start_to_end that aren't in ate.
+        # find items in start_to_end that aren't in excluded.
         max = -1
         for item in start_to_end:
             id = item['artist']
-            if id not in ate:
+            if id not in excluded:
                 if max == -1:
                     max = item['plays__sum']
                 yield Artist.objects.get(id=id), item['plays__sum'], max
                 count -= 1
                 if count == 0:
                     break
+
+    def new_artists_in_timeframe(self, user, start, end, count=200):
+        # every artist listened to between the beginning and the end, NO playcounts
+        all_to_end = self.user_weeks_between(user, ldates.idx_beginning, start) \
+                         .values('artist')
+
+        # set of ids
+        all_to_end = frozenset(map(lambda x: x['artist'], all_to_end))
+        
+        return self.__chart_excluding(user, all_to_end, start, end, count)
+
+
+    def chart_without_last_n_months(self, user, n, start, end, count):
+        # artists played in last n months:
+        n_ago = ldates.idx_last_sunday - (n * 4)
+        excluded = self.user_weeks_between(user, n_ago, ldates.idx_last_sunday) \
+                         .values('artist')
+        excluded = frozenset(map(lambda x: x['artist'], excluded))
+
+        return self.__chart_excluding(user, excluded, start, end, count)
 
     def top_n_history(self, user, start, end, count=200): #{{{
 
