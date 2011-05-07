@@ -29,6 +29,12 @@
                     <input type="hidden" name="original_end" value="{{ context.end }}"/>
                     <label for="start-date">Start:</label><input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}"/>
                     <label for="end-date">End:</label><input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}"/>
+
+                    {% block lex_page_config %}{% endblock %}
+                    <input type="submit" value="Update"/>
+                </fieldset>
+            </form>
+        </div>
                     <div class="inlinedlistpara">
                         <p>Or choose:</p>
                         <ul class="commaseparated">
@@ -46,11 +52,6 @@
     {% endfor %}
                         </ul>
                     </div>
-                    {% block lex_page_config %}{% endblock %}
-                    <input type="submit" value="Update"/>
-                </fieldset>
-            </form>
-        </div>
 {% endif %}
     </div>
 

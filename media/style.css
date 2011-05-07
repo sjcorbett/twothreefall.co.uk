@@ -238,6 +238,15 @@ div.post p {
     padding: 0 0.3em 0 0;
 }
 
+/******* FORMS *****************************************************/
+
+.small_num_input {
+    width: 30px;
+}
+
+.medium_num_input {
+    width: 100px;
+}
 
 /******* BAR CHARTS ************************************************/
 li.barchart {
