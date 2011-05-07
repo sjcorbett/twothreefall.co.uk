@@ -19,7 +19,7 @@ from matplotlib.pyplot import hist, figure
 _LASTFM  = "http://www.last.fm"
 _LASTFM_EXAMPLE_API_KEY = "b25b959554ed76058ac220b7b2e0a026"
 
-USER_REGEX = r'(?P<username>[a-zA-Z_-][a-zA-Z0-9_ -]{1,14})'
+USER_REGEX = r'(?P<username>[a-zA-Z_-][a-zA-Z0-9_ .]{1,14})'
 
 ###############################################################################
 
