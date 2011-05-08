@@ -77,24 +77,6 @@ class UserWeekDataManager(models.Manager):
             yield idx, ldates.date_of_index(idx), total
 
 
-    def chart(self, user, start=None, end=None, count=20):
-        qs = self.user_weeks_between(user, start, end) \
-                 .values('artist')                     \
-                 .annotate(Sum('plays'))               \
-                 .order_by('-plays__sum')[:count]
-        max = None
-        for d in qs:
-            # need the maximum for chart widths.
-            if not max:
-                max = d['plays__sum']
-
-            artist = cache.get("artist%d" % (d['artist'],))
-            if not artist:
-                artist = m.Artist.objects.get(id=d['artist'])
-                cache.set("artist%d" % (d['artist'],), artist, 10000)
-
-            yield artist, d['plays__sum'], max
-
     def weekly_play_counts(self, user, start, end, count=None, just_counts=False, \
             order_by_plays=False):
 
