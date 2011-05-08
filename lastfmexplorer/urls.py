@@ -3,7 +3,7 @@ from django.views.generic.simple import direct_to_template
 
 import views
 import ldates
-from models import USER_REGEX
+from managers import USER_REGEX
 import twothreefall.settings as settings
 
 import djcelery.views
