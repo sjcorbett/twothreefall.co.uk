@@ -324,9 +324,10 @@ def overview(request, context):
     chart = WeekData.objects.chart(user, start, end, count=100)
 
     # weekly playcounts histogram
-    wpc_hist = WeekData.objects.weekly_play_counts_histogram(user, start, end)
+    wpc_hist, wpc_hist_step = WeekData.objects.weekly_play_counts_histogram(user, start, end)
     return { 'context' : context,
              'wpc_hist' : wpc_hist,
+             'wpc_hist_step' : wpc_hist_step,
              'chart' : chart,
              'rwas' : rwas,
              'rwps' : rwps,

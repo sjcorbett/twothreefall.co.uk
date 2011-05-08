@@ -23,12 +23,12 @@
         </div>
         <div class="itemcontent">
             <div style="float:left;">
-                <h3>Monthly track totals</h3>
-                <div style="width:430px; height: 300px; margin-bottom:2em;" id="monthly_js"></div>
+                <h3>Cumulative monthly track totals</h3>
+                <div id="monthly_js" style="width:430px; height: 300px; margin-bottom:2em;"></div>
             </div>
             <div style="float:right;">
-                <h3>Histogram of weekly track totals</h3>
-                <img src="{{ wpc_hist }}" />
+                <h3>Weekly playcount frequency</h3>
+                <div id="weekly_counts_hist" style="width:430px; height: 300px; margin-bottom:2em;"></div>
             </div>
         </div>
     </div>
@@ -82,34 +82,60 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
-        monthly_data = [];
-        month_ticks = [];
-        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        function monthly_counts() {
+            var monthly_data = [];
+            var month_ticks = [];
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 {% comment %} Get some data! {% endcomment %}
 {% for count in mcjs %} 
-        monthly_data.push([{{ forloop.counter0 }}, {{ count }}]);
-        month_ticks.push([{{ forloop.counter0 }}, months[{{ forloop.counter0 }}]]);
+            monthly_data.push([{{ forloop.counter0 }}, {{ count }}]);
+            month_ticks.push([{{ forloop.counter0 }}, months[{{ forloop.counter0 }}]]);
 {% endfor %}
 
-        {% comment %} Plot the graphs. {% endcomment %}
-        $.plot($("#monthly_js"), [{data : monthly_data, color: "#00f"}], {
-            bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
-            xaxis: { ticks: month_ticks },
-            grid:  { hoverable: true }
-        });
-        bindTooltip("#monthly_js");
+            {% comment %} Plot the graphs. {% endcomment %}
+            $.plot($("#monthly_js"), [{data : monthly_data, color: "#00f"}], {
+                bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
+                xaxis: { ticks: month_ticks },
+                grid:  { hoverable: true }
+            });
+            bindTooltip("#monthly_js");
+        }
 
-        weekly_data = [];
-        averages = [];
+        function weekly_hist() {
+            var weekly_data = [];
+            var weekly_ticks = [];
+{% for count in wpc_hist %} 
+            weekly_ticks.push([{{ forloop.counter0 }}, ({{ wpc_hist_step }}*{{ forloop.counter0 }}){% if not forloop.first %}+1{% endif %} + "-" + {{ wpc_hist_step }}*{{ forloop.counter }}]);
+            weekly_data.push([{{ forloop.counter0 }}, {{ count }}]);
+{% endfor %}
 
+            {% comment %} Plot the graphs. {% endcomment %}
+            $.plot($("#weekly_counts_hist"), [{data : weekly_data, color: "#00f"}], {
+                bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
+                 xaxis: { ticks: weekly_ticks },
+                grid:  { hoverable: true }
+            });
+            bindTooltip("#weekly_counts_hist");
+        }
+
+
+        function weekly_line() {
+            var weekly_data = [];
+            var averages = [];
 {% comment %} Get some data! {% endcomment %}
 {% for dte, playcount, average in wpcjs %} 
-        weekly_data.push([{{ dte }}, {{ playcount }}]); averages.push([{{ dte }}, {{ average }}]); {% endfor %}
+            weekly_data.push([{{ dte }}, {{ playcount }}]); averages.push([{{ dte }}, {{ average }}]); {% endfor %}
 
-        plot_line_chart("#weekly_js", 
-            [ {data : weekly_data, color: "#00f"}, 
-              {data: averages, color: "#007f02"} ]);
+            plot_line_chart("#weekly_js", 
+                [ {data : weekly_data, color: "#00f"}, 
+                  {data: averages, color: "#007f02"} ]);
+        }
+
+        monthly_counts();
+        weekly_hist();
+        weekly_line();
     });
     </script>
 

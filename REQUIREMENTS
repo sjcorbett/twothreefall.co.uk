@@ -7,7 +7,6 @@ memcached            aptitude
 psycopg2
 python-memcached     pip
 python-tk            aptitude
-python2.6-matplotlib aptitude
 rabbitmq-server      aptitude
 
 

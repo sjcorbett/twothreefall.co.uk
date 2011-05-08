@@ -14,11 +14,6 @@ from django.db import connection, models
 from django.db.models import Sum, Count, Max, Min
 from django.core.cache import cache
 
-import matplotlib
-import matplotlib.cbook    # placates something or other.
-matplotlib.use("Agg")
-from matplotlib.pyplot import hist, figure
-
 USER_REGEX = r'(?P<username>[a-zA-Z_-][a-zA-Z0-9_ .]{1,14})'
 
 class UserManager(models.Manager):
@@ -137,21 +132,13 @@ class UserWeekDataManager(models.Manager):
             yield y(index, d['plays__sum'])
             last_index = index
 
-
-    def save_figure(self, user, figure, fig_name):
-        relative = "img/user/%s-%s.png" % (user, fig_name)
-        figure.savefig(os.path.join(MEDIA_ROOT, relative), 
-                format="png", pad_inches=0, bbox_inches='tight')
-        return os.path.join(MEDIA_URL, relative)
-
     def weekly_play_counts_histogram(self, user, start, end, bins=10):
         wpcs = list(self.weekly_play_counts(user, start, end, just_counts=True))
-        fig = figure(figsize=(5,3.5))
-        ax  = fig.add_subplot(111)
-        ax.grid(True)
-        ax.hist(wpcs, bins)
-        return self.save_figure(user, fig, 'wpcs-hist-%d-%d' % (start, end))
-
+        buckets = [0] * bins
+        step = (max(wpcs) / bins) + 1
+        for c in wpcs:
+            buckets[c / step] += 1
+        return buckets, step
 
     def monthly_counts_js(self, user, start, end):
         hist = [0] * 12
@@ -160,9 +147,6 @@ class UserWeekDataManager(models.Manager):
             bucket = (ldates.date_of_index(date)).month - 1
             hist[bucket] += wpc
         return hist
-
-    def weekly_artist_play_counts_js(self, user, artist, start, end):
-        pass
 
     def weekly_play_counts_js(self, user, start, end):
         wpcs = self.weekly_play_counts(user, start, end)
