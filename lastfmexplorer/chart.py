@@ -44,7 +44,7 @@ class Chart:
                            WeekData.objects
                             .user_weeks_between(self.user, ldates.idx_beginning, self.start)
                             .values('artist'))
-            logging.info(previous)
+            excluded.update(previous)
             del previous
 
         if self.exclude_months and self.months_excluded > 0:
