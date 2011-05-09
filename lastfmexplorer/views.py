@@ -364,17 +364,24 @@ def user_chart(request, context):
     if only_new:
         chart.set_exclude_before_start()
 
-    exclusion = G.get('exclude_months', 0) 
+    exclusion = G.get('num_excluded', '')
+    max_scrobbles = G.get('max_scrobbles', '')
     if exclude_months:
-
         if (exclusion.isdigit()):
             exclusion = int(exclusion) 
-            max_scrobbles = G.get('max_scrobbles', 0)
             max_scrobbles = int(max_scrobbles) if max_scrobbles.isdigit() else 0
-            chart.set_exclude_before_start(exclusion, max_scrobbles)
+            chart.set_exclude_months(exclusion, max_scrobbles)
 
-    back = { 'context' : context, 'chart' : chart.chart(), 'isWeek' : isWeek, \
-             'only_new': only_new, 'count' : count, 'exclude_months': exclusion }
+    back = { 
+        'context': context,
+        'chart' : chart.chart(),
+        'isWeek' : isWeek,
+        'count' : count,
+        'only_new': only_new,
+        'exclude_months': exclude_months,
+        'num_excluded': exclusion,
+        'max_scrobbles': max_scrobbles
+    }
 
     if isWeek:
         back['prevW'] = start - 1

@@ -1,7 +1,9 @@
 """
 A user's chart between two dates.
 """
+import logging
 
+import ldates
 from models import Artist, WeekData
 
 from django.db.models import Sum
@@ -15,6 +17,8 @@ class Chart:
         self.end = end
         self.start = start
         self.count = count
+        self.only_new = False
+        self.exclude_months = False
 
     def set_exclude_before_start(self):
         self.only_new = True
@@ -25,23 +29,53 @@ class Chart:
         self.max_scrobbles_excluded = max_scrobbles
 
     def chart(self):
-    
+        """
+        Return generator for chart between dates excluding artists as specified.
+        """
+        # every artist listened to between start and end, with playcounts
         qs = WeekData.objects.user_weeks_between(self.user, self.start, self.end) \
                  .values('artist')                     \
                  .annotate(Sum('plays'))               \
-                 .order_by('-plays__sum')[:self.count]
+                 .order_by('-plays__sum')
+
+        excluded = set()
+        if self.only_new:
+            previous = map(lambda a: a['artist'],
+                           WeekData.objects
+                            .user_weeks_between(self.user, ldates.idx_beginning, self.start)
+                            .values('artist'))
+            logging.info(previous)
+            del previous
+
+        if self.exclude_months and self.months_excluded > 0:
+            # artists played in last n months:
+            n_ago = ldates.idx_last_sunday - (self.months_excluded * 4)
+            recent = map(lambda a: a['artist'],
+                         WeekData.objects
+                          .user_weeks_between(self.user, n_ago, ldates.idx_last_sunday) 
+                          .values('artist'))
+            excluded.update(recent)
+            del recent
 
         max = None
+        to_go = self.count
         for d in qs:
             # need the maximum for chart widths.
-            if not max:
-                max = d['plays__sum']
+            artist_id = d['artist']
+            if artist_id not in excluded:
 
-            artist = cache.get("artist%d" % (d['artist'],))
-            if not artist:
-                artist = Artist.objects.get(id=d['artist'])
-                cache.set("artist%d" % (d['artist'],), artist, 10000)
+                if not max:
+                    max = d['plays__sum']
 
-            yield artist, d['plays__sum'], max
+                artist = cache.get("artist%d" % (artist_id,))
+                if not artist:
+                    artist = Artist.objects.get(id=artist_id)
+                    cache.set("artist%d" % (artist_id,), artist, 10000)
+
+                yield artist, d['plays__sum'], max
+
+                to_go -= 1
+                if to_go <= 0:
+                    break
 
 

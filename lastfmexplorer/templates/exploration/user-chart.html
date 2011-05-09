@@ -15,12 +15,16 @@
             </div>
 
             <div>
-                <input type="checkbox"/>
-                <label for="exclude_months">artists with more than
-                    <input type="input" class="small_num_input"/>
-                     scrobbles in the last
-                    <input id="exclude_months" class="small_num_input" name="exclude_months" type="input" {% if exclude_months %}value="{{ exclude_months }}"{% endif %}/>
-                    months</label>
+                <input id="exclude_months" name="exclude_months" type="checkbox"
+                    {% if exclude_months %}checked="checked"{% endif %}/>
+                <label for="exclude_months">artists {% comment %}with more than</label>
+                <input id="max_scrobbles" name="max_scrobbles" type="input" class="small_num_input"
+                value="{{ max_scrobbles }}"/>
+                scrobbles in the last{% endcomment %}
+                scrobbled in the last</label>
+                <input id="num_excluded" name="num_excluded" type="input" class="small_num_input"
+                    value="{{ num_excluded }}"/>
+                months
             </div>
         </div>
 

@@ -147,7 +147,6 @@ class WeekData(models.Model):
                 (self.user.username, self.week_idx, self.artist.name, self.plays)
 
     class Meta:
-        ordering = ['user', 'week_idx', 'plays', 'artist']
         unique_together = ('user', 'week_idx', 'artist')
 
 
