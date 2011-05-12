@@ -44,7 +44,7 @@ div.post h2 {
 }
 #dateform {
     float: left;
-    margin: 1.5em 0;
+    margin: 1.5em 0 0 0;
 }
 #dateform legend {
     font-size: 1.5em;
@@ -246,6 +246,43 @@ div.post p {
 
 .medium_num_input {
     width: 100px;
+}
+
+div.alignedLabel {
+    margin-bottom: 4px;
+}
+
+label.aligned,
+.grouped_checkbox_label {
+    width: 100px;
+    text-align: right;
+    display: block;
+    float: left;
+    margin-top: 5px;
+    margin-right: 4px;
+}
+
+.grouped_checkboxes {
+    float: left;
+}
+
+.alignedLabel { 
+    clear: both;
+}
+
+#update {
+    margin: 0 0 0 50px;
+}
+
+#dateform fieldset {
+    border-top: 1px solid blue;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+}
+
+#dateShortcuts {
+    clear: both;
 }
 
 /******* BAR CHARTS ************************************************/
