@@ -2,7 +2,7 @@ function plot_line_chart(divid, data) {
     $.plot($(divid), data, {
         lines: { show: true },
         xaxis: { mode: "time", timeformat: "%b %y" },
-        grid:  { hoverable: true }
+        grid:  { hoverable: true, borderWidth: 0 }
     });
 
     bindTooltip(divid);

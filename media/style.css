@@ -24,12 +24,16 @@ body {
     margin: 0 0;
     padding: 0;
     font: 11px "Trebuchet MS";
-    background-color: #f8f8f8;
-    min-width: 1200px;
+    /* background-color: #f8f8f8; */
+}
+
+#bodywrapper {
+    width: 964px;
+    margin: 0 auto;
 }
 
 #top {
-    padding: 1em 1em 1em 3em;
+    padding: 2em 1em 1em 3em;
 }
 #top h1,
 div.post h2 {
@@ -46,17 +50,17 @@ div.post h2 {
     float: left;
     margin: 1.5em 0 0 0;
 }
-#dateform legend {
+div#dateform legend {
     font-size: 1.5em;
     font-weight: bold;
 }
 
-#datechanger legend {
+form#datechanger legend {
     font-size: 1.5em;
     font-weight: bold;
 }
 
-#datechanger p, #datechanger li {
+form#datechanger p, form#datechanger li {
     /* font-size:1.3em; */
 }
 
@@ -172,10 +176,14 @@ div.itemtitle hr {
 div.itemtitle h2 {
     font-family: "Trebuchet MS", arial, serif;
     font-size: 2.3em;
-    font-weight: normal;
+    /* font-weight: normal; */
     width: 100%;
     padding: 0;
     margin: -0.15em 0.5em;
+}
+
+div.itemofinterest h3 {
+    margin: 0.4em 0 0 0;
 }
 
 div.itemcontent {
@@ -185,10 +193,9 @@ div.itemcontent p {
     margin: 0 0 0.5em 0.75em;
 }
 
-div.halfbox {
-    width: 40%;
+div.clumped_box {
     float: left;
-    padding: 0 0 1em 3em;
+    margin: 0 1em 1em 2em;
 }
 
 div.post {
@@ -202,6 +209,7 @@ div.post p {
 
 .blue { color: blue; }
 .green { color: #007f02; }
+
 
 /******* START FORM*********************************************/
 
@@ -275,8 +283,8 @@ label.aligned,
 }
 
 #dateform fieldset {
-    border-top: 1px solid blue;
-    border-bottom: none;
+    border-top: 1px solid green;
+    border-bottom: 1px solid green;
     border-left: none;
     border-right: none;
 }

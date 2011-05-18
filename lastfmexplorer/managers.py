@@ -76,6 +76,17 @@ class UserWeekDataManager(models.Manager):
                 self.weekly_play_counts(user, start, end, num, order_by_plays=True):
             yield idx, ldates.date_of_index(idx), total
 
+    def record_unique_artists_in_week(self, user, start, end, num=10):
+        """
+        Returns a generator of weeks with most unique artists scrobbled.
+        """
+        qs = self.user_weeks_between(user, start, end) \
+                 .values('week_idx') \
+                 .annotate(Count('artist')) \
+                 .order_by('-artist__count')[:num]
+        for r in qs:
+            idx = r['week_idx']
+            yield idx, ldates.date_of_index(idx), r['artist__count']
 
     def weekly_play_counts(self, user, start, end, count=None, just_counts=False, \
             order_by_plays=False):

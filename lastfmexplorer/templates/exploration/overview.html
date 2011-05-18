@@ -4,18 +4,16 @@
 {% block content %}
 
     <div class="itemofinterest">
-        <div class="itemtitle"><h2>Vital Stats</h2><hr/></div>
         <div class="itemcontent">
+            <h3>In this period</h3>
             <ul>
             {% for item in vitals %}
-                <li>{{ item }}</li>
+                <li>{{ item|safe }}</li>
             {% endfor %}
             </ul>
         </div>
-    </div>
 
-    <div class="itemofinterest">
-        <div class="itemtitle"><h2>Weekly Playcounts</h2><hr/></div>
+        <h3>Weekly Playcounts</h3>
         <div class="itemcontent">
             <p><b><span class="blue">blue</span></b>: number of songs played in a week, 
                 <b><span class="green">green</span></b>: onrunning average</p>
@@ -34,24 +32,33 @@
     </div>
 
     <div class="itemofinterest">
-        <div class="itemtitle"><h2>Record Weeks</h2><hr/></div>
+        <div class="itemtitle"><h2>Most...</h2></div>
         <div class="itemcontent">
-            <div class="halfbox" />
-                <h3>Most plays of one artist in a week</h3>
+            <div class="clumped_box" />
+                <h3>Plays of one artist in one week</h3>
                 <ol>
-                    {% for item, date in rwas %}
+                    {% for item, date in record_single_artist %}
                     <li><a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">
                         {{ date|date:"d/m/Y" }}</a>: 
                     <b>{{ item.plays }}</b> - {{ item.artist }}</li>
                     {% endfor %}
                 </ol>
             </div>
-            <div class="halfbox" />
-                <h3>Most songs played in a single week</h3>
+            <div class="clumped_box" />
+                <h3>Songs scrobbled in one week</h3>
                 <ol>
-                    {% for idx, date, plays in rwps %}
+                    {% for idx, date, plays in record_total_plays %}
                     <li><a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">
                         {{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b> </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="clumped_box" />
+                <h3>Unique artists scrobbled in one week</h3>
+                <ol>
+                    {% for idx, date, artist_count in record_unique_artists %}
+                    <li><a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">
+                        {{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b> </li>
                     {% endfor %}
                 </ol>
             </div>
@@ -59,7 +66,7 @@
     </div>
 
     <div class="itemofinterest">
-        <div class="itemtitle"><h2>Chart</h2><hr/></div>
+        <div class="itemtitle"><h2>Top Artists</h2></div>
         <div class="itemcontent">
             <ol>
                 {% for artist, count, max in chart %}
@@ -98,7 +105,7 @@
             $.plot($("#monthly_js"), [{data : monthly_data, color: "#00f"}], {
                 bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
                 xaxis: { ticks: month_ticks },
-                grid:  { hoverable: true }
+                grid:  { hoverable: true, borderWidth: 0 }
             });
             bindTooltip("#monthly_js");
         }
@@ -115,7 +122,7 @@
             $.plot($("#weekly_counts_hist"), [{data : weekly_data, color: "#00f"}], {
                 bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
                  xaxis: { ticks: weekly_ticks },
-                grid:  { hoverable: true }
+                grid:  { hoverable: true, borderWidth: 0 }
             });
             bindTooltip("#weekly_counts_hist");
         }

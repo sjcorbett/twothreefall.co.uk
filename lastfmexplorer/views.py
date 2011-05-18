@@ -306,8 +306,8 @@ def overview(request, context):
     total_plays = WeekData.objects.total_plays_between(user, start, end)
     total_weeks = float(end - start) + 1
     vitals = [
-            "%d weeks, %d days" % (total_weeks, total_weeks * 7),
-            "%d plays: an average of %.2f songs per week and %.2f per year" \
+            "<b>%d</b> weeks, <b>%d</b> days" % (total_weeks, total_weeks * 7),
+            "<b>%d</b> plays: an average of <b>%.2f</b> songs per week and <b>%.2f</b> per year" \
                     % (total_plays, \
                        total_plays / total_weeks, 
                        total_plays / (total_weeks / 52) if total_weeks >= 52 else total_plays * (52 / total_weeks)),
@@ -320,8 +320,10 @@ def overview(request, context):
     mcjs  = WeekData.objects.monthly_counts_js(user, start, end)
 
     # record weeks and overall chart
-    rwas  = WeekData.objects.record_weeks(user, start, end)
-    rwps  = WeekData.objects.record_week_totals(user, start, end)
+    record_single_artist  = WeekData.objects.record_weeks(user, start, end)
+    record_total_plays    = WeekData.objects.record_week_totals(user, start, end)
+    record_unique_artists = WeekData.objects.record_unique_artists_in_week(user, start, end)
+
     chart = Chart(user, start, end)
 
     # weekly playcounts histogram
@@ -330,8 +332,9 @@ def overview(request, context):
              'wpc_hist' : wpc_hist,
              'wpc_hist_step' : wpc_hist_step,
              'chart' : chart.chart(),
-             'rwas' : rwas,
-             'rwps' : rwps,
+             'record_single_artist' : record_single_artist,
+             'record_total_plays' : record_total_plays,
+             'record_unique_artists' : record_unique_artists,
              'mcjs' : mcjs,
              'wpcjs' : wpcjs,
              'total_weeks' : total_weeks,
