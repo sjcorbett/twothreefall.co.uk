@@ -84,6 +84,10 @@
 
 {% block javascript %}
 
+
+    <!--[if IE]>
+    <script language="javascript" type="text/javascript" src="{{ MEDIA_URL }}js/external/flot/excanvas.min.js"></script>
+    <![endif]-->
     <script type="text/javascript" src="{{ MEDIA_URL }}js/external/flot/jquery.flot.min.js"></script>
     <script type="text/javascript" src="{{ MEDIA_URL }}js/flot-charts.js"></script>
 
