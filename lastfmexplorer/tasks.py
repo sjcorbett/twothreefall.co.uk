@@ -158,7 +158,8 @@ def __parse_week_data(xml):
         artist = __elem(d, 'name')
         pc     = int(__elem(d, 'playcount'))
         rank   = int(__attr(d, 'rank'))
-        a, _ = Artist.objects.get_or_create(name=artist)
+        mbid   = __elem(d, 'mbid')
+        a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
 
         # Truncating this artist's name could cause a key clash
         # Add the playcount to that entry.

@@ -21,6 +21,8 @@ class TruncatingCharField(models.CharField):
 
 class Artist(models.Model):
     name = TruncatingCharField(max_length=MAX_ARTIST_NAME_LENGTH)
+    # e.g. 80e577ba-841f-43ba-9f32-72e7c1692336
+    mbid = models.CharField(max_length=36, null=True, unique=True)
 
     def __unicode__(self):
         return self.name
