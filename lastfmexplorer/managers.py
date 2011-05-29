@@ -14,7 +14,7 @@ from django.db import connection, models
 from django.db.models import Sum, Count, Max, Min
 from django.core.cache import cache
 
-USER_REGEX = r'(?P<username>[a-zA-Z_-][a-zA-Z0-9_ .]{1,14})'
+USER_REGEX = r'(?P<username>[a-zA-Z_-][a-zA-Z0-9_ .-]{1,14})'
 
 class UserManager(models.Manager):
     def known_user(self, name):
