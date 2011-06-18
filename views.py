@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django import http
 from django.shortcuts import render_to_response
 from django.conf import settings
@@ -6,11 +5,6 @@ from django.conf import settings
 import twothreefall.settings
 
 import datetime, re
-import mimetypes
-
-basic_context = { 'template' : 
-                    { 'MEDIA_URL' : settings.MEDIA_URL,
-                      'DEV' : settings.DEV } }
 
 ###############################################################################
 # Memcached status
