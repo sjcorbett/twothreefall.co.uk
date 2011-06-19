@@ -9,7 +9,7 @@ import twothreefall.views
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^$', cache_page(direct_to_template, settings.CACHE_DATA_TIMEOUT), {'template': 'landing.html'}),
+    url(r'^$', cache_page(direct_to_template, settings.CACHE_DATA_TIMEOUT), {'template': 'landing.html'}, name="home"),
     url(r'^about$', cache_page(direct_to_template, settings.CACHE_DATA_TIMEOUT), {'template' : 'about.html'}, name="about"),
     (r'^lastfmexplorer/', include('twothreefall.lastfmexplorer.urls')),
     (r'^status/cache/$', twothreefall.views.memcached_status),

@@ -1,5 +1,10 @@
 {% extends 'root.html' %}
+{% load breadcrumbs %}
 {% block ttle %}Last.fm Explorer{% endblock %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb_url "Last.fm Explorer" twothreefall.lastfmexplorer.views.start %}
+{% endblock %}
 {% comment %}
 {% block javascript %}<script type="text/javascript" src="{{ MEDIA_URL }}js/update-polling.js"></script>{% endblock %}
         <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>

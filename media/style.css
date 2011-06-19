@@ -1,23 +1,78 @@
 /******* TWOTHREEFALL **********************************************/
 #twothreefall {
+    position: relative;
+    float: left;
     width: 100%;
-    border-bottom: 1px solid #000;
-    background-color: #ddf;
+    border-bottom: 2px solid #00afa0;
+    padding: 15px 0 10px 0;
+    background-color: #e5dbfc;
+    /* color: #fff; */
 }
 
 #twothreefall h2 {
+    float: left;
+    font-size: 2em;
     letter-spacing: 0.35em;
-    padding: 0 0.3em;
-    display: inline;
-    color: #0000bb;
+    padding: 0 0.3em 0 1.5em;
+    margin: 0;
 }
 
-#twothreefall a.ttflink:hover,
-#twothreefall a.ttflink:visited {
+.ttflink .ttfTwo {
+    color: #ff4302;
+}
+.ttflink .ttfThree {
+    color: #7b04ff;
+}
+.ttflink .ttfFall {
+    color: #00bd00;
+}
+.ttflink:hover {
     text-decoration: none;
-    color: #0000bb;
 }
 
+#twothreefall #crumbs {
+    float: left;
+    margin-top: 8px;
+}
+
+.crumblink {
+    font-weight: bold;
+    margin: 0 4px;
+    color: blue;
+}
+
+#twothreefall a.crumblink:hover,
+#twothreefall a.crumblink:visited {
+    text-decoration: none;
+}
+
+#twothreefall a.crumblink:hover {
+    text-decoration: underline;
+}
+
+#fixedrightmenu {
+    position: absolute;
+    right: 20px;
+    top: 0;
+    bottom: 0;
+    background-color: #00afa0;
+    padding: 20px 0;
+    font-weight: bold;
+}
+
+#fixedrightentries li {
+    padding: 0 1.5em;
+    font-size: 1.25em;
+}
+
+#fixedrightmenu a,
+#fixedrightmenu a:visited {
+    color: #e5dbfc;
+}
+#fixedrightmenu a:hover {
+    color: #fff;
+    text-decoration: none;
+}
 
 /******* GENERAL ***************************************************/
 body {
@@ -29,6 +84,7 @@ body {
 
 #bodywrapper {
     width: 964px;
+    clear: both;
     margin: 0 auto;
 }
 
@@ -124,13 +180,24 @@ form#datechanger p, form#datechanger li {
 .commaseparated li:after {
     content: ", ";
 }
-.slashseparated li.last:after, .commaseparated li.last:after { 
+.gtseparated li:after {
+    content: " > ";
+}
+
+.gtseparated li.first:before {
+    content: " > ";
+}
+
+.slashseparated li.last:after,
+.commaseparated li.last:after,
+.gtseparated li.last:after { 
 	content: "";
 }
 
+
 /******* LINKS *****************************************************/
 li.barchart a:link, li.barchart a:visited {
-   color:#000;
+   color: #000;
 }
 
 a:link, a:visited {

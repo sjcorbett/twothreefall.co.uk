@@ -23,7 +23,17 @@
     </head>
 
     <body>
-{% include 'twothreefall.html' %}
+{% comment %} Navigation {% endcomment %}
+        <div id="twothreefall">
+            <h2><a class="ttflink" href="/"><span class="ttfTwo">TWO</span><span class="ttfThree">THREE</span><span class="ttfFall">FALL</span></a></h2> 
+            <div id="crumbs"> {% block breadcrumbs %}{% endblock %} </div>
+            <div id="fixedrightmenu">
+                <ul id="fixedrightentries" class="inlinedlist">
+                    <li><a href="{% url about %}">ABOUT</a></li>
+                </ul>
+            </div>
+        </div>
+
 {% block allcontent %}
         <div id="bodywrapper">
             {% block body %}{% endblock %}
