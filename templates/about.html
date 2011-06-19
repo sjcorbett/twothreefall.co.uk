@@ -1,5 +1,10 @@
 {% extends 'root.html' %}
-{% block ttle %}About Last.fm Explorer{% endblock %}
+{% block ttle %}About{% endblock %}
+{% load breadcrumbs %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb_url "About" about %}
+{% endblock %}
 {% block body %}
     <div id="top">
         <h1>About</h1>
