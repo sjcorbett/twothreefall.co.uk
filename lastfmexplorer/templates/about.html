@@ -1,21 +1,32 @@
 {% extends 'root.html' %}
-{% block title %}About Last.fm Explorer{% endblock %}
+{% block ttle %}About Last.fm Explorer{% endblock %}
 {% block body %}
     <div id="top">
-        <h1>If you're interested..</h1>
-        <p>The precursor to this was..</p>
-        <h2>Technology</h2>
-        <p>I'm using:</p>
+        <h1>About</h1>
+            I'm Sam, I live and work in Edinburgh.
+            <p>The source for twothreefall.co.uk is available on <a href="https://github.com/aradnuk/twothreefall.co.uk">GitHub</a>.
+
+        <h2 id="lex">Last.fm Explorer</h2>
+            <p><a href="http://www.last.fm/user/aradnuk">I</a> love Last.fm to pieces.</p>
+            <p>Last.fm Explorer uses:</p>
             <ul>
                 <li><a href="http://www.linode.com">Linode</a> to host twothreefall</li>
                 <li><a href="http://www.python.org">Python</a> to run it all</li>
                 <li><a href="http://www.djangoproject.com/">Django</a> as a framework to keep things simple</li>
                 <li><a href="http://celeryproject.org/">Celery</a> to fetch data from Last.fm efficiently.</li>
             </ul>
-        <h2>Bits that're still missing</h2>
+
+
+        <h3>For the future</h3>
             <ul>
                 <li>Information for tracks and albums rather than just artists.  
                     I'd like to see how the current version performs before including them.</li>
             </ul>
+
+        <h3>Changelog</h3>
+        <ul>
+            <li><b>13-02-2011</b> Charts-for-all</li>
+        </ul>
+
     </div>
 {% endblock %}
