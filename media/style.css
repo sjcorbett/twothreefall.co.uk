@@ -74,6 +74,24 @@
     text-decoration: none;
 }
 
+#projlist {
+    margin-left: 2em;
+    letter-spacing: 0.01em;
+}
+#projlist a {
+    /* text-decoration: underline; */
+}
+#projlist dt {
+    font-size: 2em;
+    margin-bottom: 8px;
+}
+#projlist dd {
+    font-size: 1.25em;
+}
+.lexred {
+	color: #dd1303;
+}
+
 /******* GENERAL ***************************************************/
 body {
     margin: 0 0;
