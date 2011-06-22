@@ -112,9 +112,13 @@ body {
 #top h1,
 div.post h2 {
     font-size: 36px;
-    margin: 0;
     padding: 0;
+    margin: 0;
     font-weight: bold;
+}
+
+#top h1.bigspace {
+    margin: 1em 0;
 }
 
 #datesandmenu {
@@ -149,9 +153,12 @@ form#datechanger p, form#datechanger li {
 
 #footer {
     clear: both;
+    margin-top: 30px;
+    color: gray;
 }
 #footer p {
     text-align: center;
+    margin: 0.7em 0;
 }
 
 #allcontent {

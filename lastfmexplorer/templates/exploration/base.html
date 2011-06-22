@@ -14,12 +14,11 @@
             <ul id="topmenu" class="inlinedlist slashseparated">
 {% if context.year %} 
                 <li><a href="{% url lastfmexplorer.views.overview context.user context.year %}">An overview</a></li>
-                <li><a href="{% url lastfmexplorer.views.user_chart context.user context.year %}">Charts</a></li>
+                <li class="last"><a href="{% url lastfmexplorer.views.user_chart context.user context.year %}">Charts</a></li>
 {% else %}
                 <li><a href="{% url lastfmexplorer.views.overview context.user context.start context.end %}">An overview</a></li>
-                <li><a href="{% url lastfmexplorer.views.user_chart context.user context.start context.end %}">Charts</a></li>
+                <li class="last"><a href="{% url lastfmexplorer.views.user_chart context.user context.start context.end %}">Charts</a></li>
 {% endif %}
-                <li class="last"><a href="{% url about %}#lex">About</a></li>
                 <!-- <li class="last"><a href="{% url lastfmexplorer.views.who context.user %}">Who</a></li> -->
             </ul>
         </div>
