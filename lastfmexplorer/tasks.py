@@ -158,8 +158,15 @@ def __parse_week_data(xml):
         artist = __elem(d, 'name')
         pc     = int(__elem(d, 'playcount'))
         rank   = int(__attr(d, 'rank'))
-        mbid   = __elem(d, 'mbid')
-        a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
+        # mbid   = __elem(d, 'mbid')
+
+        # ... no idea what the problem is..
+        # mbid   = mbid.strip() if mbid else ""
+        a, _ = Artist.objects.get_or_create(name=artist)
+
+        # a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
+        # if (c):
+            # logging.info("Created " + str(a) + "/'" + str(mbid) + "'")
 
         # Truncating this artist's name could cause a key clash
         # Add the playcount to that entry.
