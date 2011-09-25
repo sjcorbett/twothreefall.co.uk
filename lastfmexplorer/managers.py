@@ -119,7 +119,6 @@ class UserWeekDataManager(models.Manager):
             index = d['week_idx']
             # need to catch up.
             if not order_by_plays and index != (last_index + 1):
-                logging.info("catching up from %d to %d" % (last_index+1, index))
                 for idx in xrange(last_index+1, index):
                     yield y(idx, 0)
             yield y(index, d['plays__sum'])
