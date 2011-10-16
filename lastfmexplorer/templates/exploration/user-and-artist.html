@@ -6,7 +6,7 @@
             <h2>Weekly plays of artists between {{ context.template.dstart }} and {{ context.template.dend }}</h2>
             <hr/>
         </div>
-        <div style="width:1000px; height: 150px;" id="artist_playcounts"/>
+        <div style="width:1000px; height: 150px;" id="artist_playcounts">
         <div class="itemcontent">
 {% for artist, weeks in weekly_plays.items %}
         <h3>{{ artist.name }}</h3>

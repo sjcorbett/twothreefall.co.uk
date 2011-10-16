@@ -30,7 +30,7 @@ function bindTooltip(element) {
             var y = item.datapoint[1].toFixed(2);
             if (pY != y) {
                 pY = y;
-                $("#tooltip").remove()
+                $("#tooltip").remove();
                 showTooltip(item.pageX, pos.pageY, Math.floor(y));
             }
         }

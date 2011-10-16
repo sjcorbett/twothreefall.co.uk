@@ -32,10 +32,10 @@
                     <input type="hidden" name="original_start" value="{{ context.start }} "/>
                     <input type="hidden" name="original_end" value="{{ context.end }}"/>
                     <div class="alignedLabel">
-                        <label for="start-date" class="aligned">Start:</label><input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}"/>
+                        <label for="start-date-picker" class="aligned">Start:</label><input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}"/>
                     </div>
                     <div class="alignedLabel">
-                        <label for="end-date" class="aligned">End:</label><input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}"/>
+                        <label for="end-date-picker" class="aligned">End:</label><input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}"/>
                     </div>
                     {% block lex_page_config %}{% endblock %}
                     <input type="submit" value="Update" id="update" />

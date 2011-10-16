@@ -80,7 +80,7 @@ def user_chart_updates(username, requester, weeks):
     cache.set(user_update_key(username), len(weeks), timeout=7200)
 
     # create taskset and run it.
-    tasks = [ fetch_week.subtask((user, start, end)) for start, end in weeks ]
+    tasks = [ fetch_week.subtask((user, requester, start, end)) for start, end in weeks ]
     tasks.append(finish_update.subtask((user,)))
     ts = TaskSet(tasks)
     return ts.apply_async()
@@ -144,14 +144,14 @@ def __parse_week_data(xml):
         artist = __elem(d, 'name')
         pc     = int(__elem(d, 'playcount'))
         rank   = int(__attr(d, 'rank'))
-        # mbid   = __elem(d, 'mbid')
+        mbid   = __elem(d, 'mbid')
 
         # ... no idea what the problem is..
-        # mbid   = mbid.strip() if mbid else ""
-        a, _ = Artist.objects.get_or_create(name=artist)
+        mbid   = mbid.strip() if mbid else ""
+        # a, _ = Artist.objects.get_or_create(name=artist)
 
-        # a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
-        # if (c):
+        a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
+        # if (c):   
             # logging.info("Created " + str(a) + "/'" + str(mbid) + "'")
 
         # Truncating this artist's name could cause a key clash

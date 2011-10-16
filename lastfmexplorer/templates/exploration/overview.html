@@ -40,7 +40,7 @@
     <div class="itemofinterest">
         <div class="itemtitle"><h2>Most...</h2></div>
         <div class="itemcontent">
-            <div class="clumped_box" />
+            <div class="clumped_box">
                 <h3>Plays of one artist in one week</h3>
                 <ol>
                     {% for item, date in record_single_artist %}
@@ -50,7 +50,7 @@
                     {% endfor %}
                 </ol>
             </div>
-            <div class="clumped_box" />
+            <div class="clumped_box">
                 <h3>Songs scrobbled in one week</h3>
                 <ol>
                     {% for idx, date, plays in record_total_plays %}
@@ -59,7 +59,7 @@
                     {% endfor %}
                 </ol>
             </div>
-            <div class="clumped_box" />
+            <div class="clumped_box">
                 <h3>Unique artists scrobbled in one week</h3>
                 <ol>
                     {% for idx, date, artist_count in record_unique_artists %}
