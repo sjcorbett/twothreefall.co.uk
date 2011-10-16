@@ -89,7 +89,7 @@ def years_to_today():
     return xrange(2005, date.today().year + 1)
 
 def indicies_of_year(year):
-    return (fsoob(date(year, 1, 1)), fsooa(date(year, 12, 31)))
+    return fsoob(date(year, 1, 1)), fsooa(date(year, 12, 31))
 
 def __months_to_indices(num):
     return ("%d months" % (num,) if num > 1 else "month",

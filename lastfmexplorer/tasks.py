@@ -71,9 +71,9 @@ def get_or_add_user(user, requester):
 def user_update_key(username):
     return "update" + username
 
-def user_chart_updates(username, weeks):
+def user_chart_updates(username, requester, weeks):
     logging.info("user_chart_updates")
-    user = get_or_add_user(username)
+    user = get_or_add_user(username, requester)
 
     # set cache to number of tasks to complete with a long timeout to make
     # sure it doesn't get lost between polls.  Will be deleted when unnecessary.
@@ -171,7 +171,7 @@ def __save_week_data(user_id, week_idx, wd):
             WeekData.objects.create(user_id=user_id, artist_id=artistid,
                     week_idx=week_idx, plays=plays, rank=rank)
         transaction.commit()
-    except Exception as instance:
+    except Exception:
         transaction.rollback()
         # TODO: Improve logging
         logging.error("Failed to save week. user: %d, week: %d" % (user_id, week_idx))
@@ -180,7 +180,7 @@ def __save_week_data(user_id, week_idx, wd):
 
 
 @task(ignore_result=True)
-def fetch_week(user, start, end):
+def fetch_week(user, requester, start, end):
 
     logging.info("fetch_week called: %s, %d %d" % (user.username, start, end))
 
@@ -190,9 +190,9 @@ def fetch_week(user, start, end):
     week_idx = ldates.index_of_timestamp(start)
 
     try:
-        wd = week_data(user, start, end)
+        wd = week_data(user, requester, start, end)
         __save_week_data(user.id, week_idx, wd)
-    except GetWeekFailed, e:
+    except GetWeekFailed:
         # Save to DB
         pass
     except SyntaxError:
@@ -212,12 +212,13 @@ def finish_update(user):
 ########## Retrieving tags for an artist ######################################
 
 @task
-def fetch_tags_for_artist(artist_name):
+def fetch_tags_for_artist(artist_name, requester):
     artist = Artist.objects.get(artist_name)
     aid    = artist.id
-    for tag, count in artist_tags(artist_name):
+    for tag, count in artist_tags(artist_name, requester):
         mtag = Tag.objects.get_or_create(tag=tag)
         at   = ArtistTags.objects.create(artist_id=aid, tag_id=mtag.id)
+        yield at
 
 def artist_tags(artist, requester):
     """

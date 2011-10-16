@@ -15,6 +15,9 @@ import twothreefall.lastfmexplorer.tasks as tasks
 import utils
 from models import *
 from chart import Chart
+from requester import LastFMRequester
+
+_REQUESTER = LastFMRequester()
 
 # TODO: Updates?
 def start(request):
@@ -24,7 +27,7 @@ def start(request):
         given = str(given).strip()
         if User.validity.valid_username(given):
             try:
-                u = tasks.get_or_add_user(given)
+                u = tasks.get_or_add_user(given, _REQUESTER)
                 target = overview if (not ldates.sensible_to_update(u.last_updated)) else update
                 return redirect(target, u)
             except tasks.GetUserFailed as e:
@@ -57,17 +60,18 @@ def __date_redirection(request, target):
         User.objects.get(username=user)
     except:
         raise Http404
-    
+
+    start = end = None
     try:
         start = ldates.date_of_string(GET['start'])
-    except:
+    except Exception:
         # TODO: indicate errors, use better default dates (last available for user)
         if not start:
             start = ldates.idx_beginning
 
     try: 
         end = ldates.date_of_string(GET['end'])
-    except: 
+    except Exception:
         # TODO: indicate errors, use better default dates (last available for user)
         if not end:
             end = ldates.idx_last_sunday
@@ -98,14 +102,14 @@ def update(request, username):
     Queues tasks to be fetched.
     """
     
-    user = tasks.get_or_add_user(username)
+    user = tasks.get_or_add_user(username, _REQUESTER)
     template_vars = { 'username' : username } 
 
     # Check updates table to see if update is already in progress.
     update = None
     try:
         update = Updates.objects.get(user=user)
-    except:
+    except Exception:
         if ldates.sensible_to_update(user.last_updated):
             update = __init_update(user, template_vars)
 
@@ -127,7 +131,7 @@ def __init_update(user, template_vars):
 
     # new weeks, or possibly those that failed before.
     # TODO: fail here if couldn't contact last.fm
-    chart_list = tasks.chart_list(user.username)
+    chart_list = tasks.chart_list(user.username, _REQUESTER)
     done_set = set(map(lambda (_,x): x, weeks_done))
 
     weeks_todo = []
@@ -143,7 +147,7 @@ def __init_update(user, template_vars):
         user.save()
 
         # Create and run taskset.
-        t = tasks.user_chart_updates(user.username, weeks_todo)
+        t = tasks.user_chart_updates(user.username, _REQUESTER, weeks_todo)
         template_vars['total_tasks'] = t.total
 
         # Add to DB
@@ -214,7 +218,7 @@ def staged(target_view, skip_date_shortcuts=False):
                           ldates.idx_last_sunday)
 
             # Do this or just fail to 'no data in this range page?'
-            if start > end: temp = end; end = start; start = end
+            if start > end: temp = end; end = start; start = temp
 
             # has the user submitted the change date form?
             G = request.GET
@@ -253,7 +257,7 @@ def staged(target_view, skip_date_shortcuts=False):
                 try:
                     c = int(G['count'])
                     context['count'] = c
-                except:
+                except Exception:
                     pass
 
             # Fail if there's definitely no data for this range.
@@ -286,14 +290,14 @@ def overview(request, context):
     end = context.get('end')
     user = context.get('user')
 
-    def new_favourites_string(num=3):
-        artists = [(a, c) for a, c, _ in \
-                (WeekData.objects.new_artists_in_timeframe(user, start, end, num))]
-        def to_s((a, c)):
-            return "%s, with %d plays" % (a, c)
-        return 'Top %d new artists in this time: %s and %s' % \
-                (num, ', '.join(to_s(item) for item in artists[:-1]),
-                 to_s(artists[-1]))
+    #def new_favourites_string(num=3):
+        #artists = [(a, c) for a, c, _ in \
+        #        (WeekData.objects.new_artists_in_timeframe(user, start, end, num))]
+        #def to_s((a, c)):
+        #    return "%s, with %d plays" % (a, c)
+        #return 'Top %d new artists in this time: %s and %s' % \
+        #        (num, ', '.join(to_s(item) for item in artists[:-1]),
+        #         to_s(artists[-1]))
 
     # vital stats.  TODO: Rework.
     total_plays = WeekData.objects.total_plays_between(user, start, end)
@@ -363,7 +367,7 @@ def user_chart(request, context):
     exclusion = G.get('num_excluded', '')
     max_scrobbles = G.get('max_scrobbles', '')
     if exclude_months:
-        if (exclusion.isdigit()):
+        if exclusion.isdigit():
             exclusion = int(exclusion) 
             max_scrobbles = int(max_scrobbles) if max_scrobbles.isdigit() else 0
             chart.set_exclude_months(exclusion, max_scrobbles)

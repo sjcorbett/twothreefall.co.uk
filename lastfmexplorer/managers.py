@@ -104,7 +104,7 @@ class UserWeekDataManager(models.Manager):
             cache.set(cache_key, cached)
 
         def y(i, pc):
-            return (pc if just_counts else (i, pc))
+            return pc if just_counts else (i, pc)
                 
         # last_index handles weeks when nothing was played
         if order_by_plays:
