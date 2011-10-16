@@ -173,7 +173,8 @@ def poll_update_status(request):
 
     # use task id to get status, report back a progress of no. completed.
     pending = cache.get(tasks.user_update_key(username), 0)
-
+    result  = {}
+    
     # all complete.  delete from update table.
     if not update or not pending: # == 0
         result['alldone'] = True

@@ -19,6 +19,7 @@ class TruncatingCharField(models.CharField):
             return value[:self.max_length]
         return value
 
+
 class Artist(models.Model):
     name = TruncatingCharField(max_length=MAX_ARTIST_NAME_LENGTH)
     # e.g. 80e577ba-841f-43ba-9f32-72e7c1692336
@@ -32,6 +33,7 @@ class Artist(models.Model):
 
     class Meta:
         unique_together = ('name', 'mbid')
+
 
 class Album(models.Model):
     artist = models.ForeignKey(Artist)

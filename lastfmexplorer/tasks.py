@@ -1,31 +1,18 @@
 """
 Retrieve data from database and fetch it from last.fm when necessary.
 """
-import StringIO
-import datetime as dt
-import gzip
 import logging
-import tempfile, os
-import urllib2
 import xml.etree.cElementTree as ET
-from urllib import urlencode
-from httplib import BadStatusLine
 
-from celery.task.sets import TaskSet, subtask
+from celery.task.sets import TaskSet
 from celery.decorators import task
 
-from django.db import connection, transaction, IntegrityError
+from django.db import  transaction
 from django.core.cache import cache
 
-import ldates 
 from models import *
-from twothreefall.settings import LASTFM_SECRET_KEY, LASTFM_API_KEY
 
 logging.basicConfig(level=logging.DEBUG)
-
-###############################################################################
-
-_API_BASE   = 'http://ws.audioscrobbler.com/2.0/'
 
 ###############################################################################
 ########## Helpful XML functions ##############################################
@@ -60,7 +47,7 @@ class GetWeekFailed(Exception):
 ###############################################################################
 ########## Handling users #####################################################
 
-def get_or_add_user(user):
+def get_or_add_user(user, requester):
     """
     Retrieves the User object for the user string arg.  If it doesn't exist 
     then attempt to fetch the information from Last.fm and store it.
@@ -68,7 +55,7 @@ def get_or_add_user(user):
     try:
         u = User.objects.get(username=user)
     except User.DoesNotExist:
-        req = __request("user.getInfo", {'user':user})
+        req = requester.make("user.getInfo", {'user':user})
         if not req['success']:
             raise GetUserFailed(req['error']['message'])
         et  = ET.fromstring(req['data'])
@@ -102,13 +89,12 @@ def user_chart_updates(username, weeks):
 ###############################################################################
 ########## Retrieving available weekly charts #################################
 
-def chart_list(user):
+def chart_list(user, requester):
     """
     Fetches the list of available charts for user.  Returns a generator 
     providing (from, to) timestamp tuples.
     """
-    return __available_charts( \
-             __request('user.getweeklychartlist', {'user':user})['data'])
+    return __available_charts(requester.make('user.getweeklychartlist', {'user':user})['data'])
 
 def __available_charts(xml):
     """
@@ -127,7 +113,7 @@ def __available_charts(xml):
 ###############################################################################
 ########## Retrieving one week's data #########################################
 
-def week_data(user, start, end, kind='artist'):
+def week_data(user, requester, start, end, kind='artist'):
     """
     Fetches one week's worth of data from Last.fm (using start and end).  kind 
     controls the kind of chart fetched.  Returns a generator over (name, 
@@ -135,7 +121,7 @@ def week_data(user, start, end, kind='artist'):
     """
 
     method = "user.getweekly%schart" % (kind,)
-    response = __request(method, {'user':user, 'from':start, 'to':end})
+    response = requester.make(method, {'user':user, 'from':start, 'to':end})
     if response['success']:
         return __parse_week_data(response['data']) 
     else:
@@ -182,7 +168,7 @@ def __parse_week_data(xml):
 def __save_week_data(user_id, week_idx, wd):
     try:
         for artistid, (plays, rank) in wd.iteritems():
-            WeekData.objects.create(user_id=user_id, artist_id=artistid, \
+            WeekData.objects.create(user_id=user_id, artist_id=artistid,
                     week_idx=week_idx, plays=plays, rank=rank)
         transaction.commit()
     except Exception as instance:
@@ -212,7 +198,7 @@ def fetch_week(user, start, end):
     except SyntaxError:
         # Save to DB
         logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
-        WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx);
+        WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx)
 
 
 @task(ignore_result=True)
@@ -233,16 +219,16 @@ def fetch_tags_for_artist(artist_name):
         mtag = Tag.objects.get_or_create(tag=tag)
         at   = ArtistTags.objects.create(artist_id=aid, tag_id=mtag.id)
 
-def artist_tags(artist):
+def artist_tags(artist, requester):
     """
     Fetches num tags for artist from Last.fm.  Returns a generator over 
     (tag name, count).
     """
-    result = __request("artist.getTopTags", {'artist':artist})
+    result = requester.make("artist.getTopTags", {'artist':artist})
     if result['success']:
         return __parse_tags(result['data']) 
     else:
-        logging.error("Failed to fetch tags for artist '%s'" % (artist))
+        logging.error("Failed to fetch tags for artist '%s'" % (artist,))
         return [] 
 
 def __parse_tags(xml):
@@ -264,66 +250,6 @@ def __parse_tags(xml):
         else:
             return
 
-
-###############################################################################
-########## HTTP requests ######################################################
-# TODO: Handle HTTP 503s.
-def __url_for_request(method, extras):
-    args = urlencode(extras) if extras else ""
-    return "%s?method=%s&api_key=%s&%s" % (_API_BASE, method, LASTFM_API_KEY, args)
-
-def __request(method, extras=None):
-    """
-    Requests data from Last.fm.  
-      method: string name of an API method
-      extras: any arguments, whether required or optional.
-    """
-
-    query = __url_for_request(method, extras)
-    logging.info(query)
-
-    req = urllib2.Request(query)
-    req.add_header('Accept-encoding', 'gzip')
-    req.add_header('User-agent', 'Last.fm Explorer')
-
-    result = { 'success' : False }
-
-    max_retries = 2
-    attempt     = 0
-
-    while not result['success'] and attempt < max_retries:
-        attempt += 1
-        try:
-            r = urllib2.urlopen(req, timeout=60).read()
-            result['data'] = __unzip(r)
-            result['success'] = True
-
-        except urllib2.HTTPError, e:
-            logging.error("Error accessing " + query + " - " + str(e.code))
-            result['error'] = { 'code' : e.code, 'message' : e.msg }
-            
-        except urllib2.URLError, e:
-            logging.error("Failed to fetch " + query + ' - URLError.')
-            result['error'] = { 'message' : e.reason }
-
-        except BadStatusLine:
-            logging.error("fetch_week caught BadStatusLine, attempt %d" % (attempt,))
-            result['error'] = { 'message' : "Request gave BadStatusLine" }
-
-        except Exception as instance:
-            logging.error("Exception for request " + query + " - " + str(type(instance)))
-            result['error'] = { 'messasge' : "Unknown problem" }
-
-    return result
-
-def __unzip(data):
-    """
-    Unzips a gzipped stream.  Since gzip reads a file the data is represented as
-    a file in memory.
-    """
-    compressed = StringIO.StringIO(data)
-    gzipper    = gzip.GzipFile(fileobj=compressed)
-    return gzipper.read()
 
 
 
