@@ -1,13 +1,11 @@
 """
 A user's chart between two dates.
 """
-import logging
 
 import ldates
 from models import Artist, WeekData
 
 from django.db.models import Sum
-from django.db.models import Q
 from django.core.cache import cache
 
 class Chart:

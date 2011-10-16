@@ -5,7 +5,7 @@ import logging
 import xml.etree.cElementTree as ET
 
 from celery.task.sets import TaskSet
-from celery.decorators import task
+from celery.task import task
 
 from django.db import  transaction
 from django.core.cache import cache

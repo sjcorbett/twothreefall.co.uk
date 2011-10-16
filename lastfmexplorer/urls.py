@@ -1,13 +1,8 @@
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template
-from django.views.decorators.cache import cache_page
 
 import views
 import ldates
 from managers import USER_REGEX
-import twothreefall.settings as settings
-
-import djcelery.views
 
 # match usernames
 __user_base     = '^user/' + USER_REGEX + '/' 

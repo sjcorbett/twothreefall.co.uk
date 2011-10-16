@@ -5,24 +5,16 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from django.views.decorators.cache import cache_page
 from django.views.generic.list_detail import object_list
 
-from datetime import date, timedelta
+from datetime import date
 import logging
-import mimetypes
-import os
-import re
 import anyjson
 
 import twothreefall.lastfmexplorer.tasks as tasks
-import ldates 
 import utils
 from models import *
 from chart import Chart
-import twothreefall.settings as settings
-
-from celery.result import TaskSetResult 
 
 # TODO: Updates?
 def start(request):

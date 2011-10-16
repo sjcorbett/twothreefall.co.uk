@@ -1,17 +1,15 @@
 """
 Managers for some of the classes in models.py.
 """
-import os
 import re
 import logging
 from operator import itemgetter
 
 import ldates
 import models as m
-from twothreefall.settings import MEDIA_URL, MEDIA_ROOT
 
 from django.db import connection, models
-from django.db.models import Sum, Count, Max, Min
+from django.db.models import Sum, Count, Min
 from django.core.cache import cache
 
 USER_REGEX = r'(?P<username>[a-zA-Z_-][a-zA-Z0-9_ .-]{1,14})'
