@@ -227,7 +227,7 @@ def staged(target_view, skip_date_shortcuts=False):
             # has the user submitted the change date form?
             G = request.GET
             if ('original_start' in G) and \
-                    (G.get('original_start', start) != start or \
+                    (G.get('original_start', start) != start or
                      G.get('original_end', end) != end):
                 return __date_redirection(request, cleansed)
 
@@ -300,7 +300,7 @@ def overview(request, context):
         def to_s((a, c)):
             return "%s, with %d plays" % (a, c)
         return 'Top %d new artists in this time: %s and %s' % \
-                (num, ', '.join(to_s(item) for item in artists[:-1]), \
+                (num, ', '.join(to_s(item) for item in artists[:-1]),
                  to_s(artists[-1]))
 
     # vital stats.  TODO: Rework.
@@ -309,7 +309,7 @@ def overview(request, context):
     vitals = [
             "<b>%d</b> weeks, <b>%d</b> days" % (total_weeks, total_weeks * 7),
             "<b>%d</b> plays: an average of <b>%.2f</b> songs per week and <b>%.2f</b> per year" \
-                    % (total_plays, \
+                    % (total_plays,
                        total_plays / total_weeks, 
                        total_plays / (total_weeks / 52) if total_weeks >= 52 else total_plays * (52 / total_weeks)),
             # TODO: Reinstate if ever more efficient.
@@ -429,7 +429,7 @@ def user_and_artist(request, context):
             pass
 
     weekly_plays = WeekData.artists.user_weekly_plays_of_artists(user, artists, start, end)
-    return { 'context' : context, 'weekly_plays' : weekly_plays, \
+    return { 'context' : context, 'weekly_plays' : weekly_plays,
              'array_counter' : xrange(len(weekly_plays)) }
 
 

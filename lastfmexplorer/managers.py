@@ -88,7 +88,7 @@ class UserWeekDataManager(models.Manager):
             idx = r['week_idx']
             yield idx, ldates.date_of_index(idx), r['artist__count']
 
-    def weekly_play_counts(self, user, start, end, count=None, just_counts=False, \
+    def weekly_play_counts(self, user, start, end, count=None, just_counts=False,
             order_by_plays=False):
 
         # Use cache, fill cache if data not there.
@@ -194,9 +194,8 @@ class UserWeekDataManager(models.Manager):
         import time
         start_week = time.time()
 
-        artists = set([m.Artist.objects.get(name="Fleet Foxes").id, \
-                       m.Artist.objects.get(name="Squarepusher").id, \
-                   ])
+        artists = set([m.Artist.objects.get(name="Fleet Foxes").id,
+                       m.Artist.objects.get(name="Squarepusher").id])
 
         # drawn at least one week
         drawn = False
