@@ -1,5 +1,6 @@
 {% extends 'root.html' %}
-{% load reversetag breadcrumbs %}
+{% load breadcrumbs %}
+{% load url from future %}
 {% block ttle %}{% block lextitle %}{% endblock %}Last.fm Explorer{% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -13,13 +14,13 @@
             {% comment %}{% include 'date-selector.html' %}{% endcomment %}
             <ul id="topmenu" class="inlinedlist slashseparated">
 {% if context.year %} 
-                <li><a href="{% url lastfmexplorer.views.overview context.user context.year %}">An overview</a></li>
-                <li class="last"><a href="{% url lastfmexplorer.views.user_chart context.user context.year %}">Charts</a></li>
+                <li><a href="{% url "lastfmexplorer.views.overview" context.user context.year %}">An overview</a></li>
+                <li class="last"><a href="{% url "lastfmexplorer.views.user_chart" context.user context.year %}">Charts</a></li>
 {% else %}
-                <li><a href="{% url lastfmexplorer.views.overview context.user context.start context.end %}">An overview</a></li>
-                <li class="last"><a href="{% url lastfmexplorer.views.user_chart context.user context.start context.end %}">Charts</a></li>
+                <li><a href="{% url "lastfmexplorer.views.overview" context.user context.start context.end %}">An overview</a></li>
+                <li class="last"><a href="{% url "lastfmexplorer.views.user_chart" context.user context.start context.end %}">Charts</a></li>
 {% endif %}
-                <!-- <li class="last"><a href="{% url lastfmexplorer.views.who context.user %}">Who</a></li> -->
+                <!-- <li class="last"><a href="{% url "lastfmexplorer.views.who" context.user %}">Who</a></li> -->
             </ul>
         </div>
 
@@ -43,16 +44,16 @@
                         <p>Or choose:</p>
                         <ul class="commaseparated">
     {% for year in context.template.year_shortcuts %}
-                            <li><a href="{% reverse context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a></li>
+                            <li><a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a></li>
     {% endfor %}
-                            <li class="last"><a href="{% reverse context.template.active_view context.user %}{{ context.template.getq }}">All</a></li>
+                            <li class="last"><a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a></li>
                         </ul>
                         <br/>
                         <p>or the last</p>
                         <ul class="commaseparated">
     {% for name, s, e in context.template.shortcuts %}
                             {% if forloop.last %}<li class="last">{% else %}<li>{% endif %}
-                            <a href="{% reverse context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a></li>
+                            <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a></li>
     {% endfor %}
                         </ul>
                     </div>

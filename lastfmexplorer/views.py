@@ -237,7 +237,7 @@ def staged(target_view, skip_date_shortcuts=False):
                         'end' : end,
                         'template' : {
                             # Alter links appropriately
-                            'active_view' : cleansed,
+                            'active_view' : 'lastfmexplorer.views.' + fn.__name__,
                             'kwargs' : kwargs,
                             'skipped_dates' : skip_date_shortcuts,
                             'dstart' : ldates.date_of_index(start),
