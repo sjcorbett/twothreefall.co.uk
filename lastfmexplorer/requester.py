@@ -6,7 +6,7 @@ import logging
 from httplib import BadStatusLine
 from urllib import urlencode
 
-from settings import LASTFM_API_KEY
+from twothreefall.settings import LASTFM_API_KEY
 
 class Requester:
 
