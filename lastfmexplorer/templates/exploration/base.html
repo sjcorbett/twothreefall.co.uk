@@ -44,17 +44,17 @@
                         <p>Or choose:</p>
                         <ul class="commaseparated">
     {% for year in context.template.year_shortcuts %}
-                            <li><a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a></li>
+                            {% if forloop.last %}<li class="last">{% else %}<li>{% endif %}
+                            <a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a></li>
     {% endfor %}
-                            <li class="last"><a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a></li>
                         </ul>
                         <br/>
                         <p>or the last</p>
                         <ul class="commaseparated">
     {% for name, s, e in context.template.shortcuts %}
-                            {% if forloop.last %}<li class="last">{% else %}<li>{% endif %}
-                            <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a></li>
+                            <li><a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a></li>
     {% endfor %}
+                            <li class="last"><a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a></li>
                         </ul>
                     </div>
                 </fieldset>
