@@ -16,6 +16,7 @@ __default_dates = { 'start' : ldates.idx_beginning,
 urlpatterns = patterns('',
     # start and page
     (r'^$', views.start),
+    (__user_base + 'index/$', views.user_data),
 
     # updates
     (__user_base + 'update/$', views.update),

@@ -299,9 +299,14 @@ div.post p {
     padding-left: 1em;
 }
 
+.blockoftext {
+    width: 650px;
+}
+
 .blue { color: blue; }
 .green { color: #007f02; }
-
+.red { color: red; }
+.grey { color: gray; }
 
 /******* START FORM*********************************************/
 
@@ -428,3 +433,19 @@ div#justification {
     text-align: left;
 }
 
+/******* USER INDEX ************************************************/
+.year_group {
+    float: left;
+    display: inline;
+    margin: 0 2em 1em 1em;
+}
+.year_group table {
+    margin-left: 1em;
+}
+.year_group h2 {
+    margin-bottom: 0;
+}
+.year_group td {
+    padding-left: 2px;
+    padding-bottom: 2px;
+}

@@ -96,7 +96,6 @@ def __months_to_indices(num):
             idx_last_sunday - (month_in_weeks * num), idx_last_sunday)
 months = map(__months_to_indices, [1, 3, 6])
 
-
 def __years_to_indices(num):
     return ("%d years" % (num,) if num > 1 else "year",
             max(0, idx_last_sunday - (year_in_weeks * num)), idx_last_sunday)

@@ -106,7 +106,7 @@
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 {% comment %} Get some data! {% endcomment %}
-{% for count in mcjs %} 
+{% for count in mcjs %}
             monthly_data.push([{{ forloop.counter0 }}, {{ count }}]);
             month_ticks.push([{{ forloop.counter0 }}, months[{{ forloop.counter0 }}]]);
 {% endfor %}
