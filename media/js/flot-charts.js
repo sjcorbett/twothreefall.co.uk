@@ -33,8 +33,7 @@ function bindTooltip(element) {
                 $("#tooltip").remove();
                 showTooltip(item.pageX, pos.pageY, Math.floor(y));
             }
-        }
-        else {
+        } else {
             pY = null;
             $("#tooltip").fadeOut(200);
         }

@@ -127,7 +127,6 @@
             for (var i=0, len=counts.length; i<len; ++i) {
                 weekly_data.push([i, counts[i]]);
                 weekly_ticks.push([i, ((hist_step*i) + ((i == 0) ? 0 : 1)) + "-" + (hist_step*(i+1))]);
-
             }
 
             $.plot($("#weekly_counts_hist"), [{data : weekly_data, color: "#00f"}], {

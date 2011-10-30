@@ -173,105 +173,46 @@ class UserWeekDataManager(models.Manager):
             last_avg = average
             yield (ldates.js_timestamp_of_index(date_idx), wpc, average)
 
-    def top_n_history(self, user, start, end, count=200):
-
-        from PIL import Image, ImageDraw
+    def top_n_history(self, user, start, end, count=10):
+        """
+        Returns in format [
+            {'artist': "Radiohead", 'data': [[0,1], [1,2], [2,1]]},
+            {'artist': "Fleet Foxes", 'data': [[0,2], [1,1], [2,2]]},
+        ]
+        """
         import operator
         import heapq
         from collections import defaultdict
 
         chart     = defaultdict(int)  # artist --> play count
-        last_week = {}                # artist --> (last coordinates tuple)
-
-        weeks_passed = 0
+        tracking  = set()
+        current_week = 0 #qs[0].week_idx
 
         # all weekly plays, order by week start then by playcount
-        qs = self.user_weeks_between(user, ldates.the_beginning, end) \
+        qs = self.user_weeks_between(user, ldates.idx_beginning, end) \
                  .order_by('-plays') \
                  .order_by('week_idx')
 
-        height = count
-        width  = (end - start).days / 7
-        h_offset = 12
-        w_offset = 4.5
-
-        # (height * width)
-        size = (width * w_offset, height * h_offset)
-        logging.info(size)
-
-        # final triple initialises background colour
-        im = Image.new("RGB", size, (255, 255, 255))
-        dr = ImageDraw.Draw(im)
-
-        grey  = (200, 200, 200)
-        black = (0, 0, 0)
-
-        current_week = qs[0].week_idx
-
-        import time
-        start_week = time.time()
-
-        artists = set([m.Artist.objects.get(name="Fleet Foxes").id,
-                       m.Artist.objects.get(name="Squarepusher").id])
-
-        # drawn at least one week
-        drawn = False
+        # artist --> [(week index, chart position)]
+        artist_positions = defaultdict(list)
 
         # WeekData object
         for week_data in qs:
 
-            # time has advanced; we've seen another week. draw to image.
+            # time has advanced; we've seen another week.  sort this week's movers
             if week_data.week_idx >= start and week_data.week_idx > current_week:
 
-                end_week = time.time()
-
-                logging.info(week_data.week_idx)
+                # update current date
+                current_week = week_data.week_idx
 
                 # take top n items from chart, drop playcounts, zip with chart position
                 topn  = {}
                 index = 1
                 for artist, _ in heapq.nlargest(count, chart.iteritems(), operator.itemgetter(1)):
-                    topn[artist] = index
+                    artist_positions[artist].append((current_week, index))
                     index += 1
 
-                set_topn = set(topn)
-                tracking = set(last_week)
-
-                y = weeks_passed * w_offset
-
-                # three sets:
-                # 1. artists in top n but not in last_week
-                #       -> draw from bottom of image to new position
-                for artist in set_topn - tracking:
-                    clr = black if artist in artists else grey
-                    x   = topn[artist] * h_offset
-                    fro = height * h_offset if drawn else x
-                    dr.line((y-1, fro, y, x), fill=clr)
-                    last_week[artist] = (y, x)
-
-                # 2. artists in top n and in last_week
-                #       -> draw from last week to this week
-                for artist in set_topn & tracking:
-                    clr = black if artist in artists else grey
-                    x = topn[artist] * h_offset
-                    dr.line(last_week[artist] + (y, x), fill=clr)
-                    last_week[artist] = (y, x)
-
-                # 3. artists in last_week but not in top n
-                #       -> no longer need to be tracked
-                for artist in tracking - set_topn:
-                    del last_week[artist]
-
-                # increment weeks passed and update current date
-                # last_week = this_week
-                weeks_passed += 1
-                current_week = week_data.week_idx
-                drawn = True
-
-                graphed = time.time()
-                logging.info('Collecting week data took %0.3f ms' % ((end_week-start_week)*1000.0))
-                logging.info('Imaging took %0.3f ms' % ((graphed-end_week)*1000.0))
-                start_week = time.time()
+#                set_topn = set(topn)
 
             # update running chart with new data
             # using week_data.artist here __really__ slows things down!
@@ -279,8 +220,13 @@ class UserWeekDataManager(models.Manager):
             id = week_data.artist_id
             chart[id] += week_data.plays
 
-        file = "img/%s-topnhist.png" % (user,)
-        im.save(file, "PNG")
+        out = []
+        for artist_id, positions in artist_positions.iteritems():
+            out.append({
+                'artist': m.Artist.objects.get(id=artist_id).name,
+                'data': positions
+            })
+        return out
 
     def who_shall_i_listen_to(self, username):
         return m.Artist.objects.all()

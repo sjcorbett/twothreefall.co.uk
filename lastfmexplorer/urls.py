@@ -46,5 +46,11 @@ urlpatterns = patterns('',
     (__user_base + r'artists/(?P<artists>.*)/' + __date_matcher, views.user_and_artist),
     (__user_base + r'artists/(?P<artists>.*)/' + __year_matcher, views.user_and_artist),
 
+    # top n
+    (__user_base + r'top10/' + __date_matcher, views.user_top_n_history),
+    (__user_base + r'top10/' + __year_matcher, views.user_top_n_history),
+    (__user_base + r'top10/$', views.user_top_n_history, __default_dates),
+    (r'^top-n-ajax/$', views.top_n_ajax)
+
 )
 

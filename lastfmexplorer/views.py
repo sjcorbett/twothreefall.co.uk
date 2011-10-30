@@ -331,16 +331,20 @@ def user_chart(request, context):
 
     return back
 
-
-def user_top_n_history(request, username):
+@staged('exploration/top-n-history.html', skip_date_shortcuts=True)
+def user_top_n_history(request, context):
     """
     Undecided.
     """
-    raise Exception()
-    # f, start, end = formalities(request, username, start, end)
-    # WeekData.objects.top_n_history(f['user'], start, end)
-    # return render_to_response('exploration/top-n-history.html', locals())
+    return { 'context': context }
 
+def top_n_ajax(request):
+    G = request.GET
+    if 'u' not in G:
+        raise Http404
+    user = get_object_or_404(User, username=G.get('u'))
+    data = WeekData.objects.top_n_history(user, ldates.idx_beginning, ldates.idx_last_sunday)
+    return HttpResponse(anyjson.serialize(data), mimetype="application/json")
 
 @staged('exploration/who.html', skip_date_shortcuts=True)
 def who(request, context):
@@ -442,6 +446,6 @@ def user_data(request, context):
 
     return {
         'context' : context,
-        "user": user,
-        "years": years
+        'user': user,
+        'years': years
     }
