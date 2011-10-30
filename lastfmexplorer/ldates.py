@@ -2,14 +2,14 @@
 Utilities for handling dates.
 
 Last.fm's charts are effectively release each Sunday noon, and the first charts
-were published February 13th 2005.  This information makes storing dates a lot
+were published February 20th 2005.  This information makes storing dates a lot
 simpler -- rather than storing a full date we can store an index into the list
-where [0] = 13/02/05, [1] = 20/02/05, etc.
+where [0] = 20/02/05, [1] = 27/02/05, etc.
 """
 
 from datetime import date, timedelta, datetime
 
-the_beginning = date(2005,2,13)
+the_beginning = date(2005,2,20)
 idx_beginning = 0
 ts_beginning  = 1108252800
 
