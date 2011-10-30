@@ -82,7 +82,7 @@ def __date_redirection(request, target):
         start = end
         end   = temp
 
-    start = ldates.fsoob(start)
+    start = ldates.fsooa(start)
     end   = ldates.fsooa(end)
 
     url = reverse(target, args=[user, start, end])
