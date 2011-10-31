@@ -173,7 +173,7 @@ class UserWeekDataManager(models.Manager):
             last_avg = average
             yield (ldates.js_timestamp_of_index(date_idx), wpc, average)
 
-    def top_n_history(self, user, start, end, count=10):
+    def top_n_history(self, user, start, end, count=40):
         """
         Returns in format [
             {'artist': "Radiohead", 'data': [[0,1], [1,2], [2,1]]},
@@ -185,7 +185,6 @@ class UserWeekDataManager(models.Manager):
         from collections import defaultdict
 
         chart     = defaultdict(int)  # artist --> play count
-        tracking  = set()
         current_week = 0 #qs[0].week_idx
 
         # all weekly plays, order by week start then by playcount
@@ -205,17 +204,15 @@ class UserWeekDataManager(models.Manager):
                 # update current date
                 current_week = week_data.week_idx
 
-                # take top n items from chart, drop playcounts, zip with chart position
-                topn  = {}
-                index = 1
+                # take top n items from chart, drop playcounts, append to artist's list
+                # start index at count and decrement so that top artists appear at top of graph.
+                index = count
                 for artist, _ in heapq.nlargest(count, chart.iteritems(), operator.itemgetter(1)):
-                    artist_positions[artist].append((current_week, index))
-                    index += 1
+                    timestamp = ldates.js_timestamp_of_index(current_week)
+                    artist_positions[artist].append((timestamp, index))
+                    index -= 1
 
-#                set_topn = set(topn)
-
-            # update running chart with new data
-            # using week_data.artist here __really__ slows things down!
+            # using chart[week_data.artist] here __really__ slows things down!
             # (hello 25000 more queries.)
             id = week_data.artist_id
             chart[id] += week_data.plays

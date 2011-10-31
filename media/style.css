@@ -101,7 +101,7 @@ body {
 }
 
 #bodywrapper {
-    width: 964px;
+    /*width: 964px;*/
     clear: both;
     margin: 0 auto;
 }
@@ -163,8 +163,8 @@ form#datechanger p, form#datechanger li {
 }
 
 #allcontent {
-    margin: 1.25em 1em 0 3.5em;
-    width: 875px;
+    /*margin: 1.25em 1em 0 3.5em;*/
+    /*width: 875px;*/
     clear: both;
 }
 
