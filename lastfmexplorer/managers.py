@@ -146,7 +146,7 @@ class UserWeekDataManager(models.Manager):
         # CA_i+1 = CA_i + ((x_i+1 - CA_i) / i+1)
         # where CA_i = last average,
         #      x_i+1 = new entry's value.
-        last_avg = 0
+        last_avg = 0.0
         for date_idx, wpc in wpcs:
             n += 1
             average  = last_avg + (( wpc - last_avg) / n )
