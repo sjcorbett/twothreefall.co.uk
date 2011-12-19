@@ -153,8 +153,7 @@ class UserWeekDataManager(models.Manager):
             last_avg = average
             yield (ldates.js_timestamp_of_index(date_idx), wpc, average)
 
-
-    def top_n_history(self, user, start, end, count=200): #{{{
+    def top_n_history(self, user, start, end, count=200):
 
         from PIL import Image, ImageDraw
         import operator
@@ -262,7 +261,6 @@ class UserWeekDataManager(models.Manager):
 
         file = "img/%s-topnhist.png" % (user,)
         im.save(file, "PNG")
-    #}}}
 
     def who_shall_i_listen_to(self, username):
         return m.Artist.objects.all()
