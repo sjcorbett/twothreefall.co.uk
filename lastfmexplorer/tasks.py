@@ -187,7 +187,7 @@ def fetch_week(user, requester, start, end):
     # WARNING: Potential for races if decr isn't atomic.  Memcached is.
     cache.decr(user_update_key(str(user.username)))
 
-    week_idx = ldates.index_of_timestamp(start)
+    week_idx = ldates.index_of_timestamp(end)
 
     try:
         wd = week_data(user, requester, start, end)
