@@ -103,7 +103,7 @@ years_ago = map(__years_to_indices, xrange(1, today.year - the_beginning.year + 
 
 def days_between(a, b):
     """Returns the number of days between days a and b."""
-    return abs( (a - b).days )
+    return abs((a - b).days)
 
 def sensible_to_update(last):
     """Returns True if last update was before today and before 

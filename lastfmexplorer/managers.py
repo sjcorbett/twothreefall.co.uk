@@ -118,6 +118,7 @@ class UserWeekDataManager(models.Manager):
             # need to catch up.
             if not order_by_plays and index != (last_index + 1):
                 for idx in xrange(last_index+1, index):
+                    logging.info("0 plays on week " + str(ldates.date_of_index(idx)))
                     yield y(idx, 0)
             yield y(index, d['plays__sum'])
             last_index = index
@@ -265,13 +266,12 @@ class UserWeekDataManager(models.Manager):
     def who_shall_i_listen_to(self, username):
         return m.Artist.objects.all()
 
-    def weeks_fetched(self, user_id):
+    def weeks_fetched(self, user):
         """
-        Returns the list of dates that a user has data for.
+        Returns the list of week indices that we've fetched a user's data for.
         """
-        return [(x.week_idx, ldates.date_of_index(x.week_idx)) \
-                for x in self.raw("SELECT id, week_idx FROM lastfmexplorer_weekdata " + \
-                "WHERE user_id=%s GROUP BY week_idx, id", [user_id])]
+        def idx_of(d): return d['week_idx']
+        return set(map(idx_of, self.filter(user=user).values('week_idx').distinct()))
 
 
 class UserArtistWeekDataManager(UserWeekDataManager):

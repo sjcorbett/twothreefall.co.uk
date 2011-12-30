@@ -13,6 +13,7 @@ import anyjson
 
 import twothreefall.lastfmexplorer.tasks as tasks
 import utils
+import ldates
 
 from models import *
 from chart import Chart
@@ -126,24 +127,19 @@ def update(request, username):
 
 
 def __init_update(user, template_vars):
-    # weeks previously fetched
-    weeks_done = WeekData.objects.weeks_fetched(user.id)
-    weeks_done.reverse()
-
     # new weeks, or possibly those that failed before.
     # TODO: fail here if couldn't contact last.fm
     chart_list = tasks.chart_list(user.username, _REQUESTER)
-    done_set = set(map(lambda (_,x): x, weeks_done))
+    done_set = WeekData.objects.weeks_fetched(user)
 
     weeks_todo = []
     for start, end in chart_list:
-        d = ldates.date_of_timestamp(start)
-        if d not in done_set:
+        idx = ldates.index_of_timestamp(end)
+        if idx not in done_set:
             weeks_todo.append((start, end))
     
     if weeks_todo: # != []
         template_vars['skipped'] = False
-        weeks_todo.sort(reverse=True)
         user.last_updated = date.today()
         user.save()
 
