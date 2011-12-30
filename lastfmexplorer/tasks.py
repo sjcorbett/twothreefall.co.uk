@@ -171,10 +171,11 @@ def __save_week_data(user_id, week_idx, wd):
             WeekData.objects.create(user_id=user_id, artist_id=artistid,
                     week_idx=week_idx, plays=plays, rank=rank)
         transaction.commit()
-    except Exception:
+    except Exception, e:
         transaction.rollback()
         # TODO: Improve logging
-        logging.error("Failed to save week. user: %d, week: %d" % (user_id, week_idx))
+        logging.error("__save_week_data failed with %s. user: %d, week: %d" % (str(type(e)), user_id, week_idx))
+        logging.error(e.message)
         # "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d\nartist: %s\nartisttrunc: %s" % (user_id, aid, week_idx, user, start, end, artist, a.name)) 
         # logging.error(__url_for_request("user.getweeklyartistchart", {'user':user, 'from':start, 'to':end}))
 
