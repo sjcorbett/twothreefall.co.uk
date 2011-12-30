@@ -10,8 +10,9 @@ from twothreefall.settings import LASTFM_API_KEY
 
 class Requester:
 
-    def __init__(self):
+    def __init__(self, saveResponses=False):
         self.shouldGzip = True
+        self.saveResponses = saveResponses
 
     def url_for_request(self, method, extras):
         """To be overriden by subclasses"""
@@ -44,6 +45,8 @@ class Requester:
                 r = urllib2.urlopen(req, timeout=60).read()
                 result['data'] = self.__unzip(r) if self.shouldGzip else r
                 result['success'] = True
+                if self.saveResponses:
+                    self.__save_response(method, extras, result['data'])
 
             except urllib2.HTTPError, e:
                 logging.error("Error accessing " + query + " - " + str(e.code))
@@ -58,14 +61,28 @@ class Requester:
                 result['error'] = { 'message' : "Request gave BadStatusLine" }
 
             except IOError, e:
-                print e
-                
+                logging.error("fetch_week caught IOError, attempt %d" % (attempt,))
+                result['error'] = { 'message' : "Request gave IOError: " + str(e) }
+
             except Exception as instance:
                 logging.error("Exception for request " + query + " - " + str(type(instance)))
                 result['error'] = { 'messasge' : "Unknown problem" }
 
         return result
 
+    def __save_response(self, method, extras, data):
+        """Writes given data to disk"""
+
+        import os, re
+        to = "/tmp/lex/"
+        if not os.path.exists(to):
+            os.mkdir(to)
+
+        removeables = re.compile('[/&?:]')
+        filename = method + '-' + '_'.join("%s=%s" % kv for kv in extras.iteritems())
+        filename = os.path.join(to, removeables.sub('_', filename))
+        with open(filename, 'w') as f:
+            f.write(data)
 
     def __unzip(self, data):
         """Unzips a gzipped stream.  Since gzip reads a file the data is represented as a file in memory. """
