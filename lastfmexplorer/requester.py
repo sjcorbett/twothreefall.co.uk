@@ -21,7 +21,7 @@ class Requester:
     # TODO: Handle HTTP 503s.
     def make(self, method, extras=None):
         """
-            Requests data from Last.fm.
+        Requests data from Last.fm.
           method: string name of an API method
           extras: any arguments, whether required or optional.
         """

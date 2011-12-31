@@ -62,7 +62,13 @@ def get_or_add_user(user, requester):
         if et.get("status") == "ok":
             et  = et.find('user')
             reg = dt.date.fromtimestamp(int(et.find('registered').get('unixtime')))
-            u   = User.objects.create(username=user, registered=reg, last_updated=reg)
+            # TODO: Use XPath selector (image[@size='medium']) when on Python 2.7
+            # TODO: Store locally
+            img = 'http://cdn.last.fm/flatness/catalogue/noimage/2/default_user_medium.png'
+            for i in et.findall("image"):
+                if i.get('size') == 'medium' and i.text != None:
+                    img = i.text
+            u   = User.objects.create(username=user, registered=reg, last_updated=reg, image=img)
         else:
             raise GetUserFailed("Are you sure you exist?")
             

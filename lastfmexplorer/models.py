@@ -80,6 +80,7 @@ class User(models.Model):
     last_seen  = models.DateField(auto_now=True)
     last_updated = models.DateField()
     deleted    = models.BooleanField(default=False)
+    image      = models.URLField()
 
     objects    = models.Manager()
     validity   = managers.UserManager()
