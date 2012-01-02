@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lfm status="ok">
+    <weeklytrackchart user="aradnuk" from="1108296002" to="1108900802">
+        <track rank="1">
+            <artist mbid="a74b1b7f-71a5-4011-9441-d0b5e4122711">Radiohead</artist>
+            <name>Kinetic</name>
+            <playcount>18</playcount>
+        </track>
+        <track rank="2">
+            <artist mbid="8bf9b24b-e802-4ab6-b342-b348e20b58d4">Rhapsody</artist>
+            <name>Unholy Warcry</name>
+            <playcount>13</playcount>
+        </track>
+        <track rank="3">
+            <artist mbid="">DJ Danger Mouse</artist>
+            <name>December 4th</name>
+            <playcount>10</playcount>
+        </track>
+        <track rank="4">
+            <artist mbid="66fc5bf8-daa4-4241-b378-9bc9077939d2">Tool</artist>
+            <name>Disposition</name>
+            <playcount>5</playcount>
+        </track>
+        <track rank="5">
+            <artist mbid="fc4dea85-3998-4130-a56e-907689160480">Naked City</artist>
+            <name>Demon Sanctuary</name>
+            <playcount>5</playcount>
+        </track>
+    </weeklytrackchart>
+</lfm>

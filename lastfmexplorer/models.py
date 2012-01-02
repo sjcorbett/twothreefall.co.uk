@@ -55,21 +55,18 @@ class Album(models.Model):
 class Track(models.Model):
     artist = models.ForeignKey(Artist)
     title  = TruncatingCharField(max_length=100)
-    album  = models.ForeignKey(Album, null=True)
 
     def get_absolute_url(self):
-        filler = self.album.title if self.album else "_"
-        return "%s/music/%s/%s/%s" % (_LASTFM, self.artist, filler, self.title)
+        return "%s/music/%s/_/%s" % (_LASTFM, self.artist, self.title)
 
     def __unicode__(self):
         return self.title
 
     def __str__(self):
-        filler = " (%s)" % (self.album.title,) if self.album else ""
-        return "%s - %s%s" % (self.artist, self.title, filler)
+        return "%s - %s" % (self.artist, self.title)
 
     class Meta:
-        unique_together = ('artist', 'title', 'album')
+        unique_together = ('artist', 'title')
 
 
 ###############################################################################
@@ -118,8 +115,10 @@ class Update(models.Model):
     def __unicode__(self):
         return "%s:%d:%s" % (self.user, self.week_idx, self.STATUSES[self.status][1])
 
-
 class WeekData(models.Model):
+    """
+    Weekly artist plays per user
+    """
     user   = models.ForeignKey(User)
     week_idx = models.PositiveSmallIntegerField(db_index=True)
     artist = models.ForeignKey(Artist)
@@ -135,6 +134,26 @@ class WeekData(models.Model):
 
     class Meta:
         unique_together = ('user', 'week_idx', 'artist')
+
+
+class WeekTrackData(models.Model):
+    """
+    Weekly track plays per user
+    """
+    user   = models.ForeignKey(User)
+    week_idx = models.PositiveSmallIntegerField(db_index=True)
+    track  = models.ForeignKey(Track)
+    plays  = models.PositiveIntegerField()
+    rank   = models.PositiveIntegerField()
+
+    objects = managers.UserWeekDataManager()
+
+    def __unicode__(self):
+        return "<WeekTrackData: %s/%d/%s/%d>" %\
+               (self.user.username, self.week_idx, self.track, self.plays)
+
+    class Meta:
+        unique_together = ('user', 'week_idx', 'track')
 
 
 ###############################################################################

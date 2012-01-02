@@ -35,6 +35,8 @@ class RequestErrorHandling(unittest.TestCase):
     """.. and ones for invalid Last.fm XML files"""
     pass
 
+class WeeklyTrackDataHandling(unittest.TestCase):
+    pass
 
 class Updates(unittest.TestCase):
 
