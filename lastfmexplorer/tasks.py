@@ -66,7 +66,7 @@ def get_or_add_user(user, requester):
             # TODO: Store locally
             img = 'http://cdn.last.fm/flatness/catalogue/noimage/2/default_user_medium.png'
             for i in et.findall("image"):
-                if i.get('size') == 'medium' and i.text != None:
+                if i.get('size') == 'medium' and i.text is not None:
                     img = i.text
             u   = User.objects.create(username=user, registered=reg, last_updated=reg, image=img)
         else:
