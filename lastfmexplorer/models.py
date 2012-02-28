@@ -101,9 +101,18 @@ class User(models.Model):
 
 
 class Updates(models.Model):
+    IN_PROGRESS = 0
+    COMPLETE = 1
+    ERRORED = 2
+    STATUSES = (
+        (IN_PROGRESS, "In progress"),
+        (COMPLETE, "Complete"),
+        (ERRORED, "Errored")
+    )
     user = models.ForeignKey(User)
-    num_updates = models.PositiveSmallIntegerField()
-    
+    week_idx = models.PositiveSmallIntegerField()
+    status = models.IntegerField(default=0, choices=STATUSES)
+
     def place_in_queue_and_eta(self):
         """
         Returns the number of Updates in the database added before this one
