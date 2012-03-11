@@ -1,4 +1,5 @@
 from django.utils import unittest
+from lastfmexplorer.models import Update, User
 
 import tasks, requester
 
@@ -26,3 +27,24 @@ class XMLHandling(unittest.TestCase):
 class RequestErrorHandling(unittest.TestCase):
     """.. and ones for invalid Last.fm XML files"""
     pass
+
+
+class Updates(unittest.TestCase):
+
+    def __init__(self, methodName):
+        from datetime import date
+        unittest.TestCase.__init__(self, methodName)
+
+        # Create a test user
+        self.testUserA = User.objects.create(username="aradnuk", registered=date(2004, 2, 2),
+            last_updated=date.today(), image="http://www.example.com")
+        self.testUserB = User.objects.create(username="kibbls", registered=date(2006, 2, 2),
+            last_updated=date.today(), image="http://www.example.com")
+
+        # And insert a couple of updates
+        Update.objects.create(user=self.testUserA, week_idx=1)
+        Update.objects.create(user=self.testUserA, week_idx=2)
+
+    def testIsUpdating(self):
+        self.assertTrue(Update.objects.is_updating(self.testUserA))
+        self.assertFalse(Update.objects.is_updating(self.testUserB))

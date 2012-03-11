@@ -26,6 +26,21 @@ class UserManager(models.Manager):
         return re.match("^%s$" % (USER_REGEX,), name) is not None
 
 
+class UpdateManager(models.Manager):
+    def is_updating(self, user):
+        return m.Update.objects.filter(user=user, status=m.Update.IN_PROGRESS).exists()
+
+    def weeks_fetched(self, user):
+        return m.Update.objects.filter(user=user, status=m.Update.COMPLETE)
+
+    def place_in_queue(self, user):
+        """
+        Returns the number of updates in the database added before this one
+        (i.e. those with a lower primary key)
+        """
+        pass
+
+
 # TODO: Drop any filtering done if dates given are the_beginning and today.
 class UserWeekDataManager(models.Manager):
 
@@ -266,13 +281,6 @@ class UserWeekDataManager(models.Manager):
     def who_shall_i_listen_to(self, username):
         return m.Artist.objects.all()
 
-    def weeks_fetched(self, user):
-        """
-        Returns the list of week indices that we've fetched a user's data for.
-        """
-        def idx_of(d): return d['week_idx']
-        return set(map(idx_of, self.filter(user=user).values('week_idx').distinct()))
-
 
 class UserArtistWeekDataManager(UserWeekDataManager):
     def user_weeks_between(self, user, artists, start, end):
@@ -305,5 +313,4 @@ class UserArtistWeekDataManager(UserWeekDataManager):
             out[artist] = zip(dates, results[artist.id])
 
         return out
-
 

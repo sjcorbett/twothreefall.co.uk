@@ -7,8 +7,7 @@ import xml.etree.cElementTree as ET
 from celery.task.sets import TaskSet
 from celery.task import task
 
-from django.db import  transaction
-from django.core.cache import cache
+from django.db import transaction
 
 from models import *
 
@@ -63,33 +62,15 @@ def get_or_add_user(user, requester):
             et  = et.find('user')
             reg = dt.date.fromtimestamp(int(et.find('registered').get('unixtime')))
             # TODO: Use XPath selector (image[@size='medium']) when on Python 2.7
-            # TODO: Store locally
             img = 'http://cdn.last.fm/flatness/catalogue/noimage/2/default_user_medium.png'
             for i in et.findall("image"):
                 if i.get('size') == 'medium' and i.text is not None:
                     img = i.text
-            u   = User.objects.create(username=user, registered=reg, last_updated=reg, image=img)
+            u = User.objects.create(username=user, registered=reg, last_updated=reg, image=img)
         else:
             raise GetUserFailed("Are you sure you exist?")
             
     return u
-
-def user_update_key(username):
-    return "update" + username
-
-def user_chart_updates(username, requester, weeks):
-    logging.info("user_chart_updates")
-    user = get_or_add_user(username, requester)
-
-    # set cache to number of tasks to complete with a long timeout to make
-    # sure it doesn't get lost between polls.  Will be deleted when unnecessary.
-    cache.set(user_update_key(username), len(weeks), timeout=7200)
-
-    # create taskset and run it.
-    tasks = [ fetch_week.subtask((user, requester, start, end)) for start, end in weeks ]
-    tasks.append(finish_update.subtask((user,)))
-    ts = TaskSet(tasks)
-    return ts.apply_async()
 
 
 ###############################################################################
@@ -152,13 +133,8 @@ def __parse_week_data(xml):
         rank   = int(__attr(d, 'rank'))
         mbid   = __elem(d, 'mbid')
 
-        # ... no idea what the problem is..
         mbid   = mbid.strip() if mbid else ""
-        # a, _ = Artist.objects.get_or_create(name=artist)
-
         a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
-        # if (c):   
-            # logging.info("Created " + str(a) + "/'" + str(mbid) + "'")
 
         # Truncating this artist's name could cause a key clash
         # Add the playcount to that entry.
@@ -179,41 +155,34 @@ def __save_week_data(user_id, week_idx, wd):
         transaction.commit()
     except Exception, e:
         transaction.rollback()
-        # TODO: Improve logging
-        logging.error("__save_week_data failed with %s. user: %d, week: %d" % (str(type(e)), user_id, week_idx))
-        logging.error(e.message)
-        # "user: %d, artist: %d, week_idx: %d\nuser/start/end: %s/%d/%d\nartist: %s\nartisttrunc: %s" % (user_id, aid, week_idx, user, start, end, artist, a.name)) 
+        logging.error("__save_week_data failed with %s. user: %d, week: %d, message: %s" % (str(type(e)), user_id, week_idx, e.message))
+        raise GetWeekFailed(e.message)
         # logging.error(__url_for_request("user.getweeklyartistchart", {'user':user, 'from':start, 'to':end}))
 
 
 @task(ignore_result=True)
 def fetch_week(user, requester, start, end):
+    """Args: user, instance of Requestor, week start and end timestamps."""
 
-    logging.info("fetch_week called: %s, %d %d" % (user.username, start, end))
-
-    # WARNING: Potential for races if decr isn't atomic.  Memcached is.
-    cache.decr(user_update_key(str(user.username)))
+    logging.debug("fetch_week called: %s, %d %d" % (user.username, start, end))
 
     week_idx = ldates.index_of_timestamp(end)
+    u = Update.objects.get(user=user, week_idx=week_idx, status=Update.IN_PROGRESS)
 
     try:
         wd = week_data(user, requester, start, end)
         __save_week_data(user.id, week_idx, wd)
+        u.status = Update.COMPLETE
     except GetWeekFailed:
-        # Save to DB
-        pass
+        u.status = Update.ERRORED
     except SyntaxError:
-        # Save to DB
         logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
         WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx)
+        u.status = Update.ERRORED
+    finally:
+        u.save()
 
-
-@task(ignore_result=True)
-def finish_update(user):
-    update = Updates.objects.get(user=user)
-    update.delete()
-    return True
-
+    return u.status
 
 ###############################################################################
 ########## Retrieving tags for an artist ######################################

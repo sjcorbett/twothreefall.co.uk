@@ -1,3 +1,4 @@
+from celery.task.sets import TaskSet
 from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import render_to_response, redirect, get_object_or_404
@@ -98,6 +99,8 @@ def __date_redirection(request, target):
 
 ###############################################################################
 # Updating user data.
+# TODO: Return list of week indexes that are being fetched, render as javascript in template, use to poll for status
+
 def update(request, username):
     """
     Create a page showing weeks previously retrieved and those still to fetch.
@@ -107,81 +110,53 @@ def update(request, username):
     user = tasks.get_or_add_user(username, _REQUESTER)
     template_vars = { 'username' : username } 
 
-    # Check updates table to see if update is already in progress.
-    update = None
-    try:
-        update = Updates.objects.get(user=user)
-    except Exception:
-        if ldates.sensible_to_update(user.last_updated):
-            update = __init_update(user, template_vars)
-
-    if update:
-        piq, total = update.place_in_queue_and_eta()
-        eta = utils.nicetime(total / 5)
-        template_vars.update([('piq', piq - 1), ('num_requests', total), ('eta', eta)])
+    if Update.objects.is_updating(user):
+#        piq = Update.objects.place_in_queue(user)
+#        template_vars.update([('piq', piq - 1), ('num_requests', total), ('eta', eta)])
 
         return render_to_response('update-nojs.html', template_vars,
                                   context_instance=RequestContext(request))
-    else:
-        return redirect(overview, user)
+    if ldates.sensible_to_update(user.last_updated):
+        indices = __do_update(user)
+        if indices:
+            template_vars['skipped'] = False
 
+            return render_to_response('update-nojs.html', template_vars,
+                context_instance=RequestContext(request))
 
-def __init_update(user, template_vars):
-    # new weeks, or possibly those that failed before.
+    return redirect(overview, user)
+
+def __do_update(user):
+    """ Fetch new weeks, or possibly those that failed before."""
     # TODO: fail here if couldn't contact last.fm
     chart_list = tasks.chart_list(user.username, _REQUESTER)
-    done_set = WeekData.objects.weeks_fetched(user)
+    done_set = Update.objects.weeks_fetched(user)
 
-    weeks_todo = []
+    # create taskset and run it.
+    update_tasks = []
+    indices = []
     for start, end in chart_list:
         idx = ldates.index_of_timestamp(end)
         if idx not in done_set:
-            weeks_todo.append((start, end))
-    
-    if weeks_todo: # != []
-        template_vars['skipped'] = False
-        user.last_updated = date.today()
-        user.save()
+            Update.objects.create(user=user, week_idx=idx)
+            update_tasks.append(tasks.fetch_week.subtask((user, _REQUESTER, start, end)))
+            indices.append(idx)
 
-        # Create and run taskset.
-        t = tasks.user_chart_updates(user.username, _REQUESTER, weeks_todo)
-        template_vars['total_tasks'] = t.total
+    ts = TaskSet(update_tasks)
+    ts.apply_async()
 
-        # Add to DB
-        update = Updates(user=user, num_updates=t.total)
-        update.save()
+    user.last_updated = date.today()
+    user.save()
 
-        return update
-    else:
-        return None
+    return indices
+
 
 def poll_update_status(request):
 
     if not 'username' in request.POST:
         raise Http404
 
-    username = request.POST['username']
-    user   = get_object_or_404(User, username=username)
-    update = get_object_or_404(Updates, user=user)
-
-    # use task id to get status, report back a progress of no. completed.
-    pending = cache.get(tasks.user_update_key(username), 0)
-    result  = {}
-    
-    # all complete.  delete from update table.
-    if not update or not pending: # == 0
-        result['alldone'] = True
-        cache.delete(tasks.user_update_key(username))
-    else:
-        piq, total = update.place_in_queue_and_eta()
-        eta = utils.nicetime(total / 5)
-
-        result = { 'pending' : pending,
-                   'piq' : piq - 1,
-                   'num_requests' : total,
-                   'eta' : eta }
-
-    return HttpResponse(anyjson.serialize(result), mimetype="application/json")
+    return HttpResponse(anyjson.serialize({}), mimetype="application/json")
 
 
 ###############################################################################

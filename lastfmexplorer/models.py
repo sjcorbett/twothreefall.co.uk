@@ -100,7 +100,7 @@ class User(models.Model):
         unique_together = ('username',)
 
 
-class Updates(models.Model):
+class Update(models.Model):
     IN_PROGRESS = 0
     COMPLETE = 1
     ERRORED = 2
@@ -111,39 +111,9 @@ class Updates(models.Model):
     )
     user = models.ForeignKey(User)
     week_idx = models.PositiveSmallIntegerField()
-    status = models.IntegerField(default=0, choices=STATUSES)
+    status = models.IntegerField(default=IN_PROGRESS, choices=STATUSES)
 
-    def place_in_queue_and_eta(self):
-        """
-        Returns the number of Updates in the database added before this one
-        (i.e. those with a lower primary key) and the total number of requests 
-        to Last.fm that'll need to be made before this update is complete.
-        """
-        # Rubbish to do with lastfmexplorer_user is to placate Django's insistence
-        # that raw queries use an ID.
-        q = """
-            SELECT 
-              lastfmexplorer_user.id as id,
-              COUNT(lastfmexplorer_updates.id) as piq,
-              SUM(lastfmexplorer_updates.num_updates) as total
-            FROM 
-              lastfmexplorer_updates, lastfmexplorer_user
-            WHERE
-              lastfmexplorer_updates.id <= %s
-            AND
-              lastfmexplorer_user.id = 1
-            GROUP BY 
-              lastfmexplorer_user.id 
-        """
-        try:
-            data = Updates.objects.raw(q, [self.id])[0]
-            return data.piq, data.total
-        except IndexError:
-            return 0, 0
-
-    class Meta:
-        unique_together = ('user',)
-
+    objects = managers.UpdateManager()
 
 
 class WeekData(models.Model):
