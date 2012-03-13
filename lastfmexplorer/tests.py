@@ -2,6 +2,7 @@ from django.utils import unittest
 from lastfmexplorer.models import Update, User
 
 import tasks, requester
+from models import Artist
 
 class XMLHandling(unittest.TestCase):
     """Tests for valid Last.fm XML files"""
@@ -21,7 +22,12 @@ class XMLHandling(unittest.TestCase):
     def testWeekDataParsing(self):
         data = tasks.week_data('aradnuk', self.requester, 1109505601, 1110110401)
         self.assertEqual(len(data.keys()), 74)
-        # .. assertions against contents of db
+
+        playcount, artistId = data[1]
+        artist = Artist.objects.get(id=1)
+        self.assertEqual(playcount, 79)
+        self.assertEqual(artist.name, "BT")
+
 
 
 class RequestErrorHandling(unittest.TestCase):

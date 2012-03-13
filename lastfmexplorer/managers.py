@@ -28,10 +28,10 @@ class UserManager(models.Manager):
 
 class UpdateManager(models.Manager):
     def is_updating(self, user):
-        return m.Update.objects.filter(user=user, status=m.Update.IN_PROGRESS).exists()
+        return self.filter(user=user, status=m.Update.IN_PROGRESS).exists()
 
     def weeks_fetched(self, user):
-        return m.Update.objects.filter(user=user, status=m.Update.COMPLETE)
+        return self.filter(user=user, status=m.Update.COMPLETE)
 
     def updating_users(self):
         """Returns a generator of (user, count of updates in progress)"""
