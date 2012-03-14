@@ -1,14 +1,14 @@
-from django.utils import unittest
-from lastfmexplorer.models import Update, User
+import os
+from datetime import date
 
+from django.utils import unittest
+
+from lastfmexplorer.models import Artist, Update, User
 import tasks, requester
-from models import Artist
 
 class XMLHandling(unittest.TestCase):
     """Tests for valid Last.fm XML files"""
-    def __init__(self, methodName):
-        import os
-        unittest.TestCase.__init__(self, methodName)
+    def setUp(self):
         path = os.path.dirname(__file__)
         path = os.path.join(path, "test-data")
         self.requester = requester.TestRequester(path)
@@ -37,20 +37,27 @@ class RequestErrorHandling(unittest.TestCase):
 
 class Updates(unittest.TestCase):
 
-    def __init__(self, methodName):
-        from datetime import date
-        unittest.TestCase.__init__(self, methodName)
-
+    @classmethod
+    def setUpClass(instance):
         # Create a test user
-        self.testUserA = User.objects.create(username="aradnuk", registered=date(2004, 2, 2),
+        instance.testUserA = User.objects.create(username="aradnuk", registered=date(2004, 2, 2),
             last_updated=date.today(), image="http://www.example.com")
-        self.testUserB = User.objects.create(username="kibbls", registered=date(2006, 2, 2),
+        instance.testUserB = User.objects.create(username="kibbls", registered=date(2006, 2, 2),
+            last_updated=date.today(), image="http://www.example.com")
+        instance.testUserC = User.objects.create(username="mayric", registered=date(2008, 2, 2),
             last_updated=date.today(), image="http://www.example.com")
 
-        # And insert a couple of updates
-        Update.objects.create(user=self.testUserA, week_idx=1)
-        Update.objects.create(user=self.testUserA, week_idx=2)
+        # User A has two updates in progress, B has one complete and C has one in progress
+        Update.objects.create(user=instance.testUserA, week_idx=1)
+        Update.objects.create(user=instance.testUserA, week_idx=2)
+        Update.objects.create(user=instance.testUserB, week_idx=1, status=Update.COMPLETE)
+        Update.objects.create(user=instance.testUserC, week_idx=1)
 
     def testIsUpdating(self):
         self.assertTrue(Update.objects.is_updating(self.testUserA))
         self.assertFalse(Update.objects.is_updating(self.testUserB))
+ 
+    def testWeeksFetched(self):
+        bFetched = Update.objects.weeks_fetched(self.testUserB)
+        self.assertEqual(len(bFetched), 1)
+        self.assertEqual(bFetched[0].week_idx, 1)
