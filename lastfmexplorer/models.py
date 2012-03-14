@@ -115,6 +115,8 @@ class Update(models.Model):
 
     objects = managers.UpdateManager()
 
+    def __unicode__(self):
+        return "%s:%d:%s" % (self.user, self.week_idx, self.STATUSES[self.status][1])
 
 class WeekData(models.Model):
     user   = models.ForeignKey(User)

@@ -1,20 +1,15 @@
-from celery.task.sets import TaskSet
 from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.views.generic.list_detail import object_list
 
-from datetime import date
 import logging
 import anyjson
 
 import twothreefall.lastfmexplorer.tasks as tasks
-import utils
-import ldates
 
 from models import *
 from chart import Chart
@@ -22,7 +17,6 @@ from requester import LastFMRequester
 
 _REQUESTER = LastFMRequester()
 
-# TODO: Updates?
 def start(request):
     feedback = {}
     given = request.GET.get('username')
@@ -108,55 +102,35 @@ def update(request, username):
     """
     
     user = tasks.get_or_add_user(username, _REQUESTER)
-    template_vars = { 'username' : username } 
+    alreadyUpdating = Update.objects.is_updating(user)
 
-    if Update.objects.is_updating(user):
-#        piq = Update.objects.place_in_queue(user)
-#        template_vars.update([('piq', piq - 1), ('num_requests', total), ('eta', eta)])
+    # Skip straight to the overview if there's no reason to be on this page
+    if not alreadyUpdating and not ldates.sensible_to_update(user.last_updated):
+        return redirect(overview, user)
 
-        return render_to_response('update-nojs.html', template_vars,
-                                  context_instance=RequestContext(request))
-    if ldates.sensible_to_update(user.last_updated):
-        indices = __do_update(user)
-        if indices:
-            template_vars['skipped'] = False
+    # Start a new update
+    if not alreadyUpdating:
+        alreadyUpdating = tasks.update_user(user, _REQUESTER)
 
-            return render_to_response('update-nojs.html', template_vars,
-                context_instance=RequestContext(request))
+    # Presumably no new data for user
+    if not alreadyUpdating:
+        return redirect(overview, user)
 
-    return redirect(overview, user)
+    # Otherwise, we're updating!
 
-def __do_update(user):
-    """ Fetch new weeks, or possibly those that failed before."""
-    # TODO: fail here if couldn't contact last.fm
-    chart_list = tasks.chart_list(user.username, _REQUESTER)
-    done_set = Update.objects.weeks_fetched(user)
+    #        piq = Update.objects.place_in_queue(user)
+    #        template_vars.update([('piq', piq - 1), ('num_requests', total), ('eta', eta)])
 
-    # create taskset and run it.
-    update_tasks = []
-    indices = []
-    for start, end in chart_list:
-        idx = ldates.index_of_timestamp(end)
-        if idx not in done_set:
-            Update.objects.create(user=user, week_idx=idx)
-            update_tasks.append(tasks.fetch_week.subtask((user, _REQUESTER, start, end)))
-            indices.append(idx)
-
-    ts = TaskSet(update_tasks)
-    ts.apply_async()
-
-    user.last_updated = date.today()
-    user.save()
-
-    return indices
+    updating_users = Update.objects.updating_users()
+    return render_to_response('update-nojs.html', { 'updating_users': updating_users },
+        context_instance=RequestContext(request))
 
 
 def poll_update_status(request):
-
-    if not 'username' in request.POST:
-        raise Http404
-
-    return HttpResponse(anyjson.serialize({}), mimetype="application/json")
+    updates = {}
+    for user, count in Update.objects.updating_users():
+        updates[user.username] = count
+    return HttpResponse(anyjson.serialize(updates), mimetype="application/json")
 
 
 ###############################################################################

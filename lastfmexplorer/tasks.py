@@ -3,6 +3,7 @@ Retrieve data from database and fetch it from last.fm when necessary.
 """
 import logging
 import xml.etree.cElementTree as ET
+from datetime import date
 
 from celery.task.sets import TaskSet
 from celery.task import task
@@ -76,7 +77,7 @@ def get_or_add_user(user, requester):
 ###############################################################################
 ########## Retrieving available weekly charts #################################
 
-def chart_list(user, requester):
+def fetch_chart_list(user, requester):
     """
     Fetches the list of available charts for user.  Returns a generator 
     providing (from, to) timestamp tuples.
@@ -183,6 +184,29 @@ def fetch_week(user, requester, start, end):
         u.save()
 
     return u.status
+
+def update_user(user, requester):
+    """ Fetch new weeks, or possibly those that failed before."""
+    # TODO: fail here if couldn't contact last.fm
+    chart_list = fetch_chart_list(user.username, requester)
+    done_set = Update.objects.weeks_fetched(user)
+
+    # create taskset and run it.
+    update_tasks = []
+    for start, end in chart_list:
+        idx = ldates.index_of_timestamp(end)
+        if idx not in done_set:
+            Update.objects.create(user=user, week_idx=idx)
+            update_tasks.append(fetch_week.subtask((user, requester, start, end)))
+
+    ts = TaskSet(update_tasks)
+    ts.apply_async()
+
+    user.last_updated = date.today()
+    user.save()
+
+    return len(update_tasks) > 0
+
 
 ###############################################################################
 ########## Retrieving tags for an artist ######################################

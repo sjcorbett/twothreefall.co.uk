@@ -33,12 +33,12 @@ class UpdateManager(models.Manager):
     def weeks_fetched(self, user):
         return m.Update.objects.filter(user=user, status=m.Update.COMPLETE)
 
-    def place_in_queue(self, user):
-        """
-        Returns the number of updates in the database added before this one
-        (i.e. those with a lower primary key)
-        """
-        pass
+    def updating_users(self):
+        """Returns a generator of (user, count of updates in progress)"""
+        user_counts = self.values('user').filter(status=m.Update.IN_PROGRESS).annotate(count=Count('user'))
+        for entry in user_counts:
+            user = m.User.objects.get(id=entry['user'])
+            yield user, entry['count']
 
 
 # TODO: Drop any filtering done if dates given are the_beginning and today.
