@@ -118,6 +118,7 @@ class Update(models.Model):
     def __unicode__(self):
         return "%s:%d:%s" % (self.user, self.week_idx, self.STATUSES[self.status][1])
 
+
 class WeekData(models.Model):
     user   = models.ForeignKey(User)
     week_idx = models.PositiveSmallIntegerField(db_index=True)

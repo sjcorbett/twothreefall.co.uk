@@ -14,7 +14,7 @@ class XMLHandling(unittest.TestCase):
         self.requester = requester.TestRequester(path)
 
     def testWeeklyChartParsing(self):
-        chartList = list(tasks.chart_list('aradnuk', self.requester))
+        chartList = list(tasks.fetch_chart_list('aradnuk', self.requester))
         expected  = [(1108296002, 1108900802), (1108900801, 1109505601),
                         (1109505601, 1110110401), (1110110401, 1110715201)]
         self.assertListEqual(chartList, expected)
