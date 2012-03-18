@@ -2,6 +2,7 @@ import os
 from datetime import date
 
 from django.utils import unittest
+from lastfmexplorer import ldates
 
 from lastfmexplorer.models import Artist, Update, User
 import tasks, requester
@@ -61,3 +62,18 @@ class Updates(unittest.TestCase):
         bFetched = Update.objects.weeks_fetched(self.testUserB)
         self.assertEqual(len(bFetched), 1)
         self.assertEqual(bFetched[0].week_idx, 1)
+
+
+class Dates(unittest.TestCase):
+    def testSundaysBetween(self):
+        # First charts release week ending 20/02/2005
+        d = date
+        self.assertEqual(ldates.sundays_between(d(2005, 1, 1), d(2005, 2, 28)), [0, 1])
+        self.assertEqual(ldates.sundays_between(d(2005, 2, 20), d(2005, 2, 28)), [0, 1])
+        self.assertEqual(ldates.sundays_between(d(2005, 2, 20), d(2005, 2, 20)), [0])
+
+        # no Sundays between Tuesday and Friday in one week.
+        self.assertEqual(ldates.sundays_between(d(2012, 3, 13), d(2012, 3, 16)), [])
+
+        # From the beginning of time..
+        self.assertEquals(ldates.sundays_between(d(2005, 2, 20), d.today()), range(0, ldates.idx_last_sunday+1))

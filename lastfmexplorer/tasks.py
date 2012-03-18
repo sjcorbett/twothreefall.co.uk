@@ -189,7 +189,7 @@ def update_user(user, requester):
     """ Fetch new weeks, or possibly those that failed before."""
     # TODO: fail here if couldn't contact last.fm
     chart_list = fetch_chart_list(user.username, requester)
-    done_set = Update.objects.weeks_fetched(user)
+    done_set = set(Update.objects.weeks_fetched(user))
 
     # create taskset and run it.
     update_tasks = []

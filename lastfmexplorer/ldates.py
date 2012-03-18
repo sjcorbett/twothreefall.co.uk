@@ -110,3 +110,10 @@ def sensible_to_update(last):
        the last Sunday, otherwise False."""
     return last < today and last < date_of_index(idx_last_sunday)
 
+def weeks_to_last_sunday(d):
+    return sundays_between(d, today)
+
+def sundays_between(d1, d2):
+    start = first_sunday_on_or_after(d1)
+    end = first_sunday_on_or_before(d2)
+    return range(start, end+1)

@@ -117,10 +117,6 @@ def update(request, username):
         return redirect(overview, user)
 
     # Otherwise, we're updating!
-
-    #        piq = Update.objects.place_in_queue(user)
-    #        template_vars.update([('piq', piq - 1), ('num_requests', total), ('eta', eta)])
-
     updating_users = Update.objects.updating_users()
     return render_to_response('update-nojs.html', { 'updating_users': updating_users },
         context_instance=RequestContext(request))
