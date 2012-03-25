@@ -2,6 +2,7 @@ import StringIO
 import gzip
 import urllib2
 import logging
+import traceback
 
 from httplib import BadStatusLine
 from urllib import urlencode
@@ -11,7 +12,8 @@ from twothreefall.settings import LASTFM_API_KEY
 class Requester:
 
     def __init__(self, saveResponses=False):
-        self.shouldGzip = True
+        # TODO: Last.fm seems to have disabled gzip encoding?!
+        self.shouldGzip = False
         self.saveResponses = saveResponses
 
     def url_for_request(self, method, extras):
@@ -29,7 +31,6 @@ class Requester:
         logging.info(query)
 
         req = urllib2.Request(query)
-
         if self.shouldGzip:
             req.add_header('Accept-encoding', 'gzip')
         req.add_header('User-agent', 'Last.fm Explorer')
@@ -49,23 +50,24 @@ class Requester:
                     self.__save_response(method, extras, result['data'])
 
             except urllib2.HTTPError, e:
-                logging.error("Error accessing " + query + " - " + str(e.code))
+                logging.error("Requestor errored accessing " + query + " - " + str(e.code))
                 result['error'] = { 'code' : e.code, 'message' : e.msg }
 
             except urllib2.URLError, e:
-                logging.error("Failed to fetch " + query + ' - URLError.')
+                logging.error("Requestor failed to fetch " + query + ' - URLError.')
                 result['error'] = { 'message' : e.reason }
 
             except BadStatusLine:
-                logging.error("fetch_week caught BadStatusLine, attempt %d" % (attempt,))
+                logging.error("Requestor caught BadStatusLine, attempt %d" % (attempt,))
                 result['error'] = { 'message' : "Request gave BadStatusLine" }
 
             except IOError, e:
-                logging.error("fetch_week caught IOError, attempt %d" % (attempt,))
+                logging.error("Requestor caught IOError, attempt %d" % (attempt,))
+                print traceback.format_exc()
                 result['error'] = { 'message' : "Request gave IOError: " + str(e) }
 
             except Exception as instance:
-                logging.error("Exception for request " + query + " - " + str(type(instance)))
+                logging.error("Requestor caught unknown exception for request " + query + " - " + str(type(instance)))
                 result['error'] = { 'messasge' : "Unknown problem" }
 
         return result
