@@ -88,9 +88,14 @@ class User(models.Model):
     def __unicode__(self):
         return self.username
 
-    def _days_registered(self):
+    @property
+    def days_registered(self):
         return (dt.date.today() - self.registered).days
-    days_registered = property(_days_registered)
+
+    @property
+    def first_sunday_with_data(self):
+        """Returns week index of first Sunday after user's registration"""
+        return ldates.first_sunday_on_or_after(self.registered)
 
     class Meta:
         ordering = ['username']
@@ -106,14 +111,25 @@ class Update(models.Model):
         (COMPLETE, "Complete"),
         (ERRORED, "Errored")
     )
+    ARTIST = 0
+    ALBUM  = 1
+    TRACK  = 2
+    TYPES = (
+        (ARTIST, "artist"),
+        (ALBUM, "album"),
+        (TRACK, "track")
+    )
     user = models.ForeignKey(User)
     week_idx = models.PositiveSmallIntegerField()
+    type = models.IntegerField(choices=TYPES)
     status = models.IntegerField(default=IN_PROGRESS, choices=STATUSES)
 
     objects = managers.UpdateManager()
 
     def __unicode__(self):
-        return "%s:%d:%s" % (self.user, self.week_idx, self.STATUSES[self.status][1])
+        return "%s:%s:%d:%s" % \
+               (self.user, self.TYPES[self.type][1], self.week_idx, self.STATUSES[self.status][1])
+
 
 class WeekData(models.Model):
     """
@@ -129,7 +145,7 @@ class WeekData(models.Model):
     artists = managers.UserArtistWeekDataManager()
 
     def __unicode__(self):
-        return "<WeekData: %s/%d/%s/%d>" % \
+        return "%s/%d/%s/%d" % \
                 (self.user.username, self.week_idx, self.artist.name, self.plays)
 
     class Meta:
@@ -149,7 +165,7 @@ class WeekTrackData(models.Model):
     objects = managers.UserWeekDataManager()
 
     def __unicode__(self):
-        return "<WeekTrackData: %s/%d/%s/%d>" %\
+        return "%s/%d/%s/%d" %\
                (self.user.username, self.week_idx, self.track, self.plays)
 
     class Meta:

@@ -111,11 +111,11 @@ def week_data(user, requester, start, end, kind='artist'):
     method = "user.getweekly%schart" % (kind,)
     response = requester.make(method, {'user':user, 'from':start, 'to':end})
     if response['success']:
-        return __parse_week_data(response['data']) 
+        return response['data']
     else:
         raise GetWeekFailed(response['error']['message'])
 
-def __parse_week_data(xml):
+def _parse_week_artist_data(xml):
     """
     Parses XML of form:
        <artist rank="1">
@@ -146,33 +146,91 @@ def __parse_week_data(xml):
 
     return data
 
+def _parse_week_track_data(xml):
+    """
+    Parses XML of form:
+       <track rank="1">
+         <artist>Fleet Foxes</artist>
+         <name>Sun It Rises</name>
+         <mbid>..</mbid>
+         <playcount>20</playcount>
+         <url>..</url>
+       </track>
+
+    Returns dictionary with key artist id, value (plays, rank)
+    """
+    data = {}
+    for d in __iter_over_field(xml, 'track'):
+        artist = __elem(d, 'artist')
+        artist_mbid = d.find('artist').attrib['mbid']
+        title  = __elem(d, 'name')
+        pc     = int(__elem(d, 'playcount'))
+        rank   = int(__attr(d, 'rank'))
+
+        a, _ = Artist.objects.get_or_create(name=artist, mbid=artist_mbid)
+        t, _ = Track.objects.get_or_create(title=title, artist=a)
+
+        # Truncating this artist's name could cause a key clash
+        # Add the playcount to that entry.
+        if t.id in data:
+            othercount, rank = data[t.id]
+            pc += othercount
+        data[t.id] = (pc, rank)
+
+    return data
+
 
 @transaction.commit_manually
-def __save_week_data(user_id, week_idx, wd):
+def __save_week_artist_data(user_id, week_idx, wd):
     try:
         for artistid, (plays, rank) in wd.iteritems():
-            WeekData.objects.create(user_id=user_id, artist_id=artistid,
-                    week_idx=week_idx, plays=plays, rank=rank)
+            WeekData.objects.create(user_id=user_id, artist_id=artistid, week_idx=week_idx, plays=plays, rank=rank)
         transaction.commit()
     except Exception, e:
         transaction.rollback()
-        logging.error("__save_week_data failed with %s. user: %d, week: %d, message: %s" % (str(type(e)), user_id, week_idx, e.message))
+        logging.error("__save_week_artist_data failed with %s. user: %d, week: %d, message: %s" % (str(type(e)), user_id, week_idx, e.message))
         raise GetWeekFailed(e.message)
         # logging.error(__url_for_request("user.getweeklyartistchart", {'user':user, 'from':start, 'to':end}))
 
+@transaction.commit_manually
+def __save_week_track_data(user_id, week_idx, wd):
+    try:
+        for trackid, (plays, rank) in wd.iteritems():
+            WeekTrackData.objects.create(user_id=user_id, track_id=trackid, week_idx=week_idx, plays=plays, rank=rank)
+        transaction.commit()
+    except Exception, e:
+        transaction.rollback()
+        logging.error("__save_week_track_data failed with %s. user: %d, week: %d, message: %s" % (str(type(e)), user_id, week_idx, e.message))
+        raise GetWeekFailed(e.message)
+
 
 @task(ignore_result=True)
-def fetch_week(user, requester, start, end):
-    """Args: user, instance of Requestor, week start and end timestamps."""
-
-    logging.debug("fetch_week called: %s, %d %d" % (user.username, start, end))
+def fetch_week_data(user, requester, start, end, type):
+    """Args: user, instance of Requestor, week start and end timestamps, kind."""
 
     week_idx = ldates.index_of_timestamp(end)
-    u = Update.objects.get(user=user, week_idx=week_idx, status=Update.IN_PROGRESS)
+    u = Update.objects.get(user=user, week_idx=week_idx, status=Update.IN_PROGRESS, type=type)
+
+    if type == Update.ARTIST:
+        kind = 'artist'
+        parser = _parse_week_artist_data
+        saver  = __save_week_artist_data
+    elif type == Update.TRACK:
+        kind = 'track'
+        parser = _parse_week_track_data
+        saver  = __save_week_track_data
+    else:
+        return
+        #kind = 'album'
+        #parser = __parse_week_track_data
+        #saver  = __save_week_track_data
+
+    logging.debug("fetch_week called: %s, %s, %d %d" % (user.username, kind, start, end))
 
     try:
-        wd = week_data(user, requester, start, end)
-        __save_week_data(user.id, week_idx, wd)
+        xml = week_data(user, requester, start, end, kind)
+        wd = parser(xml)
+        saver(user.id, week_idx, wd)
         u.status = Update.COMPLETE
     except GetWeekFailed:
         u.status = Update.ERRORED
@@ -188,16 +246,25 @@ def fetch_week(user, requester, start, end):
 def update_user(user, requester):
     """ Fetch new weeks, or possibly those that failed before."""
     # TODO: fail here if couldn't contact last.fm
+    # Have to fetch the chart list from last.fm because their timestamps are awkward, especially
+    # those on the first few charts released.
     chart_list = fetch_chart_list(user.username, requester)
-    done_set = set(Update.objects.weeks_fetched(user))
+    successful_requests = Update.objects.weeks_fetched(user)
 
     # create taskset and run it.
     update_tasks = []
-    for start, end in chart_list:
-        idx = ldates.index_of_timestamp(end)
-        if idx not in done_set:
-            Update.objects.create(user=user, week_idx=idx)
-            update_tasks.append(fetch_week.subtask((user, requester, start, end)))
+    with transaction.commit_on_success():
+        for start, end in chart_list:
+            idx = ldates.index_of_timestamp(end)
+            # Skip if this week is before the user signed up
+            if not idx < user.first_sunday_with_data:
+                # skip if data has already been successfully fetched
+                if (idx, Update.ARTIST) not in successful_requests:
+                    Update.objects.create(user=user, week_idx=idx, type=Update.ARTIST)
+                    update_tasks.append(fetch_week_data.subtask((user, requester, start, end, Update.ARTIST)))
+#                if (idx, Update.TRACK) not in successful_requests:
+#                    Update.objects.create(user=user, week_idx=idx, type=Update.TRACK)
+#                    update_tasks.append(fetch_week_data.subtask((user, requester, start, end, Update.TRACK)))
 
     ts = TaskSet(update_tasks)
     ts.apply_async()

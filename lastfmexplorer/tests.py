@@ -21,7 +21,7 @@ class XMLHandling(unittest.TestCase):
         self.assertListEqual(chartList, expected)
 
     def testWeekDataParsing(self):
-        data = tasks.week_data('aradnuk', self.requester, 1109505601, 1110110401)
+        data = tasks._parse_week_artist_data(tasks.week_data('aradnuk', self.requester, 1109505601, 1110110401))
         self.assertEqual(len(data.keys()), 74)
 
         playcount, artistId = data[1]
@@ -35,8 +35,10 @@ class RequestErrorHandling(unittest.TestCase):
     """.. and ones for invalid Last.fm XML files"""
     pass
 
+
 class WeeklyTrackDataHandling(unittest.TestCase):
     pass
+
 
 class Updates(unittest.TestCase):
 
@@ -51,10 +53,10 @@ class Updates(unittest.TestCase):
             last_updated=date.today(), image="http://www.example.com")
 
         # User A has two updates in progress, B has one complete and C has one in progress
-        Update.objects.create(user=instance.testUserA, week_idx=1)
-        Update.objects.create(user=instance.testUserA, week_idx=2)
-        Update.objects.create(user=instance.testUserB, week_idx=1, status=Update.COMPLETE)
-        Update.objects.create(user=instance.testUserC, week_idx=1)
+        Update.objects.create(user=instance.testUserA, week_idx=1, type=Update.ARTIST)
+        Update.objects.create(user=instance.testUserA, week_idx=2, type=Update.ARTIST)
+        Update.objects.create(user=instance.testUserB, week_idx=1, status=Update.COMPLETE, type=Update.TRACK)
+        Update.objects.create(user=instance.testUserC, week_idx=1, type=Update.ARTIST)
 
     def testIsUpdating(self):
         self.assertTrue(Update.objects.is_updating(self.testUserA))
@@ -63,7 +65,8 @@ class Updates(unittest.TestCase):
     def testWeeksFetched(self):
         bFetched = Update.objects.weeks_fetched(self.testUserB)
         self.assertEqual(len(bFetched), 1)
-        self.assertEqual(bFetched[0].week_idx, 1)
+        self.assertEqual(list(bFetched)[0][0], 1)
+        self.assertEqual(list(bFetched)[0][1], Update.TRACK)
 
 
 class Dates(unittest.TestCase):

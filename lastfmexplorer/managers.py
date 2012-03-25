@@ -31,7 +31,11 @@ class UpdateManager(models.Manager):
         return self.filter(user=user, status=m.Update.IN_PROGRESS).exists()
 
     def weeks_fetched(self, user):
-        return self.filter(user=user, status=m.Update.COMPLETE)
+        """Returns a set of (week index, update type) tuples"""
+        successes = set()
+        for success in self.filter(user=user, status=m.Update.COMPLETE):
+            successes.add((success.week_idx, success.type))
+        return successes
 
     def updating_users(self):
         """Returns a generator of (user, count of updates in progress)"""
