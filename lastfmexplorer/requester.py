@@ -63,11 +63,11 @@ class Requester:
 
             except IOError, e:
                 logging.error("Requestor caught IOError, attempt %d" % (attempt,))
-                print traceback.format_exc()
                 result['error'] = { 'message' : "Request gave IOError: " + str(e) }
 
             except Exception as instance:
                 logging.error("Requestor caught unknown exception for request " + query + " - " + str(type(instance)))
+                logging.error(traceback.format_exc())
                 result['error'] = { 'messasge' : "Unknown problem" }
 
         return result
