@@ -1,0 +1,70 @@
+{% extends 'exploration/base.html' %}
+{% load breadcrumbs %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb_url context.user twothreefall.lastfmexplorer.views.overview context.user context.start context.end %}
+    {% breadcrumb_url "Chart" twothreefall.lastfmexplorer.views.user_chart context.user context.start context.end %}
+{% endblock %}
+{% block lextitle %}{{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} Chart - {% endblock %}
+{% block lex_page_config %}
+    <div class="alignedLabel">
+        {% comment %}
+          See:
+            http://alexking.org/blog/2005/07/18/css-checkbox-label-positioning
+            http://stackoverflow.com/questions/306252/how-to-align-checkboxes-and-their-labels-consistently-cross-browsers
+        {% endcomment %}
+        <div>
+            <div class="grouped_checkbox_label">Exclude:</div>
+            <div class="grouped_checkboxes">
+                <div>
+                    <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
+                    <label for="newmusic">artists scrobbled before start date</label>
+                </div>
+                <div>
+                    <input id="exclude_months" name="exclude_months" type="checkbox"
+                        {% if exclude_months %}checked="checked"{% endif %}/>
+                    <label for="exclude_months">artists {% comment %}with more than</label>
+                    <input id="max_scrobbles" name="max_scrobbles" type="input" class="small_num_input"
+                    value="{{ max_scrobbles }}"/>
+                    scrobbles in the last{% endcomment %}
+                    scrobbled in the last</label>
+                    <input id="num_excluded" name="num_excluded" type="input" class="small_num_input"
+                        value="{{ num_excluded }}"/>
+                    months
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="alignedLabel">
+        <label for="count" class="aligned">Items in chart:</label>
+        <input id="count" name="count" type="input" class="medium_num_input" {% if count %}value="{{ count }}"{% endif %}/>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="itemofinterest">
+        <div class="itemcontent">
+{% if isWeek %}
+            <div id="weeklinks">
+                <span id="previousweek">
+    {% if prevW > 0 %}
+                <a href="{% url lastfmexplorer.views.user_week_chart context.user prevW %}">Previous</a>
+    {% else %}
+                Previous
+    {% endif %}
+                </span>
+                <span id="nextweek"><a href="{% url lastfmexplorer.views.user_week_chart context.user nextW %}">Next</a></span>
+            </div>
+{% endif %}
+            <ol>
+{% for artist, count, max in chart %}
+                <li class="barchart" >
+                    <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                    <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                        <span class='barchart_num'>{{ count }}</span>
+                    </div>
+                </li>
+{% endfor %}
+            </ol>
+        </div>
+    </div>
+{% endblock %}
