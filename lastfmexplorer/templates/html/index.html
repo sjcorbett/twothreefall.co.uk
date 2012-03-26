@@ -1,29 +1,35 @@
 {% extends 'root.html' %}
+{% block ttle %}
+    Last.fm Explorer
+{% endblock %}
 {% load breadcrumbs %}
-{% block ttle %}Last.fm Explorer{% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
     {% breadcrumb_url "Last.fm Explorer" twothreefall.lastfmexplorer.views.start %}
 {% endblock %}
-{% comment %}
-{% block javascript %}<script type="text/javascript" src="{{ MEDIA_URL }}js/update-polling.js"></script>{% endblock %}
-        <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
-{% endcomment %}
 {% block body %}
-<br/> <br/> <br/> <br/> <br/> <br/> <br/>
-<form id="start" action="" method="get">
-    <fieldset id="login">
-        <legend>Last.fm Explorer</legend>
-        <p class="description">Investigate all that data <a href="http://www.last.fm">Last.fm</a> has about you but doesn't expose.</p>
-        <label for="name">Last.fm username</label>:
-        <input type="text" name="username" id="name" value="{{ given }}"/>
-        <input type="submit" value="Go" id="submit" />
-{% if feedback.errmessage %}
-        <div class="errordiv">
-             <p><img src="{{ MEDIA_URL }}img/site/error.gif"/>
-             {{ feedback.errmessage }}</p>
-        </div>
-{% endif %}
-    </fieldset>
-</form>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <form id='start' action='' method='get'>
+        <fieldset id='login'>
+            <legend>Last.fm Explorer</legend>
+            <p class='description'>Investigate all that data <a href="http://www.last.fm">Last.fm</a> has about you but doesn't expose.</p>
+            <label for='name'>Last.fm username:</label>
+            <input id='name' type='text' name='username' value='{{given}}' />
+            <input id='submit' type='submit' value='Go' />
+            {% if feedback.errmessage %}
+                <div class='errordiv'>
+                    <p>
+                        <img src="{{ MEDIA_URL }}img/site/error.gif"/>
+                        {{ feedback.errmessage }}
+                    </p>
+                </div>
+            {% endif %}
+        </fieldset>
+    </form>
 {% endblock %}

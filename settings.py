@@ -117,6 +117,7 @@ def basic_context(request):
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates/html'),
+    os.path.join(os.path.dirname(__file__), 'lastfmexplorer/templates/html'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
