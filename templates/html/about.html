@@ -1,23 +1,37 @@
 {% extends 'root.html' %}
-{% block ttle %}About{% endblock %}
+{% block ttle %}
+    About
+{% endblock %}
 {% load breadcrumbs %}
 {% block breadcrumbs %}
     {{ block.super }}
     {% breadcrumb_url "About" about %}
 {% endblock %}
 {% block body %}
-    <div id="top">
+    <div id='top'>
         <p>I'm Sam, I live and work in Edinburgh.  Slowly this website is coming together.</p>
-        <p>The source for twothreefall.co.uk is available on <a href="https://github.com/aradnuk/twothreefall.co.uk">GitHub</a>.
-        <h2 id="lex">Last.fm Explorer</h2>
+        <p>The source for twothreefall.co.uk is available on <a href="https://github.com/aradnuk/twothreefall.co.uk">GitHub</a></p>
+        <h2 id='lex'>Last.fm Explorer</h2>
         <p><a href="http://www.last.fm/user/aradnuk">I</a> love Last.fm to pieces.</p>
         <h3>Changelog</h3>
         <ul>
-            <li><b>19-12-2011</b> Fixed incorrect chart averages.
-                Thanks to <a href="http://www.last.fm/user/m2wester">m2wester</a> for spotting this.</li>
-            <li><b>23-10-2011</b> Introduced an index page for all weekly charts.</li>
-            <li><b>20-10-2011</b> Fixed it!</li>
-            <li><b>22-06-2011</b> There's a weird problem with saving new artists to the database.  Sometimes it occurs, sometimes it doesn't.. I'm working on it.</li>
+            <li>
+                <b>19-12-2011</b>
+                Fixed incorrect chart averages.  Thanks to <a href="http://www.last.fm/user/m2wester">m2wester</a> for spotting this.
+            </li>
+            <li>
+                <b>23-10-2011</b>
+                Introduced an index page for all weekly charts.
+            </li>
+            <li>
+                <b>20-10-2011</b>
+                Fixed it!
+            </li>
+            <li>
+                <b>22-06-2011</b>
+                There's a weird problem with saving new artists to the database.
+                Sometimes it occurs, sometimes it doesn't.. I'm working on it.
+            </li>
         </ul>
     </div>
 {% endblock %}
