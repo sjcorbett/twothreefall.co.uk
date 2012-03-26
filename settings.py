@@ -116,7 +116,7 @@ def basic_context(request):
     return { 'MEDIA_URL' : MEDIA_URL, 'DEV' : DEV } 
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
+    os.path.join(os.path.dirname(__file__), 'templates/html'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
