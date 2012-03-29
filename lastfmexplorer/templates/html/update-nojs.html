@@ -1,7 +1,9 @@
 {% extends 'root.html' %}
-{% block title %}Last.fm Explorer Update -- {{ username }}{% endblock %}
+{% block title %}
+    Last.fm Explorer Update -- {{ username }}
+{% endblock %}
 {% block body %}
-    <div id="top">
+    <div id='top'>
         <h1>Update queue</h1>
         <ul>
             {% for user, count in updating_users %}
