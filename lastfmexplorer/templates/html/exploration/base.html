@@ -7,14 +7,14 @@
 {% endblock %}
 {% block ttle %}
     {% block lextitle %}
+        Last.fm Explorer
     {% endblock %}
-    Last.fm Explorer
 {% endblock %}
 {% block body %}
     <div id='top'>
         <div id='datesandmenu'>
             <div class='float-left'>
-                <img src='{{context.user.image}}' alt='{{context.user}}\'s image' />
+                <img src='{{context.user.image}}' alt='Profile image for {{context.user}}' />
             </div>
             <div class='float-left'>
                 <h1>Last.fm Explorer &mdash; {{ context.user }}</h1>
