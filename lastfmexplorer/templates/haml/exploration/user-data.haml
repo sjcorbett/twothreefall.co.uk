@@ -4,8 +4,8 @@
 - load breadcrumbs
 - block breadcrumbs
     = block.super
-    - breadcrumb_url context.user twothreefall.lastfmexplorer.views.overview context.user context.start context.end
-    - breadcrumb_url "Index" twothreefall.lastfmexplorer.views.user_data context.user
+    - breadcrumb_url context.user lastfmexplorer.views.overview context.user context.start context.end
+    - breadcrumb_url "Index" lastfmexplorer.views.user_data context.user
 
 - block content
     %p.blockoftext
