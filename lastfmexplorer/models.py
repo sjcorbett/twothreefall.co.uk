@@ -84,7 +84,7 @@ class User(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('lastfmexplorer.views.overview', [self.username])
+        return ('twothreefall.lastfmexplorer.views.overview', [self.username])
 
     def __unicode__(self):
         return self.username

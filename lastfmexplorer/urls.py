@@ -16,7 +16,7 @@ __year_matcher  = r'(?P<year>\d{4})/$'
 __default_dates = { 'start' : ldates.idx_beginning,
                     'end'   : ldates.idx_last_sunday }
 
-urlpatterns = patterns('lastfmexplorer.views',
+urlpatterns = patterns('twothreefall.lastfmexplorer.views',
     # start
     (r'^$', 'start'),
 
