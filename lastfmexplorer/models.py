@@ -82,8 +82,9 @@ class User(models.Model):
     objects    = models.Manager()
     validity   = managers.UserManager()
 
+    @models.permalink
     def get_absolute_url(self):
-        return "%s/user/%s" % (_LASTFM, self.username)
+        return ('lastfmexplorer.views.overview', [self.username])
 
     def __unicode__(self):
         return self.username

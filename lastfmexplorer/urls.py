@@ -1,8 +1,11 @@
 from django.conf.urls.defaults import *
+from django.contrib.sitemaps import Sitemap
 
 import views
 import ldates
+
 from managers import USER_REGEX
+from models import User
 
 # match usernames
 __user_base     = '^user/' + USER_REGEX + '/' 
@@ -50,3 +53,9 @@ urlpatterns = patterns('lastfmexplorer.views',
 
 )
 
+# TODO: Django makes it really awkward to include /lastfmexplorer!
+class LastfmExplorerSitemap(Sitemap):
+    changefreq = "weekly"
+    priority = 0.25
+    def items(self):
+        return User.objects.all()
