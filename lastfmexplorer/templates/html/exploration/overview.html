@@ -124,7 +124,8 @@
                 var weekly_data = [];
                 var averages = [];
                 var weeklies = [
-                    {% for dte, playcount, average in wpcjs %}[{{ dte }}, {{ playcount }}, {{ average }}]{% if not forloop.last %},{% endif %}{% endfor %}];
+                    {% for dte, playcount, average in wpcjs %}
+                        [{{ dte }}, {{ playcount }}, {{ average }}]{% if not forloop.last %},{% endif %}{% endfor %}];
                 for (var i=0, len=weeklies.length; i<len; ++i) {
                     weekly_data.push([weeklies[i][0], weeklies[i][1]]);
                     averages.push([weeklies[i][0], weeklies[i][2]]);
