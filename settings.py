@@ -40,8 +40,16 @@ MEDIA_ROOT = '/home/sam/code/ttf/twothreefall/media/' if DEV else \
 MEDIA_URL = 'http://127.0.0.1:8000/media/' if DEV else \
     "http://twothreefall.co.uk/media/"
 
+STATIC_ROOT = ''
+STATIC_URL = '/static/'
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+)
+
 # Including broke admin css?
-ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -76,6 +84,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
 
     'twothreefall',
     'twothreefall.lastfmexplorer',
@@ -124,6 +133,7 @@ TEMPLATE_DIRS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'twothreefall.settings.basic_context',
     'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.static',
 )
 
 

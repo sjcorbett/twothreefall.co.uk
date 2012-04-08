@@ -17,8 +17,8 @@
     </div>
 {% endblock %}
 {% block javascript %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/external/flot/jquery.flot.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/flot-charts.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/flot-charts.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {                artists = [{% for i in array_counter %}[],{% endfor %}];{% for artist, weeks in weekly_plays.items %}    {% for dte, playcount in weeks %}            artists[{{ forloop.parentloop.counter0 }}].push([{{ dte }}, {{ playcount }}]);{% endfor %}{% endfor %}            plot_line_chart("#artist_playcounts", artists);        });
     </script>

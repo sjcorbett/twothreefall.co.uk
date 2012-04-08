@@ -19,8 +19,8 @@
 {% endblock %}
 
 {% block javascript %}
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/external/flot/jquery.flot.min.js"></script>
-    <script type="text/javascript" src="{{ MEDIA_URL }}js/flot-charts.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/flot-charts.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
                 artists = [{% for i in array_counter %}[],{% endfor %}];

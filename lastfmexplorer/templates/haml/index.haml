@@ -8,10 +8,9 @@
     = block.super
     - breadcrumb_url "Last.fm Explorer" lastfmexplorer.views.start
 
-
 -#
-    {% block javascript %}<script type="text/javascript" src="{{ MEDIA_URL }}js/update-polling.js"></script>{% endblock %}
-        <p><img src="{{ MEDIA_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
+    {% block javascript %}<script type="text/javascript" src="{{ STATIC_URL }}js/update-polling.js"></script>{% endblock %}
+        <p><img src="{{ STATIC_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
 
 - block body
     %br/
@@ -33,5 +32,5 @@
             - if feedback.errmessage
                 .errordiv
                     %p
-                        <img src="{{ MEDIA_URL }}img/site/error.gif"/>
+                      <img src="{% static "img/site/error.gif" %}"/>
                         = feedback.errmessage
