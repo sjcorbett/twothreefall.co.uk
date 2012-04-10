@@ -32,5 +32,5 @@
             - if feedback.errmessage
                 .errordiv
                     %p
-                      <img src="{% static "img/site/error.gif" %}"/>
+                        <img src="{{ STATIC_URL }}img/site/error.gif" %}"/>
                         = feedback.errmessage
