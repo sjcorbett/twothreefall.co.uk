@@ -40,7 +40,7 @@ MEDIA_ROOT = '/home/sam/code/ttf/twothreefall/media/' if DEV else \
 MEDIA_URL = 'http://127.0.0.1:8000/media/' if DEV else \
     "http://twothreefall.co.uk/media/"
 
-STATIC_ROOT = ''
+# STATIC_ROOT set in secrets
 STATIC_URL = '/static/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
