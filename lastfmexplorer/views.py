@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.http import HttpResponse
 from django.http import Http404
 from django.shortcuts import render_to_response, redirect, get_object_or_404
@@ -362,6 +363,22 @@ def list_bad_xml_files(request):
     bad_weeks = WeeksWithSyntaxErrors.objects.all()
     return object_list(request, queryset=bad_weeks,
             template_name='weekswithsyntaxerrors_list.html')
+
+
+@staged('exploration/rickshaw.html', skip_date_shortcuts=True)
+def rickshaw(request, context):
+    user = context.get('user')
+    start = context.get('start')
+    end  = context.get('end')
+
+    year_week_counts = defaultdict(list)
+
+    for week_index, count in WeekData.objects.weekly_play_counts(user, start, end):
+        year = int(ldates.year_of_index(week_index))
+        year_week_counts[year].append(count)
+
+    print year_week_counts
+    return { 'context' : context, 'year_plays' : anyjson.serialize(year_week_counts) }
 
 
 @staged('exploration/user-data.html', skip_date_shortcuts=True)

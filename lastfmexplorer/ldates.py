@@ -58,6 +58,9 @@ def index_of_sunday(d):
         raise ValueError("date passed to index_of_sunday must be a Sunday")
     return first_sunday_on_or_before(d)
 
+def year_of_index(idx):
+    return date_of_index(idx).year
+
 def string_of_date(d):
     return date.strftime(d, "%Y-%m-%d")
 

@@ -36,6 +36,9 @@ urlpatterns = patterns('twothreefall.lastfmexplorer.views',
     # user chart index
     (__user_base + 'index/$', 'user_data'),
 
+    # rickshaw chart
+    (__user_base + 'rickshaw/$', 'rickshaw'),
+
 )
 
 def __urlsForPattern(urlpatterns, pattern, view):

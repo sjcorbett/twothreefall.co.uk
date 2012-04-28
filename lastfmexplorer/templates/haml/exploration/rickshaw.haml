@@ -1,0 +1,70 @@
+- extends 'exploration/base.html'
+
+- block lextitle
+    Rickshaw experiment
+
+- block content
+
+    <div id="graph"></div>
+
+
+- block javascript
+    <script src="{{ STATIC_URL }}rickshaw/d3.v2.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}rickshaw/d3.layout.min.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}rickshaw/rickshaw.min.js"></script>
+
+
+    :javascript
+        var g;
+        var sd;
+        $(document).ready(function() {
+
+            var seriesData = [];
+            var allData = {{ year_plays|safe }};
+            var palette = new Rickshaw.Color.Palette( { scheme: 'classic9' } );
+
+            // First year will have to be filled with 0s at start, this year
+            // will have to be padded with 0s at the end.
+            var hadFirst = false;
+            var thisYear = (new Date()).getFullYear();
+
+            function nZeros(n) {
+                var l = [];
+                for (var i=0; i < n; i++) { l.push(0); }
+                return l;
+            }
+            $.each(allData, function(year, allPlays) {
+                if (!hadFirst) {
+                    console.log("Padding " + year + " with zeros at start");
+                    allPlays = nZeros(52 - allPlays.length).concat(allPlays);
+                    hadFirst = true;
+                } else if (allPlays.length < 52) {
+                    console.log("Padding " + year + " (" + allPlays.length + " weeks) with zeros at end");
+                    allPlays = allPlays.concat(nZeros(52 - allPlays.length));
+                }
+
+                var plays = [];
+                var week  = 0;
+
+                // Skipping any weeks falling in year after the 52nd.
+                for (var i=0; i < 52 /*allPlays.length*/; i++) {
+                    plays.push({x: week, y: allPlays[i]});
+                    week++;
+                }
+                seriesData.push({
+                    data: plays,
+                    color: palette.color(),
+                });
+            });
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector('#graph'),
+                height: 500,
+                series: seriesData,
+                renderer: 'stack',
+                stroke: true,
+            });
+            graph.offset = 'silhouette';
+            graph.render();
+            g=graph;
+            sd=allData;
+        });
