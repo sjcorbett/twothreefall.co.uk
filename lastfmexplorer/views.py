@@ -220,9 +220,13 @@ def staged(target_view, skip_date_shortcuts=False):
 
             result = fn(request, context)
 
-            return render_to_response(target_view, result,
-                    context_instance=RequestContext(request))
-        
+            # Allow views to respond to normal and xhr requests.
+            if isinstance(result, dict):
+                return render_to_response(target_view, result,
+                        context_instance=RequestContext(request))
+            else:
+                return result
+
         cleansed.__name__ = fn.__name__
         cleansed.__dict__ = fn.__dict__
         cleansed.__doc__  = fn.__doc__
@@ -373,12 +377,27 @@ def rickshaw(request, context):
 
     year_week_counts = defaultdict(list)
 
-    for week_index, count in WeekData.objects.weekly_play_counts(user, start, end):
-        year = int(ldates.year_of_index(week_index))
-        year_week_counts[year].append(count)
+    if request.is_ajax():
+        artistName = request.GET.get("artist", "")
+        if artistName == "":
+            return HttpResponse(anyjson.serialize({"error": "Need an artist"}), mimetype="application/json")
 
-    print year_week_counts
-    return { 'context' : context, 'year_plays' : anyjson.serialize(year_week_counts) }
+        try:
+            artist = Artist.objects.get(name=artistName)
+        except ObjectDoesNotExist:
+            return HttpResponse(anyjson.serialize({"error": "Don't know " + artistName}), mimetype="application/json")
+
+        for week_index, count in WeekData.artists.user_weekly_plays_of_artist(user, artist, start, end):
+            year = int(ldates.year_of_index(week_index))
+            year_week_counts[year].append(count)
+
+        return HttpResponse(anyjson.serialize(year_week_counts), mimetype="application/json")
+    else:
+        for week_index, count in WeekData.objects.weekly_play_counts(user, start, end):
+            year = int(ldates.year_of_index(week_index))
+            year_week_counts[year].append(count)
+
+        return { 'context' : context, 'year_plays' : anyjson.serialize(year_week_counts) }
 
 
 @staged('exploration/user-data.html', skip_date_shortcuts=True)

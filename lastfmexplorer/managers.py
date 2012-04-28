@@ -124,7 +124,7 @@ class UserWeekDataManager(models.Manager):
 
         def y(i, pc):
             return pc if just_counts else (i, pc)
-                
+
         # last_index handles weeks when nothing was played
         if order_by_plays:
             cached.sort(key=itemgetter('plays__sum'), reverse=True)
@@ -287,34 +287,21 @@ class UserWeekDataManager(models.Manager):
 
 
 class UserArtistWeekDataManager(UserWeekDataManager):
-    def user_weeks_between(self, user, artists, start, end):
-        """
-        Returns a basic query set of a user's data filtered to plays of
-        particular artists, between start and end.
-        """
-        base = self.filter(user=user.id).filter(artist__in=artists)
-        if start != ldates.idx_beginning or end != ldates.idx_last_sunday:
-            return base.filter(week_idx__range=(start, end))
-        else:
-            return base
-
-    def user_weekly_plays_of_artists(self, user, artists, start, end):
+    def user_weekly_plays_of_artist(self, user, artist, start=None, end=None):
 
         # initialise the results to a dictionary or artist -> week/playcount,
         # with all playcounts set to zero.  means no need to handle missing 
         # weeks in query set loop.
-        prelim_data = [0] * ((end+1) - start) #dict((ldates.js_timestamp_of_index(x), 0) for x in xrange(start, end+1))
-        dates = [ ldates.js_timestamp_of_index(idx) for idx in xrange(start, end+1) ]
+        plays = [0] * ((end+1) - start)
+        dates = xrange(start, end+1)
 
-        results = dict((artist.id, prelim_data[:]) for artist in artists)
+        qs = self.filter(user=user.id).filter(artist=artist)
+        if start != ldates.idx_beginning or end != ldates.idx_last_sunday:
+            qs = qs.filter(week_idx__range=(start, end))
 
-        for artist_wd in self.user_weeks_between(user, artists, start, end):
+        for week_data in qs:
             # place in the appropriate slot in the result list (subtract start)
-            results[artist_wd.artist_id][artist_wd.week_idx - start] = artist_wd.plays
+            plays[week_data.week_idx - start] = week_data.plays
 
-        out = {}
-        for artist in artists:
-            out[artist] = zip(dates, results[artist.id])
-
-        return out
+        return zip(dates, plays)
 
