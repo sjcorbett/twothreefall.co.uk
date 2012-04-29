@@ -1,0 +1,116 @@
+.float-left {
+    float: left;
+}
+.row {
+    margin-bottom: 10px;
+}
+#profile_image {
+    margin-right: 10px;
+}
+/******* INLINED LISTS AND PARAGRAPHS ******************************/
+.inlinedlistpara {
+    margin: 0.4em;
+    padding: 5px;
+    font-family: "Trebuchet MS", Verdana, sans-serif;
+}
+
+.inlinedlistpara p {
+    display: inline;
+}
+
+.inlinedlistpara ul, .inlinedlistpara li {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    color: #339;
+    font-weight: bold;
+}
+
+.inlinedlist {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+.inlinedlist li {
+    display: inline;
+}
+
+.slashseparated li:after {
+    content: " /";
+}
+
+.commaseparated li:after {
+    content: ", ";
+}
+
+.gtseparated li:after {
+    content: " > ";
+}
+
+.gtseparated li.first:before {
+    content: " > ";
+}
+
+.slashseparated li.last:after,
+.commaseparated li.last:after,
+.gtseparated li.last:after {
+    content: "";
+}
+
+/******* COLOURS ***************************************************/
+
+.blue {
+    color: blue;
+}
+
+.green {
+    color: #007f02;
+}
+
+/*.red {*/
+    /*color: red;*/
+/*}*/
+
+/*.grey {*/
+    /*color: gray;*/
+/*}*/
+
+/******* BAR CHARTS ************************************************/
+li.barchart {
+    height: 3em;
+    text-align: left;
+}
+
+div.barchart_item {
+    background-color: #abcdef;
+    display: block;
+    text-align: right;
+    border-top: 1px solid #000;
+    min-width: 1px;
+}
+
+span.barchart_num {
+    padding: 0 0.25em;
+}
+
+div#weeklinks {
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+span#previousweek {
+    float: left;
+}
+
+span#nextweek {
+    float: right;
+}
+
+li.barchart a:link, li.barchart a:visited {
+    color: #000;
+}
+
+#weekly_js {
+    margin: 0 auto;
+}

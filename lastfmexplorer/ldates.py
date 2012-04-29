@@ -92,7 +92,7 @@ def indicies_of_year(year):
     return fsooa(date(year, 1, 1)), fsooa(date(year, 12, 31))
 
 def __months_to_indices(num):
-    return ("%d months" % (num,) if num > 1 else "month",
+    return ("%d months" % (num,) if num > 1 else "Month",
             idx_last_sunday - (month_in_weeks * num), idx_last_sunday)
 months = map(__months_to_indices, [1, 3, 6])
 

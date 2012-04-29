@@ -8,8 +8,8 @@
     {{ context.user }} - {% if context.year %}{{ context.year }} - {% endif %}
 {% endblock %}
 {% block content %}
-    <div class='itemofinterest'>
-        <div class='itemcontent'>
+    <div class='row'>
+        <div class='span12'>
             <h3>In this period</h3>
             <ul>
                 {% for item in vitals %}
@@ -17,31 +17,37 @@
                 {% endfor %}
             </ul>
         </div>
-        <h3>Weekly Playcounts</h3>
-        <div class='itemcontent'>
-            <p>
-                <b><span class="blue">blue</span></b>: number of songs played in a week,
-                <b><span class="green">green</span></b>: onrunning average
-            </p>
-            <div id='weekly_js' style='width: 1000px; height: 150px;'></div>
-        </div>
-        <div class='itemcontent'>
-            <div style='float:left;'>
-                <h3>Cumulative monthly track totals</h3>
-                <div id='monthly_js' style='width:430px; height: 300px; margin-bottom:2em;'></div>
-            </div>
-            <div style='float:left;'>
-                <h3>Weekly playcount frequency</h3>
-                <div id='weekly_counts_hist' style='width:430px; height: 300px; margin-bottom:2em;'></div>
+    </div>
+    <div class='row'>
+        <div class='span12'>
+            <h3>Weekly Playcounts</h3>
+            <div class='itemcontent'>
+                <p>
+                    <b><span class="blue">blue</span></b>: number of songs played in a week,
+                    <b><span class="green">green</span></b>: onrunning average
+                </p>
+                <div id='weekly_js' style='width: 1000px; height: 150px;'></div>
             </div>
         </div>
     </div>
-    <div class='itemofinterest'>
-        <div class='itemtitle'>
-            <h2>Most...</h2>
+    <div class='row'>
+        <div class='span6'>
+            <div style='float:left;'>
+                <h3>Cumulative monthly track totals</h3>
+                <div id='monthly_js' style='width:470px; height: 320px; margin-bottom:1em;'></div>
+            </div>
         </div>
-        <div class='itemcontent'>
-            <div class='clumped_box'>
+        <div class='span6'>
+            <div style='float:left;'>
+                <h3>Weekly playcount frequency</h3>
+                <div id='weekly_counts_hist' style='width:470px; height: 320px; margin-bottom:1em;'></div>
+            </div>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='span12'>
+            <h2>Most...</h2>
+            <div class='span3'>
                 <h3>Plays of one artist in one week</h3>
                 <ol>
                     {% for item, date in record_single_artist %}
@@ -52,7 +58,7 @@
                     {% endfor %}
                 </ol>
             </div>
-            <div class='clumped_box'>
+            <div class='span3'>
                 <h3>Songs scrobbled in one week</h3>
                 <ol>
                     {% for idx, date, plays in record_total_plays %}
@@ -62,7 +68,7 @@
                     {% endfor %}
                 </ol>
             </div>
-            <div class='clumped_box'>
+            <div class='span4'>
                 <h3>Unique artists scrobbled in one week</h3>
                 <ol>
                     {% for idx, date, artist_count in record_unique_artists %}
@@ -74,21 +80,23 @@
             </div>
         </div>
     </div>
-    <div class='itemofinterest'>
-        <div class='itemtitle'>
-            <h2>Top Artists</h2>
-        </div>
-        <div class='itemcontent'>
-            <ol>
-                {% for artist, count, max in chart %}
-                    <li class='barchart'>
-                        <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
-                        <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
-                            <span class='barchart_num'>{{ count }}</span>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ol>
+    <div class='row'>
+        <div class='span12'>
+            <div class='itemtitle'>
+                <h2>Top Artists</h2>
+            </div>
+            <div class='itemcontent'>
+                <ol>
+                    {% for artist, count, max in chart %}
+                        <li class='barchart'>
+                            <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                            <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                                <span class='barchart_num'>{{ count }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -124,8 +132,7 @@
                 var weekly_data = [];
                 var averages = [];
                 var weeklies = [
-                    {% for dte, playcount, average in wpcjs %}
-                        [{{ dte }}, {{ playcount }}, {{ average }}]{% if not forloop.last %},{% endif %}{% endfor %}];
+                    {% for dte, playcount, average in wpcjs %}[{{ dte }}, {{ playcount }}, {{ average }}]{% if not forloop.last %},{% endif %}{% endfor %}];
                 for (var i=0, len=weeklies.length; i<len; ++i) {
                     weekly_data.push([weeklies[i][0], weeklies[i][1]]);
                     averages.push([weeklies[i][0], weeklies[i][2]]);

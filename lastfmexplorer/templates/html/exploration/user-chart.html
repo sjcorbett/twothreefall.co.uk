@@ -9,33 +9,31 @@
     {{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} Chart -
 {% endblock %}
 {% block lex_page_config %}
-    <div class='alignedLabel'>
-        <div>
-            <div class='grouped_checkbox_label'>Exclude:</div>
-            <div class='grouped_checkboxes'>
-                <div>
-                    <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
-                    <label for='newmusic'>artists scrobbled before start date</label>
-                </div>
-                <div>
-                    <input id="exclude_months" name="exclude_months" type="checkbox"
-                        {% if exclude_months %}checked="checked"{% endif %}/>
-                    <label for='exclude_months'>artists scrobbled in the last</label>
-                    <input id="num_excluded" name="num_excluded" type="text" class="small_num_input"
-                        value="{{ num_excluded }}"/>
-                    months
-                </div>
-            </div>
+    <div class='control-group'>
+        <label class='control-label'>Exclude</label>
+        <div class='controls'>
+            <label class='checkbox'>
+                <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
+                artists scrobbled before start date
+            </label>
+            <label class='checkbox'>
+                <input id="exclude_months" name="exclude_months" type="checkbox" {% if exclude_months %}checked="checked"{% endif %}/>
+                artists scrobbled in the last
+                <input id="num_excluded" name="num_excluded" type="text" class="span1" value="{{ num_excluded }}"/>
+                months
+            </label>
         </div>
     </div>
-    <div class='alignedLabel'>
-        <label class='aligned' for='count'>Items in chart:</label>
-        <input id="count" name="count" type="text" class="medium_num_input" {% if count %}value="{{ count }}"{% endif %}/>
+    <div class='control-group'>
+        <label class='control-label' for='count'>Items in chart</label>
+        <div class='controls'>
+            <input id="count" name="count" type="text" {% if count %}value="{{ count }}"{% endif %}/>
+        </div>
     </div>
 {% endblock %}
 {% block content %}
-    <div class='itemofinterest'>
-        <div class='itemcontent'>
+    <div class='row'>
+        <div class='span10 offset1'>
             {% if isWeek %}
                 <div id='weeklinks'>
                     <span id='previousweek'>

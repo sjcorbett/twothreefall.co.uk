@@ -12,13 +12,12 @@
     Last.fm Explorer
 
 - block body
-    #top
-        #datesandmenu
+    .row
+        .span12
             .float-left
-                %img{'src':'{{context.user.image}}', 'alt': "Profile image for {{context.user}}"}/
+                %img#profile_image{'src':'{{context.user.image}}', 'alt': "Profile image for {{context.user}}"}/
             .float-left
                 %h1 Last.fm Explorer &mdash; {{ context.user }}
-
                 %span#dates {{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}
                 %ul#topmenu.inlinedlist.slashseparated
                     - if context.year
@@ -34,41 +33,48 @@
                     %li.last
                         <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
 
-        - if not context.template.skipped_dates
-            #dateform
-                %form#datechanger{'method': 'get', 'action': '#'}
-                    %fieldset
-                        %legend Configure
-                        %input{'type': 'hidden', 'name': 'username', 'value': '{{context.user}}'}/
-                        %input{'type': 'hidden', 'name': 'original_start', 'value': '{{context.start}}'}/
-                        %input{'type': 'hidden', 'name': 'original_end', 'value': '{{context.end}}'}/
-                        .alignedLabel
-                            %label.aligned{'for': 'start-date-picker'} Start:
-                            <input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}"/>
-                        .alignedLabel
-                            %label.aligned{'for': 'end-date-picker'} End:
-                            <input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}"/>
+    - if not context.template.skipped_dates
+        .row
+            .span6
+                -#%form.form-inline.form-horizontal.well{'method': 'get', 'action': '#'}
+                %form.form-horizontal.well{'method': 'get', 'action': '#'}
+                    %h3 Show me data..
+                    <input type="hidden" name="username" value="{{ context.user }}"/>
+                    <input type="hidden" name="original_start" value="{{ context.start }}"/>
+                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
 
-                        - block lex_page_config
+                    .control-group
+                        %label.control-label{"for": "start-date-picker"} From the week ending
+                        .controls
+                            <input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
 
-                        %input#update{'type': 'submit', 'value': 'Update'}/
-                        #dateShortcuts.inlinedlistpara
-                            %p Or choose:
-                            %ul.commaseparated
-                                - for year in context.template.year_shortcuts
-                                    - if forloop.last
-                                        %li.last
-                                            <a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a>
-                                    - else
-                                        %li<
-                                            <a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a>
-                            %br
-                            %p or the last
-                            %ul.commaseparated
-                                - for name, s, e in context.template.shortcuts
+                    .control-group
+                        %label.control-label{"for": "end-date-picker"} to the week ending
+                        .controls
+                            <input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
+
+                    - block lex_page_config
+
+                    <button type="submit" class="btn btn-primary">Update</button>
+            .span6
+                %form.well
+                    %h3 Choose a year
+                    .inlinedlistpara
+                        %ul.commaseparated
+                            - for year in context.template.year_shortcuts
+                                - if forloop.last
+                                    %li.last
+                                        <a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a>
+                                - else
                                     %li<
-                                        <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a>
-                                %li.last
-                                    <a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a>
+                                        <a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a>
+                    %h3 Or the last..
+                    .inlinedlistpara
+                        %ul.commaseparated
+                            - for name, s, e in context.template.shortcuts
+                                %li<
+                                    <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a>
+                            %li.last
+                                <a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a>
     #allcontent
         - block content
