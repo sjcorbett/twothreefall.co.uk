@@ -53,13 +53,13 @@
                     <div class='control-group'>
                         <label class='control-label' for='start-date-picker'>From the week ending</label>
                         <div class='controls'>
-                            <input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
                         </div>
                     </div>
                     <div class='control-group'>
                         <label class='control-label' for='end-date-picker'>to the week ending</label>
                         <div class='controls'>
-                            <input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
                         </div>
                     </div>
                     {% block lex_page_config %}

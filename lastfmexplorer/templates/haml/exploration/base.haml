@@ -46,12 +46,12 @@
                     .control-group
                         %label.control-label{"for": "start-date-picker"} From the week ending
                         .controls
-                            <input id="start-date-picker" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
 
                     .control-group
                         %label.control-label{"for": "end-date-picker"} to the week ending
                         .controls
-                            <input id="end-date-picker" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
 
                     - block lex_page_config
 
