@@ -27,31 +27,36 @@ urlpatterns = patterns('twothreefall.lastfmexplorer.views',
     # invalid XML
     (r'^bad-weeks$', 'list_bad_xml_files'),
 
-    # plain user overview, first between two dates, second all time.
-    (__user_base + __date_matcher, 'overview'),
-    (__user_base + __year_matcher, 'overview'),
-    (__user_base + '$', 'overview', __default_dates),
-
     # single week chart
     (__user_base + r'chart/week/(?P<start>\d*)/$', views.user_week_chart),
 
-    # top artist charts
-    (__user_base + r'chart/' + __date_matcher, 'user_chart'),
-    (__user_base + r'chart/' + __year_matcher, 'user_chart'),
-    (__user_base + r'chart/$', 'user_chart', __default_dates),
-
     # suggest a listen
     (__user_base + r'who/$', views.who),
-
-    # user/artist combos
-    (__user_base + r'artists/(?P<artists>.*)/$', 'user_and_artist', __default_dates),
-    (__user_base + r'artists/(?P<artists>.*)/' + __date_matcher, 'user_and_artist'),
-    (__user_base + r'artists/(?P<artists>.*)/' + __year_matcher, 'user_and_artist'),
 
     # user chart index
     (__user_base + 'index/$', 'user_data'),
 
 )
+
+def __urlsForPattern(urlpatterns, pattern, view):
+    """Creates urls for root, years and arbitrary dates"""
+    default_dates  = { 'start': ldates.idx_beginning, 'end': ldates.idx_last_sunday }
+
+    urlpatterns += patterns('twothreefall.lastfmexplorer.views',
+        (pattern + '$', view, default_dates),
+        (pattern + r'(?P<year>\d{4})/$', view),
+        (pattern + r'(?P<start>\d+)-(?P<end>\d+)/$', view),
+    )
+
+# plain user overview.
+__urlsForPattern(urlpatterns, __user_base, 'overview')
+
+# top artist charts
+__urlsForPattern(urlpatterns, __user_base + r'chart/', 'user_chart')
+
+# user/artist combos
+__urlsForPattern(urlpatterns, __user_base + r'artists/(?P<artists>.*)/', 'user_and_artist')
+
 
 # TODO: Django makes it really awkward to include /lastfmexplorer!
 class LastfmExplorerSitemap(Sitemap):
