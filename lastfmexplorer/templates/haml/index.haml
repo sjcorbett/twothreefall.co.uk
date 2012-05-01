@@ -3,11 +3,6 @@
 - block ttle
     Last.fm Explorer
 
-- load breadcrumbs
-- block breadcrumbs
-    = block.super
-    - breadcrumb_url "Last.fm Explorer" lastfmexplorer.views.start
-
 -#
     {% block javascript %}<script type="text/javascript" src="{{ STATIC_URL }}js/update-polling.js"></script>{% endblock %}
         <p><img src="{{ STATIC_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>

@@ -1,9 +1,4 @@
 {% extends 'exploration/base.html' %}
-{% load breadcrumbs %}
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb_url  context.user lastfmexplorer.views.overview context.user context.start context.end %}
-{% endblock %}
 {% block lextitle %}
     {{ context.user }} - {% if context.year %}{{ context.year }} - {% endif %}
 {% endblock %}

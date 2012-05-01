@@ -1,11 +1,5 @@
 {% extends 'exploration/base.html' %}
 {% load humanize %}
-{% load breadcrumbs %}
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb_url context.user lastfmexplorer.views.overview context.user context.start context.end %}
-    {% breadcrumb_url "Index" lastfmexplorer.views.user_data context.user %}
-{% endblock %}
 {% block content %}
     <p class='blockoftext'>
         A week-by-week index of data Last.fm Explorer has pulled for {{ context.user }} from Last.fm.

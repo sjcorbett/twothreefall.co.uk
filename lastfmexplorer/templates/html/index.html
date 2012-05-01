@@ -2,11 +2,6 @@
 {% block ttle %}
     Last.fm Explorer
 {% endblock %}
-{% load breadcrumbs %}
-{% block breadcrumbs %}
-    {{ block.super }}
-    {% breadcrumb_url "Last.fm Explorer" lastfmexplorer.views.start %}
-{% endblock %}
 {% block body %}
     <br />
     <br />
