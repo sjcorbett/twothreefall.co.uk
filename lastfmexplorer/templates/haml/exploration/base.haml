@@ -8,7 +8,7 @@
 
 - block body
     .row
-        .span12
+        .span10.offset1
             .float-left
                 %img#profile_image{'src':'{{context.user.image}}', 'alt': "Profile image for {{context.user}}"}/
             .float-left
@@ -24,27 +24,6 @@
 
     - if not context.template.skipped_dates
         .row
-            .span6
-                -#%form.form-inline.form-horizontal.well{'method': 'get', 'action': '#'}
-                %form.form-horizontal.well{'method': 'get', 'action': '#'}
-                    %h3 Show me data..
-                    <input type="hidden" name="username" value="{{ context.user }}"/>
-                    <input type="hidden" name="original_start" value="{{ context.start }}"/>
-                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
-
-                    .control-group
-                        %label.control-label{"for": "start-date-picker"} From the week ending
-                        .controls
-                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
-
-                    .control-group
-                        %label.control-label{"for": "end-date-picker"} to the week ending
-                        .controls
-                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
-
-                    - block lex_page_config
-
-                    <button type="submit" class="btn btn-primary">Update</button>
             .span6
                 %form.well
                     %h3 Choose a year
@@ -65,5 +44,26 @@
                                     <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a>
                             %li.last
                                 <a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a>
+            .span6
+                -#%form.form-inline.form-horizontal.well{'method': 'get', 'action': '#'}
+                %form.form-horizontal.well{'method': 'get', 'action': '#'}
+                    %h3 Choose a custom date range
+                    <input type="hidden" name="username" value="{{ context.user }}"/>
+                    <input type="hidden" name="original_start" value="{{ context.start }}"/>
+                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
+
+                    .control-group
+                        %label.control-label{"for": "start-date-picker"} From the week ending
+                        .controls
+                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
+
+                    .control-group
+                        %label.control-label{"for": "end-date-picker"} to the week ending
+                        .controls
+                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
+
+                    - block lex_page_config
+
+                    <button type="submit" class="btn btn-primary">Update</button>
     #allcontent
         - block content

@@ -7,7 +7,7 @@
 {% endblock %}
 {% block body %}
     <div class='row'>
-        <div class='span12'>
+        <div class='span10 offset1'>
             <div class='float-left'>
                 <img id='profile_image' src='{{context.user.image}}' alt='Profile image for {{context.user}}' />
             </div>
@@ -30,29 +30,6 @@
     </div>
     {% if not context.template.skipped_dates %}
         <div class='row'>
-            <div class='span6'>
-                <form class='form-horizontal well' action='#' method='get'>
-                    <h3>Show me data..</h3>
-                    <input type="hidden" name="username" value="{{ context.user }}"/>
-                    <input type="hidden" name="original_start" value="{{ context.start }}"/>
-                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
-                    <div class='control-group'>
-                        <label class='control-label' for='start-date-picker'>From the week ending</label>
-                        <div class='controls'>
-                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
-                        </div>
-                    </div>
-                    <div class='control-group'>
-                        <label class='control-label' for='end-date-picker'>to the week ending</label>
-                        <div class='controls'>
-                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
-                        </div>
-                    </div>
-                    {% block lex_page_config %}
-                    {% endblock %}
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </form>
-            </div>
             <div class='span6'>
                 <form class='well'>
                     <h3>Choose a year</h3>
@@ -80,6 +57,29 @@
                             </li>
                         </ul>
                     </div>
+                </form>
+            </div>
+            <div class='span6'>
+                <form class='form-horizontal well' action='#' method='get'>
+                    <h3>Choose a custom date range</h3>
+                    <input type="hidden" name="username" value="{{ context.user }}"/>
+                    <input type="hidden" name="original_start" value="{{ context.start }}"/>
+                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
+                    <div class='control-group'>
+                        <label class='control-label' for='start-date-picker'>From the week ending</label>
+                        <div class='controls'>
+                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                        </div>
+                    </div>
+                    <div class='control-group'>
+                        <label class='control-label' for='end-date-picker'>to the week ending</label>
+                        <div class='controls'>
+                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                        </div>
+                    </div>
+                    {% block lex_page_config %}
+                    {% endblock %}
+                    <button type="submit" class="btn btn-primary">Update</button>
                 </form>
             </div>
         </div>
