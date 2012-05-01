@@ -15,21 +15,12 @@
                 <h1>Last.fm Explorer &mdash; {{ context.user }}</h1>
                 <span id='dates'>{{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}</span>
                 <ul id='topmenu' class='inlinedlist slashseparated'>
-                    {% if context.year %}
-                        <li>
-                            <a href="{% url "lastfmexplorer.views.overview" context.user context.year %}">An overview</a>
-                        </li>
-                        <li>
-                            <a href="{% url "lastfmexplorer.views.user_chart" context.user context.year %}">Charts</a>
-                        </li>
-                    {% else %}
-                        <li>
-                            <a href="{% url "lastfmexplorer.views.overview" context.user context.start context.end %}">An overview</a>
-                        </li>
-                        <li>
-                            <a href="{% url "lastfmexplorer.views.user_chart" context.user context.start context.end %}">Charts</a>
-                        </li>
-                    {% endif %}
+                    <li>
+                        <a href="{% url "lastfmexplorer.views.overview" context.user %}">An overview</a>
+                    </li>
+                    <li>
+                        <a href="{% url "lastfmexplorer.views.user_chart" context.user %}">Charts</a>
+                    </li>
                     <li class='last'>
                         <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
                     </li>
