@@ -54,9 +54,6 @@ __urlsForPattern(urlpatterns, __user_base, 'overview')
 # top artist charts
 __urlsForPattern(urlpatterns, __user_base + r'chart/', 'user_chart')
 
-# user/artist combos
-__urlsForPattern(urlpatterns, __user_base + r'artists/(?P<artists>.*)/', 'user_and_artist')
-
 
 # TODO: Django makes it really awkward to include /lastfmexplorer!
 class LastfmExplorerSitemap(Sitemap):

@@ -351,26 +351,6 @@ def who(request, context):
     return { 'context' : context, 'suggestions' : suggestions }
 
 
-@staged('exploration/user-and-artist.html', skip_date_shortcuts=True)
-def user_and_artist(request, context):
-    user = context.get('user')
-    start = context.get('start')
-    end  = context.get('end')
-    artist_names = context.get('artists')
-    artists = []
-
-    # look for each artist in the database, ignore if it doesn't exist.
-    for artist in artist_names.split("+"):
-        try:
-            artists.append(Artist.objects.get(name=artist))
-        except ObjectDoesNotExist:
-            pass
-
-    weekly_plays = WeekData.artists.user_weekly_plays_of_artists(user, artists, start, end)
-    return { 'context' : context, 'weekly_plays' : weekly_plays,
-             'array_counter' : xrange(len(weekly_plays)) }
-
-
 def list_bad_xml_files(request):
     bad_weeks = WeeksWithSyntaxErrors.objects.all()
     return object_list(request, queryset=bad_weeks,
