@@ -29,16 +29,22 @@
                 })();
 
     %body
-        #twothreefall
-            %h2
-                %a.ttflink{'href':'/'}
-                    %span.ttfTwo TWO
-                    %span.ttfThree> THREE
-                    %span.ttfFall FALL
-            #fixedrightmenu
-                %ul.inlinedlist
-                    %li
-                        <a href="{% url about %}">ABOUT</a>
+        .container
+            #header.row
+                .span2
+                    %h2#ttf
+                        %a.ttflink{'href':'/'}
+                            %span.ttfTwo TWO
+                            %span.ttfThree> THREE
+                            %span.ttfFall FALL
+                .span8
+                    #header-container
+                        - block extended_header
+                .span1
+                    #fixedrightmenu
+                        %ul.inlinedlist
+                            %li
+                                <a href="{% url about %}">ABOUT</a>
 
         .container
             - block body
@@ -46,5 +52,3 @@
             - if not start
                 #footer
                     %p Written by Sam, powered by really strong tea.
-
-

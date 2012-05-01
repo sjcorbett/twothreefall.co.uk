@@ -6,21 +6,21 @@
     - block lextitle
     Last.fm Explorer
 
+- block extended_header
+    .float-left
+        %img#profile_image{'src':'{{context.user.image}}', 'alt': "Profile image for {{context.user}}"}/
+    .float-left
+        %h1 <span class="lex-red">Last.fm Explorer</span> &mdash; <span class="lex-red">VodkaVolauvent</span>
+        %span#dates {{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}
+        %ul#topmenu.inlinedlist.slashseparated
+            %li
+                <a href="{% url "lastfmexplorer.views.overview" context.user %}">An overview</a>
+            %li
+                <a href="{% url "lastfmexplorer.views.user_chart" context.user %}">Charts</a>
+            %li.last
+                <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
+
 - block body
-    .row
-        .span10.offset1
-            .float-left
-                %img#profile_image{'src':'{{context.user.image}}', 'alt': "Profile image for {{context.user}}"}/
-            .float-left
-                %h1 Last.fm Explorer &mdash; {{ context.user }}
-                %span#dates {{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}
-                %ul#topmenu.inlinedlist.slashseparated
-                    %li
-                        <a href="{% url "lastfmexplorer.views.overview" context.user %}">An overview</a>
-                    %li
-                        <a href="{% url "lastfmexplorer.views.user_chart" context.user %}">Charts</a>
-                    %li.last
-                        <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
 
     - if not context.template.skipped_dates
         .row
@@ -45,7 +45,6 @@
                             %li.last
                                 <a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a>
             .span6
-                -#%form.form-inline.form-horizontal.well{'method': 'get', 'action': '#'}
                 %form.form-horizontal.well{'method': 'get', 'action': '#'}
                     %h3 Choose a custom date range
                     <input type="hidden" name="username" value="{{ context.user }}"/>

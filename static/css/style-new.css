@@ -7,6 +7,12 @@
 #profile_image {
     margin-right: 10px;
 }
+#header {
+    margin: 22px 0 20px 0;
+}
+.lex-red {
+    color: #dd1303;
+}
 /******* INLINED LISTS AND PARAGRAPHS ******************************/
 .inlinedlistpara {
     margin: 0.4em;
@@ -68,13 +74,13 @@
     color: #007f02;
 }
 
-/*.red {*/
-    /*color: red;*/
-/*}*/
+.red {
+    color: red;
+}
 
-/*.grey {*/
-    /*color: gray;*/
-/*}*/
+.grey {
+    color: gray;
+}
 
 /******* BAR CHARTS ************************************************/
 li.barchart {
