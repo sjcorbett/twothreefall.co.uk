@@ -32,20 +32,12 @@
     %body
         .container
             #header.row
-                .span2
-                    %h2#ttf
-                        %a.ttflink{'href':'/'}
-                            %span.ttfTwo TWO
-                            %span.ttfThree> THREE
-                            %span.ttfFall FALL
-                .span8
-                    #header-container
-                        - block extended_header
+                .span10
+                    %h2
+                        %a.ttflink{'href':'/'} TWOTHREEFALL
                 .span1
-                    #fixedrightmenu
-                        %ul.inlinedlist
-                            %li
-                                <a href="{% url about %}">ABOUT</a>
+                    #about
+                        %b <a href="{% url about %}">ABOUT</a>
 
         .container
             - block body

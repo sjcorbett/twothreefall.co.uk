@@ -40,39 +40,37 @@
         </div>
     </div>
     <div class='row'>
-        <div class='span12'>
-            <h2>Most...</h2>
-            <div class='span3'>
-                <h3>Plays of one artist in one week</h3>
-                <ol>
-                    {% for item, date in record_single_artist %}
-                        <li>
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
-                            <b>{{ item.plays }}</b> - {{ item.artist }}
-                        </li>
-                    {% endfor %}
-                </ol>
-            </div>
-            <div class='span3'>
-                <h3>Songs scrobbled in one week</h3>
-                <ol>
-                    {% for idx, date, plays in record_total_plays %}
-                        <li>
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
-                        </li>
-                    {% endfor %}
-                </ol>
-            </div>
-            <div class='span4'>
-                <h3>Unique artists scrobbled in one week</h3>
-                <ol>
-                    {% for idx, date, artist_count in record_unique_artists %}
-                        <li>
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
-                        </li>
-                    {% endfor %}
-                </ol>
-            </div>
+        <h2>Most...</h2>
+        <div class='span4'>
+            <h3>Plays of one artist in one week</h3>
+            <ol>
+                {% for item, date in record_single_artist %}
+                    <li>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
+                        <b>{{ item.plays }}</b> - {{ item.artist }}
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class='span4'>
+            <h3>Songs scrobbled in one week</h3>
+            <ol>
+                {% for idx, date, plays in record_total_plays %}
+                    <li>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class='span4'>
+            <h3>Unique artists scrobbled in one week</h3>
+            <ol>
+                {% for idx, date, artist_count in record_unique_artists %}
+                    <li>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
+                    </li>
+                {% endfor %}
+            </ol>
         </div>
     </div>
     <div class='row'>

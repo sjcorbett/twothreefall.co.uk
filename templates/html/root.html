@@ -33,26 +33,14 @@
     <body>
         <div class='container'>
             <div id='header' class='row'>
-                <div class='span2'>
-                    <h2 id='ttf'>
-                        <a class='ttflink' href='/'>
-                            <span class='ttfTwo'>TWO</span><span class='ttfThree'>THREE</span><span class='ttfFall'>FALL</span>
-                        </a>
+                <div class='span10'>
+                    <h2>
+                        <a class='ttflink' href='/'>TWOTHREEFALL</a>
                     </h2>
                 </div>
-                <div class='span8'>
-                    <div id='header-container'>
-                        {% block extended_header %}
-                        {% endblock %}
-                    </div>
-                </div>
                 <div class='span1'>
-                    <div id='fixedrightmenu'>
-                        <ul class='inlinedlist'>
-                            <li>
-                                <a href="{% url about %}">ABOUT</a>
-                            </li>
-                        </ul>
+                    <div id='about'>
+                        <b><a href="{% url about %}">ABOUT</a></b>
                     </div>
                 </div>
             </div>

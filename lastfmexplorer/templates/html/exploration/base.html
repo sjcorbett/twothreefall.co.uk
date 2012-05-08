@@ -5,27 +5,29 @@
     {% endblock %}
     Last.fm Explorer
 {% endblock %}
-{% block extended_header %}
-    <div class='float-left'>
-        <img id='profile_image' src='{{context.user.image}}' alt='Profile image for {{context.user}}' />
-    </div>
-    <div class='float-left'>
-        <h1><span class="lex-red">Last.fm Explorer</span> &mdash; <span class="lex-red">VodkaVolauvent</span></h1>
-        <span id='dates'>{{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}</span>
-        <ul id='topmenu' class='inlinedlist slashseparated'>
-            <li>
-                <a href="{% url "lastfmexplorer.views.overview" context.user %}">An overview</a>
-            </li>
-            <li>
-                <a href="{% url "lastfmexplorer.views.user_chart" context.user %}">Charts</a>
-            </li>
-            <li class='last'>
-                <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
-            </li>
-        </ul>
-    </div>
-{% endblock %}
 {% block body %}
+    <div class='row'>
+        <div class='span12'>
+            <div class='float-left'>
+                <img id='profile_image' src='{{context.user.image}}' alt='Profile image for {{context.user}}' />
+            </div>
+            <div class='float-left'>
+                <h1><span class="lex-red">Last.fm Explorer</span> &mdash; <span class="lex-red">{{context.user}}</span></h1>
+                <span id='dates'>{{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}</span>
+                <ul id='topmenu' class='inlinedlist slashseparated'>
+                    <li>
+                        <a href="{% url "lastfmexplorer.views.overview" context.user %}">An overview</a>
+                    </li>
+                    <li>
+                        <a href="{% url "lastfmexplorer.views.user_chart" context.user %}">Charts</a>
+                    </li>
+                    <li class='last'>
+                        <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     {% if not context.template.skipped_dates %}
         <div class='row'>
             <div class='span6'>

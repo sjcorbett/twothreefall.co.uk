@@ -31,27 +31,26 @@
                 #weekly_counts_hist{'style':"width:470px; height: 320px; margin-bottom:1em;"}
 
     .row
-        .span12
-            %h2 Most...
-            .span3
-                %h3 Plays of one artist in one week
-                %ol
-                    - for item, date in record_single_artist
-                        %li
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
-                            <b>{{ item.plays }}</b> - {{ item.artist }}
-            .span3
-                %h3 Songs scrobbled in one week
-                %ol
-                    - for idx, date, plays in record_total_plays
-                        %li
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
-            .span4
-                %h3 Unique artists scrobbled in one week
-                %ol
-                    - for idx, date, artist_count in record_unique_artists
-                        %li
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
+        %h2 Most...
+        .span4
+            %h3 Plays of one artist in one week
+            %ol
+                - for item, date in record_single_artist
+                    %li
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
+                        <b>{{ item.plays }}</b> - {{ item.artist }}
+        .span4
+            %h3 Songs scrobbled in one week
+            %ol
+                - for idx, date, plays in record_total_plays
+                    %li
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
+        .span4
+            %h3 Unique artists scrobbled in one week
+            %ol
+                - for idx, date, artist_count in record_unique_artists
+                    %li
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
 
     .row
         .span12
