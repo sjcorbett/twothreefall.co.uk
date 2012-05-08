@@ -10,21 +10,27 @@
     <br />
     <br />
     <br />
-    <form id='start' action='' method='get'>
-        <fieldset id='login'>
-            <legend>Last.fm Explorer</legend>
-            <p class='description'>Investigate all that data <a href="http://www.last.fm">Last.fm</a> has about you but doesn't expose.</p>
-            <label for='name'>Last.fm username:</label>
-            <input id='name' type='text' name='username' value='{{given}}' />
-            <input id='submit' type='submit' value='Go' />
+    <div id='lex-start'>
+        <form class='well form-inline' action='' method='get'>
+            <fieldset id='login' class='control-group'>
+                <legend>Last.fm Explorer</legend>
+                <p class='description'>Investigate all that data <a href="http://www.last.fm">Last.fm</a> has about you but doesn't expose.</p>
+                <div id='lex-user-inputs'>
+                    {% if feedback.errmessage %}
+                    <div class="control-group error">
+                    {% else %}
+                    <div class="control-group">
+                    {% endif %}
+                        <input id="name" type="text" name="username" value="{{ given }}" placeholder="Last.fm username"/>
+                        <button class="btn" type="submit">Go</button>
+                    </div>
+                </div>
+            </fieldset>
             {% if feedback.errmessage %}
-                <div class='errordiv'>
-                    <p>
-                        <img src="{{ STATIC_URL }}img/site/error.gif" %}"/>
-                        {{ feedback.errmessage }}
-                    </p>
+                <div class='alert alert-error'>
+                    <strong>{{ feedback.errmessage }}</strong>
                 </div>
             {% endif %}
-        </fieldset>
-    </form>
+        </form>
+    </div>
 {% endblock %}
