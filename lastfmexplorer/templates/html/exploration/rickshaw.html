@@ -3,13 +3,23 @@
     Rickshaw experiment
 {% endblock %}
 {% block content %}
-    <form>
-        <input id="artist_filter" name="artist" type="text"/>
-        <input id="artist_filter_submit" type="submit" value="Filter" />
-    </form>
-    <div id='graph'></div>
-    <div id='slider'></div>
-    <div id='legend'></div>
+    <div class='row'>
+        <div class='span12'>
+            <form>
+                <input id="artist_filter" name="artist" type="text"/>
+                <input id="artist_filter_submit" type="submit" value="Filter" />
+            </form>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='span1'>
+            <div id='legend'></div>
+        </div>
+        <div class='span11'>
+            <div id='graph'></div>
+            <div id='slider'></div>
+        </div>
+    </div>
 {% endblock %}
 {% block javascript %}
     <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}rickshaw/rickshaw.css">
