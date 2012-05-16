@@ -11,22 +11,24 @@
         <b><span class="red">red</span></b> weeks were unavailable,
         <b><span class="grey">grey</span></b> weeks had no scrobbles or aren't available yet.
 
-    - for year, months in years
-        .year_group
-            %h2 {{ year }}
-            %hr/
-            %table
-                - for month, weeks in months
-                    %tr
-                        %td
-                            %strong {{ month|upper }}
-                        - for week in weeks reversed
-                            <td id="{{ week.index }}">
-                                - if  week.errored
-                                    <strong><span class="red">{{ week.day|ordinal }}</span></strong>
-                                - else
-                                    - if not week.missing
-                                        <a href="{% url lastfmexplorer.views.user_week_chart context.user week.index %}">
-                                        <span class="green">{{ week.day|ordinal }}</span></a>
-                                    - else
-                                        <span class="grey">{{ week.day|ordinal }}</span>
+    .container
+        .row
+            .span3
+                - for year, months in years
+                    .year_group
+                        %h2 {{ year }}
+                        %table.table
+                            - for month, weeks in months
+                                %tr
+                                    %td
+                                        %strong {{ month|upper }}
+                                    - for week in weeks reversed
+                                        <td id="{{ week.index }}">
+                                            - if  week.errored
+                                                <strong><span class="red">{{ week.day|ordinal }}</span></strong>
+                                            - else
+                                                - if not week.missing
+                                                    <a href="{% url lastfmexplorer.views.user_week_chart context.user week.index %}">
+                                                    <span class="green">{{ week.day|ordinal }}</span></a>
+                                                - else
+                                                    <span class="grey">{{ week.day|ordinal }}</span>

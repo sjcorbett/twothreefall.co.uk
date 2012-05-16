@@ -9,32 +9,37 @@
         <b><span class="red">red</span></b> weeks were unavailable,
         <b><span class="grey">grey</span></b> weeks had no scrobbles or aren't available yet.
     </p>
-    {% for year, months in years %}
-        <div class='year_group'>
-            <h2>{{ year }}</h2>
-            <hr />
-            <table>
-                {% for month, weeks in months %}
-                    <tr>
-                        <td>
-                            <strong>{{ month|upper }}</strong>
-                        </td>
-                        {% for week in weeks reversed %}
-                            <td id="{{ week.index }}">
-                                {% if  week.errored %}
-                                    <strong><span class="red">{{ week.day|ordinal }}</span></strong>
-                                {% else %}
-                                    {% if not week.missing %}
-                                        <a href="{% url lastfmexplorer.views.user_week_chart context.user week.index %}">
-                                        <span class="green">{{ week.day|ordinal }}</span></a>
-                                    {% else %}
-                                        <span class="grey">{{ week.day|ordinal }}</span>
-                                    {% endif %}
-                                {% endif %}
-                        {% endfor %}
-                    </tr>
+    <div class='container'>
+        <div class='row'>
+            <div class='span3'>
+                {% for year, months in years %}
+                    <div class='year_group'>
+                        <h2>{{ year }}</h2>
+                        <table class='table'>
+                            {% for month, weeks in months %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ month|upper }}</strong>
+                                    </td>
+                                    {% for week in weeks reversed %}
+                                        <td id="{{ week.index }}">
+                                            {% if  week.errored %}
+                                                <strong><span class="red">{{ week.day|ordinal }}</span></strong>
+                                            {% else %}
+                                                {% if not week.missing %}
+                                                    <a href="{% url lastfmexplorer.views.user_week_chart context.user week.index %}">
+                                                    <span class="green">{{ week.day|ordinal }}</span></a>
+                                                {% else %}
+                                                    <span class="grey">{{ week.day|ordinal }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
                 {% endfor %}
-            </table>
+            </div>
         </div>
-    {% endfor %}
+    </div>
 {% endblock %}
