@@ -43,9 +43,27 @@ def __urlsForPattern(urlpatterns, pattern, view):
     default_dates  = { 'start': ldates.idx_beginning, 'end': ldates.idx_last_sunday }
 
     urlpatterns += patterns('twothreefall.lastfmexplorer.views',
-        (pattern + '$', view, default_dates),
-        (pattern + r'(?P<year>\d{4})/$', view),
+
+        # Named patterns. Seems these override root below, so important these are first
+        (pattern + r'month/$',   view, { 'monthsAgo': 1 }),
+        (pattern + r'3months/$', view, { 'monthsAgo': 3 }),
+        (pattern + r'6months/$', view, { 'monthsAgo': 6 }),
+        (pattern + r'year/$',   view, { 'yearsAgo': 1 }),
+        (pattern + r'2years/$', view, { 'yearsAgo': 2 }),
+        (pattern + r'3years/$', view, { 'yearsAgo': 3 }),
+        (pattern + r'4years/$', view, { 'yearsAgo': 4 }),
+        (pattern + r'5years/$', view, { 'yearsAgo': 5 }),
+        (pattern + r'6years/$', view, { 'yearsAgo': 6 }),
+        (pattern + r'7years/$', view, { 'yearsAgo': 7 }),
+
+        # Root
+        (pattern + '/$', view, default_dates),
+
+        # Arbitrary selection
         (pattern + r'(?P<start>\d+)-(?P<end>\d+)/$', view),
+
+        # Years
+        (pattern + r'(?P<year>\d{4})/$', view),
     )
 
 # plain user overview.

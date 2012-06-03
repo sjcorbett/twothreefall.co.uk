@@ -41,11 +41,17 @@
                     %h3 Or the last..
                     .inlinedlistpara
                         %ul.commaseparated
-                            - for name, s, e in context.template.shortcuts
-                                %li<
-                                    <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a>
-                            %li.last
-                                <a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a>
+                            <li><a href="{% url context.template.active_view context.user %}month/{{ context.template.getq }}">Month</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}3months/{{ context.template.getq }}">3 months</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}6months/{{ context.template.getq }}">6 months</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}year/{{ context.template.getq }}">year</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}2years/{{ context.template.getq }}">2 years</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}3years/{{ context.template.getq }}">3 years</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}4years/{{ context.template.getq }}">4 years</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}5years/{{ context.template.getq }}">5 years</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}6years/{{ context.template.getq }}">6 years</a></li>
+                            <li><a href="{% url context.template.active_view context.user %}7years/{{ context.template.getq }}">7 years</a></li>
+                            <li class="last"><a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All time</a></li>
             .span6
                 %form.form-horizontal.well{'method': 'get', 'action': '#'}
                     %h3 Choose a custom date range
