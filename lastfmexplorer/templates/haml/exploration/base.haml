@@ -41,11 +41,13 @@
                     %h3 Or the last..
                     .inlinedlistpara
                         %ul.commaseparated
-                            - for name, s, e in context.template.shortcuts
-                                %li<
-                                    <a href="{% url context.template.active_view context.user s e %}{{ context.template.getq }}">{{ name }}</a>
-                            %li.last
-                                <a href="{% url context.template.active_view context.user %}{{ context.template.getq }}">All</a>
+                            <li><a href="{% url context.template.active_view username=context.user monthsAgo=1 %}{{ context.template.getq }}">Month</a></li>
+                            <li><a href="{% url context.template.active_view username=context.user monthsAgo=3 %}{{ context.template.getq }}">3 months</a></li>
+                            <li><a href="{% url context.template.active_view username=context.user monthsAgo=6 %}{{ context.template.getq }}">6 months</a></li>
+                            - for year in context.template.years_ago
+                                <li><a href="{% url context.template.active_view username=context.user yearsAgo=year%}{{ context.template.getq }}">
+                                    {% if year > 1 %}{{ year }} years{% else %}year{% endif %}</a></li>
+                            <li class="last"><a href="{% url context.template.active_view username=context.user %}{{ context.template.getq }}">All time</a></li>
             .span6
                 %form.form-horizontal.well{'method': 'get', 'action': '#'}
                     %h3 Choose a custom date range
