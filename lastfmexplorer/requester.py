@@ -95,6 +95,10 @@ class Requester:
 
 class LastFMRequester(Requester):
     """Proper requests to Last.fm"""
+
+    def __init__(self):
+        Requester.__init__(self, saveResponses=False)
+
     def url_for_request(self, method, extras):
         args = urlencode(extras) if extras else ""
         return "http://ws.audioscrobbler.com/2.0/?method=%s&api_key=%s&%s" % (method, LASTFM_API_KEY, args)
@@ -104,9 +108,8 @@ class TestRequester(Requester):
     """Requests to the local file system to use when testing"""
 
     def __init__(self, rootDataDir):
-        Requester.__init__(self)
+        Requester.__init__(self, saveResponses=False)
         self.rootDataDir = rootDataDir
-        self.shouldGzip = False
 
     def url_for_request(self, method, extras):
         if method == 'user.getweeklychartlist':
