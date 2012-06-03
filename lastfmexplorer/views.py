@@ -156,10 +156,10 @@ def staged(target_view, skip_date_shortcuts=False):
                 year = int(year)
                 start, end = ldates.indicies_of_year(year)
             elif monthsAgo:
-                start = ldates.months_ago(monthsAgo)
+                start = max(0, ldates.months_ago(int(monthsAgo)))
                 end   = ldates.idx_last_sunday
             elif yearsAgo:
-                start = ldates.years_ago(yearsAgo)
+                start = max(0, ldates.years_ago(int(yearsAgo)))
                 end   = ldates.idx_last_sunday
             else:
                 start = int(start) if (start and int(start) > faw) else faw
@@ -200,6 +200,7 @@ def staged(target_view, skip_date_shortcuts=False):
             # shortcuts for links to and presentation of dates.
             if not skip_date_shortcuts:
                 context['template']['year_shortcuts'] = ldates.years_to_today()
+                context['template']['years_ago'] = range(1, ldates.today.year - ldates.the_beginning.year + 1)
 
             if 'count' in G:
                 try:

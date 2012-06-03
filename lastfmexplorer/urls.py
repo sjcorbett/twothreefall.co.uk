@@ -44,20 +44,11 @@ def __urlsForPattern(urlpatterns, pattern, view):
 
     urlpatterns += patterns('twothreefall.lastfmexplorer.views',
 
-        # Named patterns. Seems these override root below, so important these are first
-        (pattern + r'month/$',   view, { 'monthsAgo': 1 }),
-        (pattern + r'3months/$', view, { 'monthsAgo': 3 }),
-        (pattern + r'6months/$', view, { 'monthsAgo': 6 }),
-        (pattern + r'year/$',   view, { 'yearsAgo': 1 }),
-        (pattern + r'2years/$', view, { 'yearsAgo': 2 }),
-        (pattern + r'3years/$', view, { 'yearsAgo': 3 }),
-        (pattern + r'4years/$', view, { 'yearsAgo': 4 }),
-        (pattern + r'5years/$', view, { 'yearsAgo': 5 }),
-        (pattern + r'6years/$', view, { 'yearsAgo': 6 }),
-        (pattern + r'7years/$', view, { 'yearsAgo': 7 }),
+        (pattern + '$', view, default_dates),
 
-        # Root
-        (pattern + '/$', view, default_dates),
+        # x ago
+        (pattern + r'(?P<monthsAgo>\d)month/$', view),
+        (pattern + r'(?P<yearsAgo>\d\d?)year/$', view),
 
         # Arbitrary selection
         (pattern + r'(?P<start>\d+)-(?P<end>\d+)/$', view),

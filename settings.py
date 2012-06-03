@@ -11,7 +11,7 @@ import os
 from secrets import *
 
 DEBUG = DEV
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     ('Sam', 'sam@twothreefall.co.uk'),
@@ -107,7 +107,7 @@ INSTALLED_APPS = (
 
 ########## Dev options ########################################################
 
-if DEV:
+if TEMPLATE_DEBUG:
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     INSTALLED_APPS += ('debug_toolbar',)
     DEBUG_TOOLBAR_CONFIG = {
