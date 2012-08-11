@@ -7,7 +7,7 @@ from models import Artist, WeekData
 
 from django.db.models import Sum
 from django.core.cache import cache
-import settings
+import twothreefall.settings
 
 class Chart:
     
