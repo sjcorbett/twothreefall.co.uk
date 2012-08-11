@@ -1,0 +1,34 @@
+- extends 'root.html'
+
+- block ttle
+    About
+
+- block body
+    #top
+        %p I'm Sam, I live and work in Edinburgh.  Slowly this website is coming together.
+        %p The source for twothreefall.co.uk is available on <a href="https://github.com/aradnuk/twothreefall.co.uk">GitHub</a>
+
+        %h2#lex Last.fm Explorer
+        %p <a href="http://www.last.fm/user/aradnuk">I</a> love Last.fm to pieces.
+
+        %h3 Changelog
+        %ul
+            %li
+                %strong 03-06-2012
+                Remove all uses of MusicBrainz ids &mdash; Last.fm seem to change the ids attached to artists arbitrarily.
+            %li
+                %strong 15-04-2012
+                Bit of a restyle.
+            %li
+                %strong 19-12-2011
+                Fixed incorrect chart averages.  Thanks to <a href="http://www.last.fm/user/m2wester">m2wester</a> for spotting this.
+            %li
+                %strong 23-10-2011
+                Introduced an index page for all weekly charts.
+            %li
+                %strong 20-10-2011
+                Fixed it!
+            %li
+                %strong 22-06-2011
+                There's a weird problem with saving new artists to the database.
+                Sometimes it occurs, sometimes it doesn't.. I'm working on it.

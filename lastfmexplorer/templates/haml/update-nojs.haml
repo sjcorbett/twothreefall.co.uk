@@ -1,0 +1,14 @@
+- extends 'root.html'
+
+- block title
+    Last.fm Explorer Update -- {{ username }}
+
+- block body
+    #top
+        %h1 Update queue
+        %ul
+            - for user, count in updating_users
+                %li {{ user }}, {{ count }} requests remaining
+
+        %p Perhaps have a cup of tea?
+

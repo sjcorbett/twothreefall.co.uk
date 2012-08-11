@@ -132,10 +132,7 @@ def _parse_week_artist_data(xml):
         artist = __elem(d, 'name')
         pc     = int(__elem(d, 'playcount'))
         rank   = int(__attr(d, 'rank'))
-        mbid   = __elem(d, 'mbid')
-
-        mbid   = mbid.strip() if mbid else ""
-        a, _ = Artist.objects.get_or_create(name=artist, mbid=mbid)
+        a, _ = Artist.objects.get_or_create(name=artist)
 
         # Truncating this artist's name could cause a key clash
         # Add the playcount to that entry.
@@ -162,12 +159,11 @@ def _parse_week_track_data(xml):
     data = {}
     for d in __iter_over_field(xml, 'track'):
         artist = __elem(d, 'artist')
-        artist_mbid = d.find('artist').attrib['mbid']
         title  = __elem(d, 'name')
         pc     = int(__elem(d, 'playcount'))
         rank   = int(__attr(d, 'rank'))
 
-        a, _ = Artist.objects.get_or_create(name=artist, mbid=artist_mbid)
+        a, _ = Artist.objects.get_or_create(name=artist)
         t, _ = Track.objects.get_or_create(title=title, artist=a)
 
         # Truncating this artist's name could cause a key clash

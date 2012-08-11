@@ -1,0 +1,36 @@
+<html>
+    <body>
+        <h1>Cache status</h1>
+        <ul>
+            <li>
+                Memory usage:
+                {{ stats.bytes|filesizeformat }}
+            </li>
+            <li>
+                Keys in cache:
+                {{ stats.curr_items }}
+                of
+                {{ stats.total_items }}
+            </li>
+            <li>
+                Cache hits:
+                {{ stats.get_hits }}
+                of
+                {{ stats.cmd_get }}
+                :
+                <b>{{ hit_rate }}</b>
+            </li>
+            <li>
+                Cache traffic:
+                {{ stats.bytes_read|filesizeformat }}
+                in,
+                {{ stats.bytes_written|filesizeformat }}
+                out
+            </li>
+            <li>
+                uptime
+                {{ stats.uptime }}
+            </li>
+        </ul>
+    </body>
+</html>

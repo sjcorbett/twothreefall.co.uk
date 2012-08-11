@@ -1,0 +1,57 @@
+{% extends 'exploration/base.html' %}
+{% block lextitle %}
+    {{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} Chart -
+{% endblock %}
+{% block lex_page_config %}
+    <div class='control-group'>
+        <label class='control-label'>Exclude</label>
+        <div class='controls'>
+            <label class='checkbox'>
+                <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
+                artists scrobbled before start date
+            </label>
+            <label class='checkbox'>
+                <input id="exclude_months" name="exclude_months" type="checkbox" {% if exclude_months %}checked="checked"{% endif %}/>
+                artists scrobbled in the last
+                <input id="num_excluded" name="num_excluded" type="text" class="span1" value="{{ num_excluded }}"/>
+                months
+            </label>
+        </div>
+    </div>
+    <div class='control-group'>
+        <label class='control-label' for='count'>Items in chart</label>
+        <div class='controls'>
+            <input id="count" class="span3" name="count" type="text" {% if count %}value="{{ count }}"{% endif %}/>
+        </div>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class='row'>
+        <div class='span12'>
+            {% if isWeek %}
+                <div id='weeklinks'>
+                    <span id='previousweek'>
+                        {% if prevW > 0 %}
+                            <a href="{% url lastfmexplorer.views.user_week_chart context.user prevW %}">Previous</a>
+                        {% else %}
+                            Previous
+                        {% endif %}
+                    </span>
+                    <span id='nextweek'>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user nextW %}">Next</a>
+                    </span>
+                </div>
+            {% endif %}
+            <ol>
+                {% for artist, count, max in chart %}
+                    <li class='barchart'>
+                        <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                        <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                            <span class='barchart_num'>{{ count }}</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+{% endblock %}

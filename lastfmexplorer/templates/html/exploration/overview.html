@@ -1,0 +1,144 @@
+{% extends 'exploration/base.html' %}
+{% block lextitle %}
+    {{ context.user }} - {% if context.year %}{{ context.year }} - {% endif %}
+{% endblock %}
+{% block content %}
+    <div class='row'>
+        <div class='span12'>
+            <h3>In this period</h3>
+            <ul>
+                {% for item in vitals %}
+                    <li>{{ item|safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='span12'>
+            <h3>Weekly Playcounts</h3>
+            <div class='itemcontent'>
+                <p>
+                    <b><span class="blue">blue</span></b>: number of songs played in a week,
+                    <b><span class="green">green</span></b>: onrunning average
+                </p>
+                <div id='weekly_js' style='width: 1000px; height: 150px;'></div>
+            </div>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='span6'>
+            <div style='float:left;'>
+                <h3>Cumulative monthly track totals</h3>
+                <div id='monthly_js' style='width:470px; height: 320px; margin-bottom:1em;'></div>
+            </div>
+        </div>
+        <div class='span6'>
+            <div style='float:left;'>
+                <h3>Weekly playcount frequency</h3>
+                <div id='weekly_counts_hist' style='width:470px; height: 320px; margin-bottom:1em;'></div>
+            </div>
+        </div>
+    </div>
+    <div class='row'>
+        <h2>Most...</h2>
+        <div class='span4'>
+            <h3>Plays of one artist in one week</h3>
+            <ol>
+                {% for item, date in record_single_artist %}
+                    <li>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
+                        <b>{{ item.plays }}</b> - {{ item.artist }}
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class='span4'>
+            <h3>Songs scrobbled in one week</h3>
+            <ol>
+                {% for idx, date, plays in record_total_plays %}
+                    <li>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class='span4'>
+            <h3>Unique artists scrobbled in one week</h3>
+            <ol>
+                {% for idx, date, artist_count in record_unique_artists %}
+                    <li>
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='span12'>
+            <div class='itemtitle'>
+                <h2>Top Artists</h2>
+            </div>
+            <div class='itemcontent'>
+                <ol>
+                    {% for artist, count, max in chart %}
+                        <li class='barchart'>
+                            <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                            <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                                <span class='barchart_num'>{{ count }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+<!--[if lte IE 8]>
+        <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/external/flot/excanvas.min.js"></script>
+    <![endif]-->    <script type="text/javascript" src="{{ STATIC_URL }}js/external/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/flot-charts.js"></script>
+<script type='text/javascript'>
+// <![CDATA[
+        $(document).ready(function() {
+            function monthly_counts() {                var monthly_data = [];                var month_ticks = [];                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];                var data = {{ mcjs }};                for (var i=0, len=data.length; i<len; ++i) {                    monthly_data.push([i, data[i]]);                    month_ticks.push([i, months[i]]);                }
+                $.plot($("#monthly_js"), [{data : monthly_data, color: "#00f"}], {                    bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },                    xaxis: { ticks: month_ticks },                    grid:  { hoverable: true, borderWidth: 0 }                });
+                bindTooltip("#monthly_js");
+            }
+            function weekly_hist() {
+                var weekly_data = [];
+                var weekly_ticks = [];
+                var hist_step = {{ wpc_hist_step }};
+                var counts = {{ wpc_hist }};
+                for (var i=0, len=counts.length; i<len; ++i) {
+                    weekly_data.push([i, counts[i]]);
+                    weekly_ticks.push([i, ((hist_step*i) + ((i == 0) ? 0 : 1)) + "-" + (hist_step*(i+1))]);
+                }
+                $.plot($("#weekly_counts_hist"), [{data : weekly_data, color: "#00f"}], {
+                    bars:  { show: true, barWidth: 0.75, fill: 0.8, align: "center" },
+                    xaxis: { ticks: weekly_ticks },
+                    grid:  { hoverable: true, borderWidth: 0 }
+                });
+                bindTooltip("#weekly_counts_hist");
+            }
+            function weekly_line() {
+                var weekly_data = [];
+                var averages = [];
+                var weeklies = [
+                    {% for dte, playcount, average in wpcjs %}[{{ dte }}, {{ playcount }}, {{ average }}]{% if not forloop.last %},{% endif %}{% endfor %}];
+                for (var i=0, len=weeklies.length; i<len; ++i) {
+                    weekly_data.push([weeklies[i][0], weeklies[i][1]]);
+                    averages.push([weeklies[i][0], weeklies[i][2]]);
+                }
+                plot_line_chart("#weekly_js", [
+                    {data : weekly_data, color: "#00f"},
+                    {data: averages, color: "#007f02"}
+                ]);
+            }
+            monthly_counts();
+            weekly_hist();
+            weekly_line();
+        });
+// ]]>
+</script>
+{% endblock %}

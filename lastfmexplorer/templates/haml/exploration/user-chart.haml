@@ -1,0 +1,41 @@
+- extends 'exploration/base.html'
+
+- block lextitle
+    {{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} Chart -
+
+- block lex_page_config
+    .control-group
+        %label.control-label Exclude
+        .controls
+            %label.checkbox
+                <input id="newmusic" name="newmusic" type="checkbox" {% if only_new %}checked="checked"{% endif %}/>
+                artists scrobbled before start date
+            %label.checkbox
+                <input id="exclude_months" name="exclude_months" type="checkbox" {% if exclude_months %}checked="checked"{% endif %}/>
+                artists scrobbled in the last
+                <input id="num_excluded" name="num_excluded" type="text" class="span1" value="{{ num_excluded }}"/>
+                months
+    .control-group
+        %label.control-label{"for": "count"} Items in chart
+        .controls
+            <input id="count" class="span3" name="count" type="text" {% if count %}value="{{ count }}"{% endif %}/>
+
+- block content
+    .row
+        .span12
+            - if isWeek
+                #weeklinks
+                    %span#previousweek
+                        - if prevW > 0
+                            <a href="{% url lastfmexplorer.views.user_week_chart context.user prevW %}">Previous</a>
+                        - else
+                            Previous
+                    %span#nextweek
+                        <a href="{% url lastfmexplorer.views.user_week_chart context.user nextW %}">Next</a>
+            %ol
+                - for artist, count, max in chart
+                    %li.barchart
+                        <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+                        <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                            <span class='barchart_num'>{{ count }}</span>
+                        </div>

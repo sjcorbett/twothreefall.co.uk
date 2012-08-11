@@ -11,7 +11,7 @@ import os
 from secrets import *
 
 DEBUG = DEV
-TEMPLATE_DEBUG = DEBUG
+TEMPLATE_DEBUG = False
 
 ADMINS = (
     ('Sam', 'sam@twothreefall.co.uk'),
@@ -40,8 +40,16 @@ MEDIA_ROOT = '/home/sam/code/ttf/twothreefall/media/' if DEV else \
 MEDIA_URL = 'http://127.0.0.1:8000/media/' if DEV else \
     "http://twothreefall.co.uk/media/"
 
+# STATIC_ROOT set in secrets
+STATIC_URL = '/static/'
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+)
+
 # Including broke admin css?
-ADMIN_MEDIA_PREFIX = MEDIA_URL + 'admin/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -75,7 +83,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.humanize',
-    
+    'django.contrib.sitemaps',
+    'django.contrib.staticfiles',
+
     'twothreefall',
     'twothreefall.lastfmexplorer',
     # 'twothreefall.scrabble',
@@ -97,7 +107,7 @@ INSTALLED_APPS = (
 
 ########## Dev options ########################################################
 
-if DEV:
+if TEMPLATE_DEBUG:
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     INSTALLED_APPS += ('debug_toolbar',)
     DEBUG_TOOLBAR_CONFIG = {
@@ -116,12 +126,14 @@ def basic_context(request):
     return { 'MEDIA_URL' : MEDIA_URL, 'DEV' : DEV } 
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
+    os.path.join(os.path.dirname(__file__), 'templates/html'),
+    os.path.join(os.path.dirname(__file__), 'lastfmexplorer/templates/html'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'twothreefall.settings.basic_context',
     'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.static',
 )
 
 

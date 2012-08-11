@@ -1,0 +1,15 @@
+{% extends 'root.html' %}
+{% block title %}
+    Last.fm Explorer Update -- {{ username }}
+{% endblock %}
+{% block body %}
+    <div id='top'>
+        <h1>Update queue</h1>
+        <ul>
+            {% for user, count in updating_users %}
+                <li>{{ user }}, {{ count }} requests remaining</li>
+            {% endfor %}
+        </ul>
+        <p>Perhaps have a cup of tea?</p>
+    </div>
+{% endblock %}

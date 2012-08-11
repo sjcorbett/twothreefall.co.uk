@@ -45,9 +45,8 @@ def start(request):
 
 def __date_redirection(request, target):
     """
-    Uses given user/start/end in request.GET to redirect the user to target
-    page.  Old start and end are given as placeholders in case they're missing
-    in GET.
+    Uses given user/start/end in request.GET to redirect the user to target page.
+    Old start and end are given as placeholders in case they're missing in GET.
     """
 
     GET = request.GET
@@ -132,10 +131,12 @@ def poll_update_status(request):
 ###############################################################################
 # Interesting bits and pieces.
 
+# TODO: Does use of ldates.idx_last_sunday only work in the week after the server is started..?
+
 def staged(target_view, skip_date_shortcuts=False):
     def inner(fn):
         # @cache_page(settings.CACHE_USER_TIMEOUT)
-        def cleansed(request, username, year=None, start=None, end=None, **kwargs):
+        def cleansed(request, username, year=None, start=None, end=None, monthsAgo=None, yearsAgo=None, **kwargs):
             """
             1. Does the user exist?
             2. Are the start and end dates sensible?
@@ -154,6 +155,12 @@ def staged(target_view, skip_date_shortcuts=False):
             if year:
                 year = int(year)
                 start, end = ldates.indicies_of_year(year)
+            elif monthsAgo:
+                start = max(0, ldates.months_ago(int(monthsAgo)))
+                end   = ldates.idx_last_sunday
+            elif yearsAgo:
+                start = max(0, ldates.years_ago(int(yearsAgo)))
+                end   = ldates.idx_last_sunday
             else:
                 start = int(start) if (start and int(start) > faw) else faw
                 end   = min(int(end) if end else ldates.fsoob(user.last_updated), 
@@ -193,7 +200,7 @@ def staged(target_view, skip_date_shortcuts=False):
             # shortcuts for links to and presentation of dates.
             if not skip_date_shortcuts:
                 context['template']['year_shortcuts'] = ldates.years_to_today()
-                context['template']['shortcuts'] = ldates.months + ldates.years_ago
+                context['template']['years_ago'] = range(1, ldates.today.year - ldates.the_beginning.year + 1)
 
             if 'count' in G:
                 try:
@@ -353,26 +360,6 @@ def who(request, context):
     """
     suggestions = WeekData.objects.who_shall_i_listen_to(context.get('user'))
     return { 'context' : context, 'suggestions' : suggestions }
-
-
-@staged('exploration/user-and-artist.html', skip_date_shortcuts=True)
-def user_and_artist(request, context):
-    user = context.get('user')
-    start = context.get('start')
-    end  = context.get('end')
-    artist_names = context.get('artists')
-    artists = []
-
-    # look for each artist in the database, ignore if it doesn't exist.
-    for artist in artist_names.split("+"):
-        try:
-            artists.append(Artist.objects.get(name=artist))
-        except ObjectDoesNotExist:
-            pass
-
-    weekly_plays = WeekData.artists.user_weekly_plays_of_artists(user, artists, start, end)
-    return { 'context' : context, 'weekly_plays' : weekly_plays,
-             'array_counter' : xrange(len(weekly_plays)) }
 
 
 def list_bad_xml_files(request):

@@ -1,0 +1,40 @@
+{% extends 'root.html' %}
+{% block ttle %}
+    About
+{% endblock %}
+{% block body %}
+    <div id='top'>
+        <p>I'm Sam, I live and work in Edinburgh.  Slowly this website is coming together.</p>
+        <p>The source for twothreefall.co.uk is available on <a href="https://github.com/aradnuk/twothreefall.co.uk">GitHub</a></p>
+        <h2 id='lex'>Last.fm Explorer</h2>
+        <p><a href="http://www.last.fm/user/aradnuk">I</a> love Last.fm to pieces.</p>
+        <h3>Changelog</h3>
+        <ul>
+            <li>
+                <strong>03-06-2012</strong>
+                Remove all uses of MusicBrainz ids &mdash; Last.fm seem to change the ids attached to artists arbitrarily.
+            </li>
+            <li>
+                <strong>15-04-2012</strong>
+                Bit of a restyle.
+            </li>
+            <li>
+                <strong>19-12-2011</strong>
+                Fixed incorrect chart averages.  Thanks to <a href="http://www.last.fm/user/m2wester">m2wester</a> for spotting this.
+            </li>
+            <li>
+                <strong>23-10-2011</strong>
+                Introduced an index page for all weekly charts.
+            </li>
+            <li>
+                <strong>20-10-2011</strong>
+                Fixed it!
+            </li>
+            <li>
+                <strong>22-06-2011</strong>
+                There's a weird problem with saving new artists to the database.
+                Sometimes it occurs, sometimes it doesn't.. I'm working on it.
+            </li>
+        </ul>
+    </div>
+{% endblock %}

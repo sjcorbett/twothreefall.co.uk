@@ -1,0 +1,35 @@
+- extends 'root.html'
+
+- block ttle
+    Last.fm Explorer
+
+-#
+    {% block javascript %}<script type="text/javascript" src="{{ STATIC_URL }}js/update-polling.js"></script>{% endblock %}
+        <p><img src="{{ STATIC_URL }}img/site/spinner.gif"/>Contacting Last.fm to see if you exist</p>
+
+- block body
+    %br/
+    %br/
+    %br/
+    %br/
+    %br/
+    %br/
+    %br/
+
+    #lex-start
+        %form.well.form-inline{'action': '', 'method': 'get'}
+            %fieldset#login.control-group
+                %legend Last.fm Explorer
+                %p.description Investigate all that data <a href="http://www.last.fm">Last.fm</a> has about you but doesn't expose.
+                #lex-user-inputs
+                    {% if feedback.errmessage %}
+                    <div class="control-group error">
+                    {% else %}
+                    <div class="control-group">
+                    {% endif %}
+                        <input id="name" type="text" name="username" value="{{ given }}" placeholder="Last.fm username"/>
+                        <button class="btn" type="submit">Go</button>
+                    </div>
+            - if feedback.errmessage
+                .alert.alert-error
+                    %strong {{ feedback.errmessage }}

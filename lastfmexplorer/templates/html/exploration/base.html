@@ -1,0 +1,93 @@
+{% extends 'root.html' %}
+{% load url from future %}
+{% block ttle %}
+    {% block lextitle %}
+    {% endblock %}
+    Last.fm Explorer
+{% endblock %}
+{% block body %}
+    <div class='row'>
+        <div class='span12'>
+            <div class='float-left'>
+                <img id='profile_image' src='{{context.user.image}}' alt='Profile image for {{context.user}}' />
+            </div>
+            <div class='float-left'>
+                <h1><span class="lex-red">Last.fm Explorer</span> &mdash; <span class="lex-red">{{context.user}}</span></h1>
+                <span id='dates'>{{ context.template.dstart|date:"d/m/Y" }} &ndash; {{ context.template.dend|date:"d/m/Y" }}</span>
+                <ul id='topmenu' class='inlinedlist slashseparated'>
+                    <li>
+                        <a href="{% url "lastfmexplorer.views.overview" context.user %}">An overview</a>
+                    </li>
+                    <li>
+                        <a href="{% url "lastfmexplorer.views.user_chart" context.user %}">Charts</a>
+                    </li>
+                    <li class='last'>
+                        <a href="{% url "lastfmexplorer.views.user_data" context.user %}">Week index</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% if not context.template.skipped_dates %}
+        <div class='row'>
+            <div class='span6'>
+                <form class='well'>
+                    <h3>Choose a year</h3>
+                    <div class='inlinedlistpara'>
+                        <ul class='commaseparated'>
+                            {% for year in context.template.year_shortcuts %}
+                                {% if forloop.last %}
+                                    <li class='last'>
+                                        <a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a>
+                                    </li>
+                                {% else %}
+                                    <li><a href="{% url context.template.active_view context.user year %}{{ context.template.getq }}">{{ year }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <h3>Or the last..</h3>
+                    <div class='inlinedlistpara'>
+                        <ul class='commaseparated'>
+                            <li><a href="{% url context.template.active_view username=context.user monthsAgo=1 %}{{ context.template.getq }}">Month</a></li>
+                            <li><a href="{% url context.template.active_view username=context.user monthsAgo=3 %}{{ context.template.getq }}">3 months</a></li>
+                            <li><a href="{% url context.template.active_view username=context.user monthsAgo=6 %}{{ context.template.getq }}">6 months</a></li>
+                            {% for year in context.template.years_ago %}
+                                <li><a href="{% url context.template.active_view username=context.user yearsAgo=year%}{{ context.template.getq }}">
+                                    {% if year > 1 %}{{ year }} years{% else %}year{% endif %}</a></li>
+                            {% endfor %}
+                            <li class="last"><a href="{% url context.template.active_view username=context.user %}{{ context.template.getq }}">All time</a></li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class='span6'>
+                <form class='form-horizontal well' action='#' method='get'>
+                    <h3>Choose a custom date range</h3>
+                    <input type="hidden" name="username" value="{{ context.user }}"/>
+                    <input type="hidden" name="original_start" value="{{ context.start }}"/>
+                    <input type="hidden" name="original_end" value="{{ context.end }}"/>
+                    <div class='control-group'>
+                        <label class='control-label' for='start-date-picker'>From the week ending</label>
+                        <div class='controls'>
+                            <input id="start-date-picker" class="span3" name="start" type="text" value="{{ context.template.dstart|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                        </div>
+                    </div>
+                    <div class='control-group'>
+                        <label class='control-label' for='end-date-picker'>to the week ending</label>
+                        <div class='controls'>
+                            <input id="end-date-picker" class="span3" name="end" type="text" value="{{ context.template.dend|date:"d/m/Y" }}" placeholder="A Sunday"/>
+                        </div>
+                    </div>
+                    {% block lex_page_config %}
+                    {% endblock %}
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    <div id='allcontent'>
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}
