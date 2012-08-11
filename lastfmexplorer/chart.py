@@ -7,6 +7,7 @@ from models import Artist, WeekData
 
 from django.db.models import Sum
 from django.core.cache import cache
+import settings
 
 class Chart:
     
@@ -57,20 +58,29 @@ class Chart:
 
         max = None
         to_go = self.count
+
+        # Load artists
+        artist_ids = []
+
         for d in qs:
             # need the maximum for chart widths.
             artist_id = d['artist']
             if artist_id not in excluded:
+                artist_ids.append(artist_id)
 
+        # load all artists, transform to id => artist dict
+        artists = {}
+        for artist in Artist.objects.filter(id__in=artist_ids):
+            artists[artist.id] = artist
+
+        for d in qs:
+            # need the maximum for chart widths.
+            artist_id = d['artist']
+            if artist_id not in excluded:
                 if not max:
                     max = d['plays__sum']
 
-                artist = cache.get("artist%d" % (artist_id,))
-                if not artist:
-                    artist = Artist.objects.get(id=artist_id)
-                    cache.set("artist%d" % (artist_id,), artist, 10000)
-
-                yield artist, d['plays__sum'], max
+                yield artists[artist_id], d['plays__sum'], max
 
                 to_go -= 1
                 if to_go <= 0:
