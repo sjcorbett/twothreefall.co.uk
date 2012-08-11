@@ -1,5 +1,19 @@
 - extends 'exploration/base.html'
 
+- block lextitle
+    {{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} TopN -
+
+-block javascript
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/external/flot/jquery.flot.navigate.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/flot-charts.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/topn.js"></script>
+    :javascript
+        $(document).ready(function() {
+            $.get("{% url lastfmexplorer.views.top_n_ajax %}", {u: "{{ context.user }}"}, topNner.plot);
+        });
+
 - block content
     %h2 Top-N History
-    <img src="/img/{{ username }}-topnhist.png"/>
+    <div id="hovered">..hover</div>
+    <div style="width:100%; height: 650px;" id="topn"></div>
