@@ -1,0 +1,50 @@
+{% extends 'root.html' %}
+{% block ttle %}
+    Status | Last.fm Explorer
+{% endblock %}
+{% block body %}
+    <ul class='lex-status'>
+        <li>
+            <span class='figure'>
+                {{ users }}
+            </span>
+            <span class='description'>
+                Users
+            </span>
+        </li>
+        <li>
+            <span class='figure'>
+                {{ artists }}
+            </span>
+            <span class='description'>
+                Artists
+            </span>
+        </li>
+        <li>
+            <span class='figure'>
+                {{ updates }}
+            </span>
+            <span class='description'>
+                Requests to Last.fm
+            </span>
+            <ul class='lex-status'>
+                <li><strong class="green">{{ successful_requests }}</strong> succeeded</li>
+                <li><strong class="red">{{ failed_requests }}</strong> failed</li>
+                <li>{{ pending_requests }} pending</li>
+            </ul>
+        </li>
+        <li>
+            <span class='figure'>
+                {{ bad_weeks }}
+            </span>
+            <span class='description'>
+                Bad weeks
+            </span>
+            <ul>
+                {% for week in bad_week_list %}
+                    <li>{{ week.user }}: <a href="{{ week.get_absolute_url }}">{{ week }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+{% endblock %}

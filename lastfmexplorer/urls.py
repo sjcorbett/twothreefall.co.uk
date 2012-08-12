@@ -19,6 +19,7 @@ __default_dates = { 'start' : ldates.idx_beginning,
 urlpatterns = patterns('twothreefall.lastfmexplorer.views',
     # start
     (r'^$', 'start'),
+    (r'^status$', 'status'),
 
     # updates
     (__user_base + 'update/$', 'update'),

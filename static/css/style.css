@@ -195,3 +195,23 @@ li.barchart a:link, li.barchart a:visited {
 .errordiv img {
     padding: 0 0.3em 0 0;
 }
+
+/******* LEX STATUS **********************************************/
+
+ul.lex-status {
+    list-style: none;
+}
+
+.lex-status .figure,
+.lex-status .description {
+    font-size: 50px;
+    line-height: 65px;
+}
+
+.lex-status .figure {
+
+}
+
+.lex-status .description {
+    color: #888;
+}
