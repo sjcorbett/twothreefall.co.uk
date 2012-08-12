@@ -435,26 +435,17 @@ def user_data(request, context):
 
 
 def status(request):
-
-    failed_requests = 0
-    successful_requests = 0
-    pending_requests = 0
-
-    for update in Update.objects.all():
-        if update.status == Update.ERRORED:
-            failed_requests += 1
-        elif update.status == Update.COMPLETE:
-            successful_requests += 1
-        elif update.status == Update.IN_PROGRESS:
-            pending_requests += 1
-
+    update_count = Update.objects.count()
+    failed_count = Update.objects.filter(status=Update.ERRORED).count()
+    pending_count = Update.objects.filter(status=Update.IN_PROGRESS).count()
+    complete_count = update_count - failed_count - pending_count
     return render_to_response('status.html', {
             'users': User.objects.count(),
             'artists': Artist.objects.count(),
-            'updates': Update.objects.count(),
+            'updates': update_count,
             'bad_weeks': WeeksWithSyntaxErrors.objects.count(),
             'bad_week_list': WeeksWithSyntaxErrors.objects.all(),
-            'failed_requests': failed_requests,
-            'successful_requests': successful_requests,
-            'pending_requests': pending_requests
+            'failed_requests': failed_count,
+            'successful_requests': complete_count,
+            'pending_requests': pending_count
         }, context_instance=RequestContext(request))
