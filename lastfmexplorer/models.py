@@ -131,7 +131,7 @@ class Update(models.Model):
                (self.user, self.TYPES[self.type][1], self.week_idx, self.STATUSES[self.status][1])
 
 
-class WeekData(caching.base.CachingMixin, models.Model):
+class WeekData(models.Model):
     """
     Weekly artist plays per user
     """

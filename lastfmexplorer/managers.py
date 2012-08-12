@@ -48,7 +48,7 @@ class UpdateManager(models.Manager):
 
 
 # TODO: Drop any filtering done if dates given are the_beginning and today.
-class UserWeekDataManager(caching.base.CachingManager):
+class UserWeekDataManager(models.Manager):
 
     def __single_item(self, query):
         cursor = connection.cursor()
