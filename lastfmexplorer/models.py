@@ -1,5 +1,7 @@
 import datetime as dt
 
+import caching.base
+
 import ldates
 import managers
 
@@ -20,8 +22,10 @@ class TruncatingCharField(models.CharField):
         return value
 
 
-class Artist(models.Model):
+class Artist(caching.base.CachingMixin, models.Model):
     name = TruncatingCharField(max_length=MAX_ARTIST_NAME_LENGTH, unique=True)
+
+    objects = caching.base.CachingManager()
 
     def __unicode__(self):
         return self.name
@@ -66,7 +70,7 @@ class Track(models.Model):
 
 ###############################################################################
 
-class User(models.Model):
+class User(caching.base.CachingMixin, models.Model):
     username   = models.CharField(max_length=15)
     registered = models.DateField()
     last_seen  = models.DateField(auto_now=True)
@@ -74,7 +78,7 @@ class User(models.Model):
     deleted    = models.BooleanField(default=False)
     image      = models.URLField()
 
-    objects    = models.Manager()
+    objects    = caching.base.CachingManager()
     validity   = managers.UserManager()
 
     @models.permalink
@@ -127,7 +131,7 @@ class Update(models.Model):
                (self.user, self.TYPES[self.type][1], self.week_idx, self.STATUSES[self.status][1])
 
 
-class WeekData(models.Model):
+class WeekData(caching.base.CachingMixin, models.Model):
     """
     Weekly artist plays per user
     """
