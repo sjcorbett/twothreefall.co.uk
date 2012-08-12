@@ -1,5 +1,7 @@
 import datetime as dt
 
+import caching.base
+
 import ldates
 import managers
 
@@ -66,7 +68,7 @@ class Track(models.Model):
 
 ###############################################################################
 
-class User(models.Model):
+class User(caching.base.CachingMixin, models.Model):
     username   = models.CharField(max_length=15)
     registered = models.DateField()
     last_seen  = models.DateField(auto_now=True)
@@ -74,7 +76,7 @@ class User(models.Model):
     deleted    = models.BooleanField(default=False)
     image      = models.URLField()
 
-    objects    = models.Manager()
+    objects    = caching.base.CachingManager()
     validity   = managers.UserManager()
 
     @models.permalink

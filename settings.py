@@ -2,16 +2,15 @@
 
 import socket
 import sys
+import os
 
 DEV = socket.gethostname() == "fook"
 del socket
 
-import os
-
-from secrets import *
-
 DEBUG = DEV
 TEMPLATE_DEBUG = False
+
+from secrets import *
 
 ADMINS = (
     ('Sam', 'sam@twothreefall.co.uk'),
@@ -113,12 +112,6 @@ if TEMPLATE_DEBUG:
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS' : False
     }
-
-########## Memcached ##########################################################
-
-CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
-CACHE_USER_TIMEOUT = 1 if DEV else 60 * 5 # five minutes
-CACHE_DATA_TIMEOUT = 1 if DEV else 60 * 60 * 24 * 7 # one week
 
 ########## Template contexts ##################################################
 
