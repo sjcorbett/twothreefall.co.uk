@@ -72,9 +72,7 @@ class Chart:
                     break
 
         # load all artists, transform to id => artist dict
-        artists = {}
-        for artist in Artist.objects.filter(id__in=artist_ids):
-            artists[artist.id] = artist
+        artists = Artist.objects.in_bulk(artist_ids)
 
         to_go = self.count
         for d in qs:
