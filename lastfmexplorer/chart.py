@@ -67,12 +67,16 @@ class Chart:
             artist_id = d['artist']
             if artist_id not in excluded:
                 artist_ids.append(artist_id)
+                to_go -= 1
+                if to_go <= 0:
+                    break
 
         # load all artists, transform to id => artist dict
         artists = {}
         for artist in Artist.objects.filter(id__in=artist_ids):
             artists[artist.id] = artist
 
+        to_go = self.count
         for d in qs:
             # need the maximum for chart widths.
             artist_id = d['artist']
