@@ -5,6 +5,8 @@ import re
 import logging
 from operator import itemgetter
 
+import caching.base
+
 import ldates
 import models as m
 
@@ -46,7 +48,7 @@ class UpdateManager(models.Manager):
 
 
 # TODO: Drop any filtering done if dates given are the_beginning and today.
-class UserWeekDataManager(models.Manager):
+class UserWeekDataManager(caching.base.CachingManager):
 
     def __single_item(self, query):
         cursor = connection.cursor()
@@ -79,7 +81,7 @@ class UserWeekDataManager(models.Manager):
         start and end.
         """
         query = self.user_weeks_between(user, start, end) \
-                     .order_by('-plays')[:num]
+                     .order_by('-plays')[:num].select_related()
         for week in query:
             date = ldates.date_of_index(week.week_idx)
             yield week, date

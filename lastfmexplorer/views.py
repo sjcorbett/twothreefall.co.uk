@@ -4,11 +4,13 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.views.decorators.cache import cache_page
 from django.views.generic.list_detail import object_list
 
 import logging
 import anyjson
 
+import twothreefall.settings
 import twothreefall.lastfmexplorer.tasks as tasks
 
 from models import *
@@ -135,7 +137,7 @@ def poll_update_status(request):
 
 def staged(target_view, skip_date_shortcuts=False):
     def inner(fn):
-        # @cache_page(settings.CACHE_USER_TIMEOUT)
+        @cache_page(twothreefall.settings.CACHE_USER_TIMEOUT)
         def cleansed(request, username, year=None, start=None, end=None, monthsAgo=None, yearsAgo=None, **kwargs):
             """
             1. Does the user exist?
@@ -196,7 +198,7 @@ def staged(target_view, skip_date_shortcuts=False):
 
             for key, val in kwargs.iteritems():
                 context[key] = val
-            
+
             # shortcuts for links to and presentation of dates.
             if not skip_date_shortcuts:
                 context['template']['year_shortcuts'] = ldates.years_to_today()
@@ -210,10 +212,8 @@ def staged(target_view, skip_date_shortcuts=False):
                     pass
 
             # Fail if there's definitely no data for this range.
-            try:
-                WeekData.objects.user_weeks_between(user, start, end)[0]
-            except IndexError:
-                return render_to_response('exploration/no-data-for-dates.html', 
+            if not WeekData.objects.user_weeks_between(user, start, end).exists():
+                return render_to_response('exploration/no-data-for-dates.html',
                                           { 'context' : context },
                                           context_instance=RequestContext(request))
 

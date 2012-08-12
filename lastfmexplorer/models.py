@@ -22,8 +22,10 @@ class TruncatingCharField(models.CharField):
         return value
 
 
-class Artist(models.Model):
+class Artist(caching.base.CachingMixin, models.Model):
     name = TruncatingCharField(max_length=MAX_ARTIST_NAME_LENGTH, unique=True)
+
+    objects = caching.base.CachingManager()
 
     def __unicode__(self):
         return self.name
@@ -129,7 +131,7 @@ class Update(models.Model):
                (self.user, self.TYPES[self.type][1], self.week_idx, self.STATUSES[self.status][1])
 
 
-class WeekData(models.Model):
+class WeekData(caching.base.CachingMixin, models.Model):
     """
     Weekly artist plays per user
     """
