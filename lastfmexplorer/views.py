@@ -428,7 +428,33 @@ def user_data(request, context):
         years[year_index][1][month_index][1].append(we)
 
     return {
-        'context' : context,
-        "user": user,
-        "years": years
+        "context" : context,
+        "user" : user,
+        "years" : years
     }
+
+
+def status(request):
+
+    failed_requests = 0
+    successful_requests = 0
+    pending_requests = 0
+
+    for update in Update.objects.all():
+        if update.status == Update.ERRORED:
+            failed_requests += 1
+        elif update.status == Update.COMPLETE:
+            successful_requests += 1
+        elif update.status == Update.IN_PROGRESS:
+            pending_requests += 1
+
+    return render_to_response('status.html', {
+            'users': User.objects.count(),
+            'artists': Artist.objects.count(),
+            'updates': Update.objects.count(),
+            'bad_weeks': WeeksWithSyntaxErrors.objects.count(),
+            'bad_week_list': WeeksWithSyntaxErrors.objects.all(),
+            'failed_requests': failed_requests,
+            'successful_requests': successful_requests,
+            'pending_requests': pending_requests
+        }, context_instance=RequestContext(request))
