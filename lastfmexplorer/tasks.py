@@ -2,7 +2,7 @@
 Retrieve data from database and fetch it from last.fm when necessary.
 """
 import logging
-import xml.etree.cElementTree as ET
+import lxml.etree as ET
 from datetime import date
 
 from celery.task.sets import TaskSet
@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.DEBUG)
 def __iter_over_field(xml, field, et=None):
     """Get an iterator over field in XML."""
     if not et:
-        et = ET.fromstring(xml)
+        et = ET.fromstring(xml, ET.XMLParser(encoding="utf-8", recover=True))
     return et.getiterator(field)
 
 def __attr(el, a):
@@ -107,13 +107,13 @@ def week_data(user, requester, start, end, kind='artist'):
     controls the kind of chart fetched.  Returns a generator over (name, 
     playcount, rank).
     """
-
     method = "user.getweekly%schart" % (kind,)
     response = requester.make(method, {'user':user, 'from':start, 'to':end})
     if response['success']:
         return response['data']
     else:
-        raise GetWeekFailed(response['error']['message'])
+        url = requester.url_for_request(method, {'user':user, 'from':start, 'to':end})
+        raise GetWeekFailed("Fetch of %s failed: %s" % (url, response['error']['message']))
 
 def _parse_week_artist_data(xml):
     """
@@ -231,13 +231,19 @@ def fetch_week_data(user, requester, start, end, type):
     except GetWeekFailed:
         u.status = Update.ERRORED
     except SyntaxError:
-        logging.error("request for %s/%d/%d caused a syntax error" % (user, start, end))
+        logging.error("request for %s/%d/%d caused a syntax error." % (user, start, end))
+        logging.error(xml)
         WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx)
+        u.status = Update.ERRORED
+    except Exception, e:
+        logging.error("request for %s/%d/%d caused an unknonwn error: %s" % (user, start, end, e.message))
+        logging.error(xml)
         u.status = Update.ERRORED
     finally:
         u.save()
 
     return u.status
+
 
 def update_user(user, requester):
     """ Fetch new weeks, or possibly those that failed before."""

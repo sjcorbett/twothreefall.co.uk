@@ -4,15 +4,19 @@ from datetime import date
 from django.utils import unittest
 from lastfmexplorer import ldates
 
-from lastfmexplorer.models import Artist, Update, User
+from lastfmexplorer.models import Artist, Update, User, WeekData
 import tasks, requester
 
 class XMLHandling(unittest.TestCase):
-    """Tests for valid Last.fm XML files"""
+    """Tests for valid and troublesome Last.fm XML files"""
     def setUp(self):
         path = os.path.dirname(__file__)
         path = os.path.join(path, "test-data")
         self.requester = requester.TestRequester(path)
+
+    def tearDown(self):
+        Artist.objects.all().delete()
+        WeekData.objects.all().delete()
 
     def testWeeklyChartParsing(self):
         chartList = list(tasks.fetch_chart_list('aradnuk', self.requester))
@@ -23,17 +27,22 @@ class XMLHandling(unittest.TestCase):
     def testWeekDataParsing(self):
         data = tasks._parse_week_artist_data(tasks.week_data('aradnuk', self.requester, 1109505601, 1110110401))
         self.assertEqual(len(data.keys()), 74)
-
-        playcount, artistId = data[1]
-        artist = Artist.objects.get(id=1)
+        playcount, artistId = data[data.keys()[0]]
+        artist = Artist.objects.get(id=artistId)
         self.assertEqual(playcount, 79)
         self.assertEqual(artist.name, "BT")
 
+    def testAwkwardXmlRecovery(self):
+        data = tasks._parse_week_artist_data(tasks.week_data('Eddard_Stark', self.requester, 1175385600, 1175990400))
+        self.assertEqual(len(data.keys()), 1)
+        playcount, artistId = data[data.keys()[0]]
+        self.assertEqual(playcount, 32)
 
-
-class RequestErrorHandling(unittest.TestCase):
-    """.. and ones for invalid Last.fm XML files"""
-    pass
+    def testMoreAwkwardXmlRecovery(self):
+        data = tasks._parse_week_artist_data(tasks.week_data('Dieg0', self.requester, 1284854400, 1285459200))
+        self.assertEqual(len(data.keys()), 1)
+        playcount, artistId = data[data.keys()[0]]
+        self.assertEqual(playcount, 1)
 
 
 class WeeklyTrackDataHandling(unittest.TestCase):

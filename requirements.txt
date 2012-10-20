@@ -3,7 +3,9 @@ celery               pip
 django-celery        pip
 django-cache-machine pip
 python-memcached     pip
+south                pip
 
+lxml                 aptitude
 libapache2-mod-wsgi  aptitude
 memcached            aptitude
 psycopg2
