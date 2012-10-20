@@ -3,6 +3,8 @@ Managers for some of the classes in models.py.
 """
 import re
 import logging
+
+from datetime import datetime, timedelta
 from operator import itemgetter
 
 import caching.base
@@ -46,6 +48,10 @@ class UpdateManager(models.Manager):
             user = m.User.objects.get(id=entry['user'])
             yield user, entry['count']
 
+    def stalled(self):
+        """Returns any update that's IN_PROGRESS for more than an hour"""
+        oneHourAgo = datetime.today() - timedelta(hours = 1)
+        return self.filter(status=m.Update.IN_PROGRESS, requestedAt__lte=oneHourAgo)
 
 # TODO: Drop any filtering done if dates given are the_beginning and today.
 class UserWeekDataManager(models.Manager):

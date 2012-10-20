@@ -126,6 +126,7 @@ class Update(models.Model):
     week_idx = models.PositiveSmallIntegerField()
     type = models.IntegerField(choices=TYPES)
     status = models.IntegerField(default=IN_PROGRESS, choices=STATUSES)
+    requestedAt = models.DateTimeField(auto_now_add=True)
 
     objects = managers.UpdateManager()
 

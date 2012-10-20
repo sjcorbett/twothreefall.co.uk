@@ -77,6 +77,10 @@ class Updates(unittest.TestCase):
         self.assertEqual(list(bFetched)[0][0], 1)
         self.assertEqual(list(bFetched)[0][1], Update.TRACK)
 
+    def testStalled(self):
+        self.assertEqual(len(Update.objects.stalled()), 0)
+
+
 
 class Dates(unittest.TestCase):
     def testSundaysBetween(self):
