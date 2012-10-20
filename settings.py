@@ -101,6 +101,7 @@ INSTALLED_APPS = (
     # 'paging',
     # 'sentry',
     # 'sentry.client',
+    'south'
 
 )
 

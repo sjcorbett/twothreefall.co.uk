@@ -7,6 +7,8 @@ import managers
 
 from django.db import models
 
+from south.modelsinspector import add_introspection_rules
+
 _LASTFM  = "http://www.last.fm"
 _LASTFM_EXAMPLE_API_KEY = "b25b959554ed76058ac220b7b2e0a026"
 
@@ -20,6 +22,7 @@ class TruncatingCharField(models.CharField):
         if value:
             return value[:self.max_length]
         return value
+add_introspection_rules([], ["^twothreefall\.lastfmexplorer\.models\.TruncatingCharField"])
 
 
 class Artist(caching.base.CachingMixin, models.Model):
