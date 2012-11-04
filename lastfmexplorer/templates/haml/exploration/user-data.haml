@@ -1,6 +1,6 @@
 - extends 'exploration/base.html'
 
-- load humanize
+- load lex_tags
 
 - block content
     %p.blockoftext
@@ -13,22 +13,21 @@
 
     .container
         .row
-            .span3
-                - for year, months in years
-                    .year_group
-                        %h2 {{ year }}
-                        %table.table
-                            - for month, weeks in months
-                                %tr
-                                    %td
-                                        %strong {{ month|upper }}
-                                    - for week in weeks reversed
-                                        <td id="{{ week.index }}">
-                                            - if  week.errored
-                                                <strong><span class="red">{{ week.day|ordinal }}</span></strong>
-                                            - else
-                                                - if not week.missing
-                                                    <a href="{% url lastfmexplorer.views.user_week_chart context.user week.index %}">
-                                                    <span class="green">{{ week.day|ordinal }}</span></a>
-                                                - else
-                                                    <span class="grey">{{ week.day|ordinal }}</span>
+            .span12
+                - for year, indices in years
+                    .index_year_group
+                        .year <strong>{{ year }}</strong>
+                        .weeks
+                            -#TODO: Change to elif when on Django 1.4
+                            - for index in indices
+                                <div rel="tooltip" title="Week ending Sunday {{ index|format_week_index:"%b %d" }}" class="week {% if index in errors %}red{% else %}{% if index in scrobbledin %}green{% endif %}{% endif %}">
+                                    - if index in scrobbledin
+                                        <a href="{% url lastfmexplorer.views.user_week_chart context.user index %}"></a>
+                                </div>
+
+
+- block javascript
+    :javascript
+        $(document).ready(function() {
+            $(".week").tooltip();
+        });

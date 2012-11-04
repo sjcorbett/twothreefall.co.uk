@@ -95,3 +95,12 @@ class Dates(unittest.TestCase):
 
         # From the beginning of time..
         self.assertEquals(ldates.sundays_between(d(2005, 2, 20), d.today()), range(0, ldates.idx_last_sunday+1))
+
+    def testAllSundaysFallingIn(self):
+        years = ldates.years_to_today()
+        indices = []
+        for year in years:
+            indices.extend(ldates.all_sundays_falling_in(year))
+
+        expected = range(0, ldates.first_sunday_on_or_after(date(years[-1]+1, 1, 1)))
+        self.assertEqual(indices, expected)

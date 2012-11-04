@@ -1,5 +1,5 @@
 {% extends 'exploration/base.html' %}
-{% load humanize %}
+{% load lex_tags %}
 {% block content %}
     <p class='blockoftext'>
         A week-by-week index of data Last.fm Explorer has pulled for {{ context.user }} from Last.fm.
@@ -11,35 +11,31 @@
     </p>
     <div class='container'>
         <div class='row'>
-            <div class='span3'>
-                {% for year, months in years %}
-                    <div class='year_group'>
-                        <h2>{{ year }}</h2>
-                        <table class='table'>
-                            {% for month, weeks in months %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ month|upper }}</strong>
-                                    </td>
-                                    {% for week in weeks reversed %}
-                                        <td id="{{ week.index }}">
-                                            {% if  week.errored %}
-                                                <strong><span class="red">{{ week.day|ordinal }}</span></strong>
-                                            {% else %}
-                                                {% if not week.missing %}
-                                                    <a href="{% url lastfmexplorer.views.user_week_chart context.user week.index %}">
-                                                    <span class="green">{{ week.day|ordinal }}</span></a>
-                                                {% else %}
-                                                    <span class="grey">{{ week.day|ordinal }}</span>
-                                                {% endif %}
-                                            {% endif %}
-                                    {% endfor %}
-                                </tr>
+            <div class='span12'>
+                {% for year, indices in years %}
+                    <div class='index_year_group'>
+                        <div class='year'><strong>{{ year }}</strong></div>
+                        <div class='weeks'>
+                            {% for index in indices %}
+                                <div rel="tooltip" title="Week ending Sunday {{ index|format_week_index:"%b %d" }}" class="week {% if index in errors %}red{% else %}{% if index in scrobbledin %}green{% endif %}{% endif %}">
+                                    {% if index in scrobbledin %}
+                                        <a href="{% url lastfmexplorer.views.user_week_chart context.user index %}"></a>
+                                    {% endif %}
+                                </div>
                             {% endfor %}
-                        </table>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascript %}
+<script type='text/javascript'>
+// <![CDATA[
+        $(document).ready(function() {
+            $(".week").tooltip();
+        });
+// ]]>
+</script>
 {% endblock %}

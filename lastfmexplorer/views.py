@@ -368,69 +368,24 @@ def list_bad_xml_files(request):
 def user_data(request, context):
     """
     Report weeks user's scrobbled music in following format:
-     2011
-       November - 23, 16, 09, 02
-       October  - ..
-       ..
-     2010
-       December - ..
+     (2011, generator of week indexes)
+     (2010, ...)
     """
     user  = context.get('user')
-    # reversing?
     scrobbledin = set(map(lambda x: x['week_idx'],
                           WeekData.objects.filter(user=user.id).values('week_idx').distinct()))
     errors = set(map(lambda w: w.week_idx, WeeksWithSyntaxErrors.objects.filter(user=user.id)))
-#    years = [
-#        (2011, [
-#            ("November", [2, 9, 16, 23]),
-#            ("October", [2, 9, 16, 23])
-#            ..
-#        (2010, [
-#            ("December", [2, 9, 16, 23]),
-#            ("November", [2, 9, 16, 23])
-#            ..
 
-    class WeekEnded:
-        def __init__(self, index):
-            self.index = index
-            self.day = ldates.date_of_index(index).day
-            self.missing = index not in scrobbledin
-            self.errored = index in errors
-
-    years = []
-    reset = -1
-    last_year = None
-    last_month = None
-    month_index = reset
-    year_index = reset
-
-    months = ["January", "February", "March", "April", "May", "June",
-              "July", "August", "September", "October", "November", "December"]
-
-    for index in xrange(ldates.first_sunday_on_or_before(ldates.today), -1, -1):
-
-        date = ldates.date_of_index(index)
-
-        # has the year changed?
-        if date.year != last_year:
-            years.append((date.year, []))
-            last_year = date.year
-            year_index += 1
-            month_index = reset
-
-        # new month?
-        if date.month != last_month:
-            last_month = date.month
-            years[year_index][1].append((months[date.month-1], []))
-            month_index += 1
-
-        we = WeekEnded(index)
-        years[year_index][1][month_index][1].append(we)
+    years = list(ldates.years_to_today())
+    years.reverse()
+    years = [ (year, ldates.all_sundays_falling_in(year)) for year in years ]
 
     return {
         "context" : context,
         "user" : user,
-        "years" : years
+        "years" : years,
+        "scrobbledin": scrobbledin,
+        "errors": errors
     }
 
 

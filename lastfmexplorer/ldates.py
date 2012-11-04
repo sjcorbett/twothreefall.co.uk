@@ -91,6 +91,10 @@ def years_to_today():
 def indicies_of_year(year):
     return fsooa(date(year, 1, 1)), fsooa(date(year, 12, 31))
 
+def all_sundays_falling_in(year):
+    """Returns a range of all week indices that fell in the given year"""
+    return xrange(fsooa(date(year, 1, 1)), fsooa(date(year+1, 1, 1)))
+
 def months_ago(num):
     return idx_last_sunday - (month_in_weeks * num)
 
