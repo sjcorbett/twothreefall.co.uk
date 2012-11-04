@@ -1,8 +1,6 @@
 {% extends 'exploration/base.html' %}
-
 {% block lextitle %}
     {{ context.user }} - {% if context.year %}{{ context.year }}{% endif %} Chart -
-
 {% endblock %}
 {% block lex_page_config %}
     <div class='control-group'>
@@ -24,7 +22,6 @@
         <label class='control-label' for='count'>Items in chart</label>
         <div class='controls'>
             <input id="count" class="span3" name="count" type="text" {% if count %}value="{{ count }}"{% endif %}/>
-
         </div>
     </div>
 {% endblock %}
@@ -52,7 +49,6 @@
                         <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
                             <span class='barchart_num'>{{ count }}</span>
                         </div>
-
                     </li>
                 {% endfor %}
             </ol>

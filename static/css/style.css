@@ -284,7 +284,7 @@ body {
     text-align: center;
 }
 .container .credit {
-margin: 20px 0;
+    margin: 20px 0;
 }
 
 /* Lastly, apply responsive CSS fixes as necessary */
@@ -296,4 +296,3 @@ margin: 20px 0;
         padding-right: 20px;
     }
 }
-

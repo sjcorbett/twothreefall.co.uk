@@ -1,0 +1,367 @@
+/******* TWOTHREEFALL **********************************************/
+#twothreefall {
+  position: relative;
+  float: left;
+  width: 100%;
+  border-bottom: 2px solid #00afa0;
+  padding: 15px 0 10px 0;
+  background-color: #e5dbfc;
+  /* color: #fff; */ }
+  #twothreefall h2 {
+    float: left;
+    font-size: 2em;
+    letter-spacing: 0.35em;
+    padding: 0 0.3em 0 1.5em;
+    margin: 0; }
+  #twothreefall #crumbs {
+    float: left;
+    margin-top: 8px; }
+  #twothreefall .crumblink {
+    font-weight: bold;
+    margin: 0 4px;
+    color: blue; }
+  #twothreefall a.crumblink:hover,
+  #twothreefall a.crumblink:visited {
+    text-decoration: none; }
+  #twothreefall a.crumblink:hover {
+    text-decoration: underline; }
+  #twothreefall .ttflink .ttfTwo {
+    color: #ff4302; }
+  #twothreefall .ttflink .ttfThree {
+    color: #7b04ff; }
+  #twothreefall .ttflink .ttfFall {
+    color: #00bd00; }
+  #twothreefall .ttflink:hover {
+    text-decoration: none; }
+
+#fixedrightmenu {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  bottom: 0;
+  background-color: #00afa0;
+  padding: 20px 0;
+  font-weight: bold; }
+  #fixedrightmenu li {
+    padding: 0 1.5em;
+    font-size: 1.25em; }
+  #fixedrightmenu a, #fixedrightmenu a:visited {
+    color: #e5dbfc; }
+  #fixedrightmenu a:hover {
+    color: #fff;
+    text-decoration: none; }
+
+#projlist {
+  margin-left: 2em;
+  letter-spacing: 0.01em; }
+  #projlist a {
+    /* text-decoration: underline; */ }
+  #projlist dt {
+    font-size: 2em;
+    margin-bottom: 8px; }
+  #projlist dd {
+    font-size: 1.25em; }
+
+.lexred {
+  color: #dd1303; }
+
+/******* GENERAL ***************************************************/
+body {
+  margin: 0 0;
+  padding: 0;
+  font: 11px "Trebuchet MS";
+  /* background-color: #f8f8f8; */ }
+
+#bodywrapper {
+  width: 964px;
+  clear: both;
+  margin: 0 auto; }
+
+#top {
+  padding: 2em 1em 1em 3em; }
+
+#top h1,
+div.post h2 {
+  font-size: 36px;
+  padding: 0;
+  margin: 0;
+  font-weight: bold; }
+
+#top h1.bigspace {
+  margin: 1em 0; }
+
+#datesandmenu {
+  font-size: 14px; }
+
+#dateform {
+  float: left;
+  margin: 1.5em 0 0 0;
+  clear: both; }
+
+div#dateform legend {
+  font-size: 1.5em;
+  font-weight: bold; }
+
+form#datechanger legend {
+  font-size: 1.5em;
+  font-weight: bold; }
+
+form#datechanger p, form#datechanger li {
+  /* font-size:1.3em; */ }
+
+#top #topmenu {
+  font-size: 12px;
+  font-weight: normal;
+  display: inline;
+  padding: 0.18em 0.25em;
+  margin: 1em;
+  display: inline; }
+
+#footer {
+  clear: both;
+  margin-top: 30px;
+  color: gray; }
+
+#footer p {
+  text-align: center;
+  margin: 0.7em 0; }
+
+#allcontent {
+  margin: 1.25em 1em 0 3.5em;
+  width: 875px;
+  clear: both; }
+
+.explorer-red {
+  color: #dd1303; }
+
+.float-left {
+  float: left;
+  margin-left: 1em; }
+
+/******* INLINED LISTS AND PARAGRAPHS ******************************/
+.inlinedlistpara {
+  margin: 0.4em;
+  padding: 5px;
+  font-family: "Trebuchet MS", Verdana, sans-serif; }
+
+.inlinedlistpara p {
+  display: inline; }
+
+.inlinedlistpara ul, .inlinedlistpara li {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  color: #339;
+  font-weight: bold; }
+
+.inlinedlist {
+  display: inline;
+  padding: 0;
+  margin: 0; }
+
+.inlinedlist li {
+  display: inline; }
+
+.slashseparated li:after {
+  content: " /"; }
+
+.commaseparated li:after {
+  content: ", "; }
+
+.gtseparated li:after {
+  content: " > "; }
+
+.gtseparated li.first:before {
+  content: " > "; }
+
+.slashseparated li.last:after,
+.commaseparated li.last:after,
+.gtseparated li.last:after {
+  content: ""; }
+
+/******* LINKS *****************************************************/
+li.barchart a:link, li.barchart a:visited {
+  color: #000; }
+
+a:link, a:visited {
+  text-decoration: none; }
+
+a:hover {
+  text-decoration: underline; }
+
+/******* MENU ******************************************************/
+#leftcolumn {
+  float: left;
+  width: 220px;
+  margin: 1em 0 2em 1em;
+  padding: 1em; }
+
+#shortcuts {
+  border: 1px solid #000;
+  margin: 1em 0 0 0;
+  padding: 1em; }
+
+/******* CONTENT ***************************************************/
+div.itemofinterest {
+  margin: 0.5em 0 1em 0;
+  clear: both; }
+
+div.itemtitle {
+  padding: 0;
+  margin: 0; }
+  div.itemtitle hr {
+    margin: 0; }
+  div.itemtitle h2 {
+    font-family: "Trebuchet MS", arial, serif;
+    font-size: 2.3em;
+    /* font-weight: normal; */
+    width: 100%;
+    padding: 0;
+    margin: -0.15em 0.5em; }
+
+div.itemofinterest h3 {
+  margin: 0.4em 0 0 0; }
+
+div.itemcontent {
+  padding: 0.5em 0; }
+  div.itemcontent p {
+    margin: 0 0 0.5em 0.75em; }
+
+div.clumped_box {
+  float: left;
+  margin: 0 1em 1em 2em; }
+
+div.post {
+  margin: 2em 1em 2em 4em;
+  font-family: "Trebuchet MS", serif;
+  font-size: 16px; }
+
+div.post p {
+  padding-left: 1em; }
+
+.blockoftext {
+  width: 650px; }
+
+.blue {
+  color: blue; }
+
+.green {
+  color: #007f02; }
+
+.red {
+  color: red; }
+
+.grey {
+  color: gray; }
+
+/******* START FORM*********************************************/
+#login {
+  border: 6px solid #999;
+  width: 500px;
+  margin: auto;
+  background-color: white;
+  padding: 0 2em 2em 2em; }
+  #login legend {
+    color: #dd1303;
+    font-size: 36px;
+    font-weight: bold; }
+  #login .description {
+    font-size: 16px; }
+  #login label {
+    font-size: 14px; }
+
+.errordiv {
+  border: 4px solid #aa0000;
+  background-color: #ff998b;
+  padding: 0 1em 0 2em;
+  margin: 1em 0 0.2em 0;
+  font-size: 1.2em; }
+
+.errordiv img {
+  padding: 0 0.3em 0 0; }
+
+/******* FORMS *****************************************************/
+.small_num_input {
+  width: 30px; }
+
+.medium_num_input {
+  width: 100px; }
+
+div.alignedLabel {
+  margin-bottom: 4px; }
+
+label.aligned,
+.grouped_checkbox_label {
+  width: 100px;
+  text-align: right;
+  display: block;
+  float: left;
+  margin-top: 5px;
+  margin-right: 4px; }
+
+.grouped_checkboxes {
+  float: left; }
+
+.alignedLabel {
+  clear: both; }
+
+#update {
+  margin: 0 0 0 50px; }
+
+#dateform fieldset {
+  border-top: 1px solid green;
+  border-bottom: 1px solid green;
+  border-left: none;
+  border-right: none; }
+
+#dateShortcuts {
+  clear: both; }
+
+/******* BAR CHARTS ************************************************/
+li.barchart {
+  height: 3em;
+  text-align: left; }
+
+div.barchart_item {
+  background-color: #abcdef;
+  display: block;
+  text-align: right;
+  border-top: 1px solid #000;
+  min-width: 1px; }
+
+span.barchart_num {
+  padding: 0 0.25em; }
+
+div#weeklinks {
+  margin-bottom: 1em;
+  width: 100%; }
+
+span#previousweek {
+  float: left; }
+
+span#nextweek {
+  float: right; }
+
+/******* WHO SHALL I LISTEN TO *************************************/
+h2#suggestion {
+  font-size: 10em;
+  margin: 0.5em 0 0.15em 0; }
+
+div#justification {
+  margin: 0 auto;
+  padding: 1em 2em;
+  width: 400px;
+  text-align: left; }
+
+/******* USER INDEX ************************************************/
+.year_group {
+  float: left;
+  display: inline;
+  margin: 0 2em 1em 1em; }
+  .year_group h2 {
+    margin-bottom: 0; }
+  .year_group table {
+    margin-left: 1em; }
+  .year_group td {
+    padding-left: 2px;
+    padding-bottom: 2px; }
