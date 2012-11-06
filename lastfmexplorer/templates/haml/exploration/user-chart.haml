@@ -39,3 +39,9 @@
                         <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
                             <span class='barchart_num'>{{ count }}</span>
                         </div>
+
+- block javascript
+    :javascript
+        $(document).ready(function() {
+            $("#num_excluded").on("click", function(e) { e.preventDefault(); });
+        });
