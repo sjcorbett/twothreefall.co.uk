@@ -222,6 +222,7 @@ ul.lex-status {
     font-size: 20px;
     float: left;
     padding: 3px 4px 4px 0;
+    clear: both;
 }
 
 .index_year_group .weeks {
