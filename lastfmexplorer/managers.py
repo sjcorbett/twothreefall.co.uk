@@ -74,7 +74,10 @@ class UserWeekDataManager(models.Manager):
         """
         base = self.filter(user=user.id)
         if start != ldates.idx_beginning or end != ldates.idx_last_sunday:
-            return base.filter(week_idx__range=(start, end))
+            if start == end:
+                return base.filter(week_idx=start)
+            else:
+                return base.filter(week_idx__range=(start, end))
         else:
             return base
 
