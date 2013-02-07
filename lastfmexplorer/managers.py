@@ -90,7 +90,7 @@ class UserWeekDataManager(models.Manager):
         start and end.
         """
         query = self.user_weeks_between(user, start, end) \
-                     .order_by('-plays')[:num].select_related()
+                     .order_by('-plays')[:num]
         for week in query:
             date = ldates.date_of_index(week.week_idx)
             yield week, date
@@ -123,7 +123,7 @@ class UserWeekDataManager(models.Manager):
         cache_key = "%s:%d:%d:weekly_play_counts" % (user.username, start, end)
         cached = cache.get(cache_key)
         if not cached:
-            logging.info("Weekly play counts not in cache: fetching from database")
+            logging.info("Weekly play counts not in cache, fetching from database: " + cache_key)
             qs = self.user_weeks_between(user, start, end) \
                      .values('week_idx')                   \
                      .annotate(Sum('plays'))               \
@@ -132,7 +132,8 @@ class UserWeekDataManager(models.Manager):
             # list() forces evaluation of queryset.
             cached = list(qs)
             cache.set(cache_key, cached)
-
+        else:
+            logging.info("Found weekly playcounts in cache with key: " + cache_key)
         def y(i, pc):
             return pc if just_counts else (i, pc)
                 

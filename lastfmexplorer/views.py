@@ -150,6 +150,7 @@ def staged(target_view, skip_date_shortcuts=False):
                 return redirect(update, username)
 
             # Never updated their data?
+            # TODO: Calculate date from user object, not a query. ldates.first_sunday_on_or_after(user.registered)
             faw = WeekData.objects.first_available_week(user)
             if not isinstance(faw, int):
                 raise Http404
