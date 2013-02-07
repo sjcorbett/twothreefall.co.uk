@@ -1,0 +1,10 @@
+lxml
+libapache2-mod-wsgi
+memcached
+python-tk
+rabbitmq-server
+libxml2-dev 
+libxslt1-dev
+
+And chgrp -R www-data lastfmexplorer
+

@@ -1,0 +1,23 @@
+# General
+
+lxml==2.2.8
+anyjson==0.3.3
+python-memcached==1.48
+nose>=1.1.2
+psycopg2==2.2.1
+
+# Django specific
+
+Django==1.4.3
+South==0.7.6
+django-debug-toolbar==0.9.4
+django-cache-machine==0.6
+django-extensions==1.0.3
+
+# Celery
+
+kombu==2.1.1
+celery==2.5.1
+django-celery==2.5.1
+
+
