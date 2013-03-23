@@ -5,6 +5,9 @@ python-tk
 rabbitmq-server
 libxml2-dev 
 libxslt1-dev
+gcc
+python-dev
+libpq-dev
 
 And chgrp -R www-data lastfmexplorer
 
