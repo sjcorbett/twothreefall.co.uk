@@ -115,8 +115,8 @@ class TestRequester(Requester):
         if method == 'user.getweeklychartlist':
             testFile = "%s/weeklychartlist.xml" % (extras['user'],)
         elif method == 'user.getweeklyartistchart':
-            testFile = "%s/%d-%d.xml" % (extras['user'], extras['from'], extras['to'])
+            testFile = "%(user)s/%(from)s-%(to)s.xml" % extras
         else:
-            raise ValueError("Unknown method %s given to LocalRequest" % (method,))
+            raise ValueError("Unknown method %s given to TestRequester" % (method,))
         
         return "file://%s/%s/%s" % (self.rootDataDir, method, testFile)

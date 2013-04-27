@@ -1,11 +1,13 @@
 import os
+
 from datetime import date
-
 from django.utils import unittest
-from lastfmexplorer import ldates
 
-from lastfmexplorer.models import Artist, Update, User, WeekData
-import tasks, requester
+import tasks
+import requester
+import ldates
+from models import Artist, Update, User, WeekData
+
 
 class UsernameTests(unittest.TestCase):
     """Check unusual usernames are considered valid"""

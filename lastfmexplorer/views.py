@@ -1,11 +1,10 @@
 from django.http import HttpResponse
 from django.http import Http404
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import render_to_response, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
-from django.views.generic.list_detail import object_list
 
 import logging
 import anyjson
@@ -15,9 +14,9 @@ import twothreefall.lastfmexplorer.tasks as tasks
 
 from models import *
 from chart import Chart
-from requester import LastFMRequester
+import requester
 
-_REQUESTER = LastFMRequester()
+_REQUESTER = requester.LastFMRequester()
 
 def start(request):
     feedback = {}
@@ -101,7 +100,6 @@ def update(request, username):
     Create a page showing weeks previously retrieved and those still to fetch.
     Queues tasks to be fetched.
     """
-    
     user = tasks.get_or_add_user(username, _REQUESTER)
     alreadyUpdating = Update.objects.is_updating(user)
 
@@ -357,12 +355,6 @@ def who(request, context):
     """
     suggestions = WeekData.objects.who_shall_i_listen_to(context.get('user'))
     return { 'context' : context, 'suggestions' : suggestions }
-
-
-def list_bad_xml_files(request):
-    bad_weeks = WeeksWithSyntaxErrors.objects.all()
-    return object_list(request, queryset=bad_weeks,
-            template_name='weekswithsyntaxerrors_list.html')
 
 
 @staged('exploration/user-data.html', skip_date_shortcuts=True)

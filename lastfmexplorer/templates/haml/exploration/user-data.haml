@@ -6,7 +6,7 @@
     %p.blockoftext
         A week-by-week index of data Last.fm Explorer has pulled for {{ context.user }} from Last.fm.
         On rare occasions data given out is unavailable for unknown reasons &mdash;
-        there's a full list of bad weeks encountered <a href="{% url lastfmexplorer.views.list_bad_xml_files %}">here</a>.
+        there's a full list of bad weeks encountered <a href="{% url "bad_weeks" %}">here</a>.
         <b><span class="green">Green</span></b> weeks are good,
         <b><span class="red">red</span></b> weeks were unavailable,
         <b><span class="grey">grey</span></b> weeks had no scrobbles or aren't available yet.
@@ -22,7 +22,7 @@
                             - for index in indices
                                 <div rel="tooltip" title="Week ending Sunday {{ index|format_week_index:"%b %d" }}" class="week {% if index in errors %}red{% else %}{% if index in scrobbledin %}green{% endif %}{% endif %}">
                                     - if index in scrobbledin
-                                        <a href="{% url lastfmexplorer.views.user_week_chart context.user index %}"></a>
+                                        <a href="{% url "lastfmexplorer.views.user_week_chart" context.user index %}"></a>
                                 </div>
 
 

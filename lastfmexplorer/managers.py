@@ -7,8 +7,6 @@ import logging
 from datetime import datetime, timedelta
 from operator import itemgetter
 
-import caching.base
-
 import ldates
 import models as m
 

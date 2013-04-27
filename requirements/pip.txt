@@ -8,7 +8,7 @@ psycopg2==2.2.1
 
 # Django specific
 
-Django==1.4.3
+Django==1.5.1
 South==0.7.6
 django-debug-toolbar==0.9.4
 django-cache-machine==0.6

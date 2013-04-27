@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.contrib.sitemaps import Sitemap
-from django.views.generic.simple import direct_to_template
+from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 
@@ -25,10 +25,11 @@ sitemaps = {
 }
 
 admin.autodiscover()
+(r'^about/', TemplateView.as_view(template_name="about.html")),
 
 urlpatterns = patterns('',
-    url(r'^$', cache_page(direct_to_template, settings.CACHE_DATA_TIMEOUT), {'template': 'landing.html'}, name="home"),
-    url(r'^about$', cache_page(direct_to_template, settings.CACHE_DATA_TIMEOUT), {'template' : 'about.html'}, name="about"),
+    url(r'^$', cache_page(settings.CACHE_DATA_TIMEOUT)(TemplateView.as_view(template_name="landing.html")), name="home"),
+    url(r'^about$', cache_page(settings.CACHE_DATA_TIMEOUT)(TemplateView.as_view(template_name="about.html")), name="about"),
     (r'^lastfmexplorer/', include('twothreefall.lastfmexplorer.urls')),
     (r'^status/cache/$', twothreefall.views.memcached_status),
     (r'^admin/', include(admin.site.urls)),

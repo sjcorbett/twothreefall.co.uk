@@ -27,11 +27,11 @@
                 #weeklinks
                     %span#previousweek
                         - if prevW > 0
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user prevW %}">Previous</a>
+                            <a href="{% url "lastfmexplorer.views.user_week_chart" context.user prevW %}">Previous</a>
                         - else
                             Previous
                     %span#nextweek
-                        <a href="{% url lastfmexplorer.views.user_week_chart context.user nextW %}">Next</a>
+                        <a href="{% url "lastfmexplorer.views.user_week_chart" context.user nextW %}">Next</a>
             %ol
                 - for artist, count, max in chart
                     %li.barchart

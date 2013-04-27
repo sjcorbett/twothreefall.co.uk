@@ -43,12 +43,8 @@ MEDIA_URL = 'http://127.0.0.1:8000/media/' if DEV else \
 STATIC_URL = '/static/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
-
-# Including broke admin css?
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -87,22 +83,10 @@ INSTALLED_APPS = (
 
     'twothreefall',
     'twothreefall.lastfmexplorer',
-    # 'twothreefall.scrabble',
-    # 'twothreefall.blog',
-    # 'reversetag',
+
     'djcelery',
-    # 'typogrify',
     'django_extensions',
-    # 'tagging',
-    # 'disqus',
-
-    # django-sentry
-    # 'indexer',
-    # 'paging',
-    # 'sentry',
-    # 'sentry.client',
     'south'
-
 )
 
 ########## Dev options ########################################################

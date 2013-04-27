@@ -1,11 +1,12 @@
 from django.conf.urls.defaults import *
 from django.contrib.sitemaps import Sitemap
+from django.views.generic.list import ListView
 
 import views
 import ldates
 
 from managers import USER_REGEX
-from models import User
+from models import User, WeeksWithSyntaxErrors
 
 # match usernames
 __user_base     = '^user/' + USER_REGEX + '/' 
@@ -26,7 +27,7 @@ urlpatterns = patterns('twothreefall.lastfmexplorer.views',
     (r'^poll-update$', 'poll_update_status'),
 
     # invalid XML
-    (r'^bad-weeks$', 'list_bad_xml_files'),
+    url(r'^bad-weeks$', ListView.as_view(model=WeeksWithSyntaxErrors), name="bad_weeks"),
 
     # single week chart
     (__user_base + r'chart/week/(?P<start>\d*)/$', views.user_week_chart),

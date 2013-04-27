@@ -9,7 +9,8 @@ from django.db.models import Sum
 from django.core.cache import cache
 import twothreefall.settings
 
-class Chart:
+
+class Chart(object):
     
     def __init__(self, user, start, end, count=100):
         self.user = user
@@ -87,5 +88,3 @@ class Chart:
                 to_go -= 1
                 if to_go <= 0:
                     break
-
-

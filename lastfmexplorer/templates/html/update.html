@@ -5,7 +5,7 @@
 {% if not skipped %}
         <script type="text/javascript">
             {% comment %} Requesting updates to weekly data. {% endcomment %}
-            function pollstatus() {                $.post("{% url lastfmexplorer.views.poll_task_status %}",                    {"username" : "{{ username }}" },                      function(response) {                        $("#updatestatus").html(response.pending);                        if (!response.alldone) {                            setTimeout('pollstatus()', 2500);                        } else {                            $("#updatepara").append(" All done! <a href=\"{% url lastfmexplorer.views.overview username %}\">Get exploring</a>.");                        }
+            function pollstatus() {                $.post("{% url "lastfmexplorer.views.poll_task_status" %}",                    {"username" : "{{ username }}" },                      function(response) {                        $("#updatestatus").html(response.pending);                        if (!response.alldone) {                            setTimeout('pollstatus()', 2500);                        } else {                            $("#updatepara").append(" All done! <a href=\"{% url "lastfmexplorer.views.overview" username %}\">Get exploring</a>.");                        }
                     },
                     "json"
                 );
@@ -19,7 +19,7 @@
             <h1>Hey {{ username }},</h1>
 {% if skipped %}
             <p>Looks like you're up to date!</p>
-            <p><a href="{% url lastfmexplorer.views.overview username %}">Get exploring</a>.</p>
+            <p><a href="{% url "lastfmexplorer.views.overview username" %}">Get exploring</a>.</p>
 {% else %}
             <p id="updatepara"><span id="updatestatus">0</span> of {{ total_tasks }} weeks remaining.</p>
 {% endif %}

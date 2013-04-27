@@ -9,6 +9,7 @@ from celery.task.sets import TaskSet
 from celery.task import task
 
 from django.db import transaction
+from django.core.cache import cache
 
 from models import *
 
@@ -236,7 +237,7 @@ def fetch_week_data(user, requester, start, end, type):
         WeeksWithSyntaxErrors.objects.create(user_id=user.id, week_idx=week_idx)
         u.status = Update.ERRORED
     except Exception, e:
-        logging.error("request for %s/%d/%d caused an unknonwn error: %s" % (user, start, end, e.message))
+        logging.error("request for %s/%d/%d caused an unknown error: %s" % (user, start, end, e.message))
         logging.error(xml)
         u.status = Update.ERRORED
     finally:
@@ -255,6 +256,7 @@ def update_user(user, requester):
 
     # create taskset and run it.
     update_tasks = []
+    updates = []
     with transaction.commit_on_success():
         for start, end in chart_list:
             idx = ldates.index_of_timestamp(end)
@@ -262,12 +264,14 @@ def update_user(user, requester):
             if not idx < user.first_sunday_with_data:
                 # skip if data has already been successfully fetched
                 if (idx, Update.ARTIST) not in successful_requests:
-                    Update.objects.create(user=user, week_idx=idx, type=Update.ARTIST)
+                    update = Update(user=user, week_idx=idx, type=Update.ARTIST)
+                    updates.append(update)
                     update_tasks.append(fetch_week_data.subtask((user, requester, start, end, Update.ARTIST)))
 #                if (idx, Update.TRACK) not in successful_requests:
 #                    Update.objects.create(user=user, week_idx=idx, type=Update.TRACK)
 #                    update_tasks.append(fetch_week_data.subtask((user, requester, start, end, Update.TRACK)))
 
+    Update.objects.bulk_create(updates)
     ts = TaskSet(update_tasks)
     ts.apply_async()
 

@@ -32,13 +32,13 @@
                 <div id='weeklinks'>
                     <span id='previousweek'>
                         {% if prevW > 0 %}
-                            <a href="{% url lastfmexplorer.views.user_week_chart context.user prevW %}">Previous</a>
+                            <a href="{% url "lastfmexplorer.views.user_week_chart" context.user prevW %}">Previous</a>
                         {% else %}
                             Previous
                         {% endif %}
                     </span>
                     <span id='nextweek'>
-                        <a href="{% url lastfmexplorer.views.user_week_chart context.user nextW %}">Next</a>
+                        <a href="{% url "lastfmexplorer.views.user_week_chart" context.user nextW %}">Next</a>
                     </span>
                 </div>
             {% endif %}

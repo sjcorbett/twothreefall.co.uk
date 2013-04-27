@@ -46,7 +46,7 @@
             <ol>
                 {% for item, date in record_single_artist %}
                     <li>
-                        <a href="{% url lastfmexplorer.views.user_week_chart context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
+                        <a href="{% url "lastfmexplorer.views.user_week_chart" context.user item.week_idx %}">{{ date|date:"d/m/Y" }}</a>:
                         <b>{{ item.plays }}</b> - {{ item.artist }}
                     </li>
                 {% endfor %}
@@ -57,7 +57,7 @@
             <ol>
                 {% for idx, date, plays in record_total_plays %}
                     <li>
-                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
+                        <a href="{% url "lastfmexplorer.views.user_week_chart" context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ plays }}</b>
                     </li>
                 {% endfor %}
             </ol>
@@ -67,7 +67,7 @@
             <ol>
                 {% for idx, date, artist_count in record_unique_artists %}
                     <li>
-                        <a href="{% url lastfmexplorer.views.user_week_chart context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
+                        <a href="{% url "lastfmexplorer.views.user_week_chart" context.user idx %}">{{ date|date:"d/m/Y" }}</a> - <b>{{ artist_count }}</b>
                     </li>
                 {% endfor %}
             </ol>
