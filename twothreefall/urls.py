@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 
 import settings
 import twothreefall.views
-import twothreefall.lastfmexplorer.urls
+import lastfmexplorer.urls
 
 # Includes named views in sitemap
 class ViewSitemap(Sitemap):
@@ -21,7 +21,7 @@ class ViewSitemap(Sitemap):
 
 sitemaps = {
     'views': ViewSitemap,
-    'lastfmexplorer': twothreefall.lastfmexplorer.urls.LastfmExplorerSitemap
+    'lastfmexplorer': lastfmexplorer.urls.LastfmExplorerSitemap
 }
 
 admin.autodiscover()
@@ -30,7 +30,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', cache_page(settings.CACHE_DATA_TIMEOUT)(TemplateView.as_view(template_name="landing.html")), name="home"),
     url(r'^about$', cache_page(settings.CACHE_DATA_TIMEOUT)(TemplateView.as_view(template_name="about.html")), name="about"),
-    (r'^lastfmexplorer/', include('twothreefall.lastfmexplorer.urls')),
+    (r'^lastfmexplorer/', include('lastfmexplorer.urls')),
     (r'^status/cache/$', twothreefall.views.memcached_status),
     (r'^admin/', include(admin.site.urls)),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps})

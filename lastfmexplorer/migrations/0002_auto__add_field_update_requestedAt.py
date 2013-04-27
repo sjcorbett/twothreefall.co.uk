@@ -24,12 +24,12 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('artist', 'title'),)", 'object_name': 'Album'},
             'artist': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lastfmexplorer.Artist']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
+            'title': ('lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
         },
         'lastfmexplorer.artist': {
             'Meta': {'object_name': 'Artist'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'unique': 'True', 'max_length': '75'})
+            'name': ('lastfmexplorer.models.TruncatingCharField', [], {'unique': 'True', 'max_length': '75'})
         },
         'lastfmexplorer.artisttags': {
             'Meta': {'unique_together': "(('artist', 'tag'),)", 'object_name': 'ArtistTags'},
@@ -41,13 +41,13 @@ class Migration(SchemaMigration):
         'lastfmexplorer.tag': {
             'Meta': {'unique_together': "(('tag',),)", 'object_name': 'Tag'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'tag': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
+            'tag': ('lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
         },
         'lastfmexplorer.track': {
             'Meta': {'unique_together': "(('artist', 'title'),)", 'object_name': 'Track'},
             'artist': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lastfmexplorer.Artist']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
+            'title': ('lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
         },
         'lastfmexplorer.update': {
             'Meta': {'object_name': 'Update'},

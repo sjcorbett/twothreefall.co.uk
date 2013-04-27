@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'Artist'
         db.create_table('lastfmexplorer_artist', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('twothreefall.lastfmexplorer.models.TruncatingCharField')(unique=True, max_length=75)),
+            ('name', self.gf('lastfmexplorer.models.TruncatingCharField')(unique=True, max_length=75)),
         ))
         db.send_create_signal('lastfmexplorer', ['Artist'])
 
@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
         db.create_table('lastfmexplorer_album', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('artist', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lastfmexplorer.Artist'])),
-            ('title', self.gf('twothreefall.lastfmexplorer.models.TruncatingCharField')(max_length=100)),
+            ('title', self.gf('lastfmexplorer.models.TruncatingCharField')(max_length=100)),
         ))
         db.send_create_signal('lastfmexplorer', ['Album'])
 
@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
         db.create_table('lastfmexplorer_track', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('artist', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['lastfmexplorer.Artist'])),
-            ('title', self.gf('twothreefall.lastfmexplorer.models.TruncatingCharField')(max_length=100)),
+            ('title', self.gf('lastfmexplorer.models.TruncatingCharField')(max_length=100)),
         ))
         db.send_create_signal('lastfmexplorer', ['Track'])
 
@@ -93,7 +93,7 @@ class Migration(SchemaMigration):
         # Adding model 'Tag'
         db.create_table('lastfmexplorer_tag', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('tag', self.gf('twothreefall.lastfmexplorer.models.TruncatingCharField')(max_length=100)),
+            ('tag', self.gf('lastfmexplorer.models.TruncatingCharField')(max_length=100)),
         ))
         db.send_create_signal('lastfmexplorer', ['Tag'])
 
@@ -179,12 +179,12 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('artist', 'title'),)", 'object_name': 'Album'},
             'artist': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lastfmexplorer.Artist']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
+            'title': ('lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
         },
         'lastfmexplorer.artist': {
             'Meta': {'object_name': 'Artist'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'unique': 'True', 'max_length': '75'})
+            'name': ('lastfmexplorer.models.TruncatingCharField', [], {'unique': 'True', 'max_length': '75'})
         },
         'lastfmexplorer.artisttags': {
             'Meta': {'unique_together': "(('artist', 'tag'),)", 'object_name': 'ArtistTags'},
@@ -196,13 +196,13 @@ class Migration(SchemaMigration):
         'lastfmexplorer.tag': {
             'Meta': {'unique_together': "(('tag',),)", 'object_name': 'Tag'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'tag': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
+            'tag': ('lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
         },
         'lastfmexplorer.track': {
             'Meta': {'unique_together': "(('artist', 'title'),)", 'object_name': 'Track'},
             'artist': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['lastfmexplorer.Artist']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('twothreefall.lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
+            'title': ('lastfmexplorer.models.TruncatingCharField', [], {'max_length': '100'})
         },
         'lastfmexplorer.update': {
             'Meta': {'object_name': 'Update'},

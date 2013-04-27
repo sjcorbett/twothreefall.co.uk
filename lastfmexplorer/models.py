@@ -86,7 +86,7 @@ class User(caching.base.CachingMixin, models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('twothreefall.lastfmexplorer.views.overview', [self.username])
+        return ('lastfmexplorer.views.overview', [self.username])
 
     def __unicode__(self):
         return self.username

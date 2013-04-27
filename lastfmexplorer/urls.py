@@ -17,7 +17,7 @@ __year_matcher  = r'(?P<year>\d{4})/$'
 __default_dates = { 'start' : ldates.idx_beginning,
                     'end'   : ldates.idx_last_sunday }
 
-urlpatterns = patterns('twothreefall.lastfmexplorer.views',
+urlpatterns = patterns('lastfmexplorer.views',
     # start
     (r'^$', 'start'),
     (r'^status$', 'status'),
@@ -44,7 +44,7 @@ def __urlsForPattern(urlpatterns, pattern, view):
     """Creates urls for root, years and arbitrary dates"""
     default_dates  = { 'start': ldates.idx_beginning, 'end': ldates.idx_last_sunday }
 
-    urlpatterns += patterns('twothreefall.lastfmexplorer.views',
+    urlpatterns += patterns('lastfmexplorer.views',
 
         (pattern + '$', view, default_dates),
 

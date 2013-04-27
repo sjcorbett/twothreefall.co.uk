@@ -46,12 +46,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,7 +76,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'twothreefall',
-    'twothreefall.lastfmexplorer',
+    'lastfmexplorer',
 
     'djcelery',
     'django_extensions',
@@ -103,9 +97,15 @@ if TEMPLATE_DEBUG:
 def basic_context(request):
     return { 'MEDIA_URL' : MEDIA_URL, 'DEV' : DEV } 
 
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates/html'),
-    os.path.join(os.path.dirname(__file__), 'lastfmexplorer/templates/html'),
+    os.path.join(os.path.dirname(__file__), '../lastfmexplorer/templates/html'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

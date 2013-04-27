@@ -10,8 +10,8 @@ import logging
 import anyjson
 
 import twothreefall.settings
-import twothreefall.lastfmexplorer.tasks as tasks
 
+import tasks
 from models import *
 from chart import Chart
 import requester

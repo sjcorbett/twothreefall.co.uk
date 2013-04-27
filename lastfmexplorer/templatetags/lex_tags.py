@@ -1,6 +1,6 @@
 from django import template
 
-import twothreefall.lastfmexplorer.ldates as ldates
+import lastfmexplorer.ldates as ldates
 
 register = template.Library()
 
