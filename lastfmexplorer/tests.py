@@ -7,6 +7,20 @@ from lastfmexplorer import ldates
 from lastfmexplorer.models import Artist, Update, User, WeekData
 import tasks, requester
 
+class UsernameTests(unittest.TestCase):
+    """Check unusual usernames are considered valid"""
+
+    def testValid(self):
+        names = ["Mrs DNA", "392414", "_abc_"]
+        for name in names:
+            self.assertTrue(User.validity.valid_username(name), "Failed on: '"+name+"'")
+
+    def testInvalid(self):
+        names = [" "]
+        for name in names:
+            self.assertFalse(User.validity.valid_username(name), "Expected invalid name on: '"+name+"'")
+
+
 class XMLHandling(unittest.TestCase):
     """Tests for valid and troublesome Last.fm XML files"""
     def setUp(self):
@@ -104,3 +118,4 @@ class Dates(unittest.TestCase):
 
         expected = range(0, ldates.first_sunday_on_or_after(date(years[-1]+1, 1, 1)))
         self.assertEqual(indices, expected)
+
