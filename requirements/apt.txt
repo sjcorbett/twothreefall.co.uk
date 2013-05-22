@@ -1,13 +1,16 @@
-lxml
+# Include comments with a # at the beginning of the line
+# Don't include any blank lines.
+gcc
+vim
+apache2
 libapache2-mod-wsgi
 memcached
-python-tk
 rabbitmq-server
+python-tk
 libxml2-dev 
 libxslt1-dev
-gcc
 python-dev
 libpq-dev
-
-And chgrp -R www-data lastfmexplorer
-
+python-pip
+python-virtualenv
+ack-grep

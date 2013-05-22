@@ -61,6 +61,10 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 APPEND_SLASH = True
 
+WSGI_APPLICATION = 'twothreefall.wsgi.application'
+
+ALLOWED_HOSTS = ['*'] if DEV else ['.twothreefall.co.uk']
+
 ########## Apps ###############################################################
 
 INSTALLED_APPS = (

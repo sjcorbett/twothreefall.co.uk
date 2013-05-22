@@ -5,6 +5,8 @@ anyjson==0.3.3
 python-memcached==1.48
 nose>=1.1.2
 psycopg2==2.2.1
+fabric==1.6
+fabtools==0.13.0
 
 # Django specific
 
@@ -19,5 +21,3 @@ django-extensions==1.0.3
 kombu==2.1.1
 celery==2.5.1
 django-celery==2.5.1
-
-
