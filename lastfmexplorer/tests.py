@@ -1,15 +1,17 @@
 import os
 
 from datetime import date
-from django.utils import unittest
+from django.test import TestCase, TransactionTestCase
 
 import tasks
 import requester
 import ldates
+import chart
+
 from models import Artist, Update, User, WeekData
 
 
-class UsernameTests(unittest.TestCase):
+class UsernameTests(TestCase):
     """Check unusual usernames are considered valid"""
 
     def testValid(self):
@@ -23,7 +25,7 @@ class UsernameTests(unittest.TestCase):
             self.assertFalse(User.validity.valid_username(name), "Expected invalid name on: '"+name+"'")
 
 
-class XMLHandling(unittest.TestCase):
+class XMLHandling(TestCase):
     """Tests for valid and troublesome Last.fm XML files"""
     def setUp(self):
         path = os.path.dirname(__file__)
@@ -38,7 +40,7 @@ class XMLHandling(unittest.TestCase):
         chartList = list(tasks.fetch_chart_list('aradnuk', self.requester))
         expected  = [(1108296002, 1108900802), (1108900801, 1109505601),
                         (1109505601, 1110110401), (1110110401, 1110715201)]
-        self.assertListEqual(chartList, expected)
+        self.assertSequenceEqual(chartList, expected)
 
     def testWeekDataParsing(self):
         data = tasks._parse_week_artist_data(tasks.week_data('aradnuk', self.requester, 1109505601, 1110110401))
@@ -61,27 +63,25 @@ class XMLHandling(unittest.TestCase):
         self.assertEqual(playcount, 1)
 
 
-class WeeklyTrackDataHandling(unittest.TestCase):
+class WeeklyTrackDataHandling(TestCase):
     pass
 
 
-class Updates(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(instance):
+class Updates(TransactionTestCase):
+    def setUp(self):
         # Create a test user
-        instance.testUserA = User.objects.create(username="aradnuk", registered=date(2004, 2, 2),
+        self.testUserA = User.objects.create(username="aradnuk", registered=date(2004, 2, 2),
             last_updated=date.today(), image="http://www.example.com")
-        instance.testUserB = User.objects.create(username="kibbls", registered=date(2006, 2, 2),
+        self.testUserB = User.objects.create(username="kibbls", registered=date(2006, 2, 2),
             last_updated=date.today(), image="http://www.example.com")
-        instance.testUserC = User.objects.create(username="mayric", registered=date(2008, 2, 2),
+        self.testUserC = User.objects.create(username="mayric", registered=date(2008, 2, 2),
             last_updated=date.today(), image="http://www.example.com")
 
         # User A has two updates in progress, B has one complete and C has one in progress
-        Update.objects.create(user=instance.testUserA, week_idx=1, type=Update.ARTIST)
-        Update.objects.create(user=instance.testUserA, week_idx=2, type=Update.ARTIST)
-        Update.objects.create(user=instance.testUserB, week_idx=1, status=Update.COMPLETE, type=Update.TRACK)
-        Update.objects.create(user=instance.testUserC, week_idx=1, type=Update.ARTIST)
+        Update.objects.create(user=self.testUserA, week_idx=1, type=Update.ARTIST)
+        Update.objects.create(user=self.testUserA, week_idx=2, type=Update.ARTIST)
+        Update.objects.create(user=self.testUserB, week_idx=1, status=Update.COMPLETE, type=Update.TRACK)
+        Update.objects.create(user=self.testUserC, week_idx=1, type=Update.ARTIST)
 
     def testIsUpdating(self):
         self.assertTrue(Update.objects.is_updating(self.testUserA))
@@ -97,8 +97,7 @@ class Updates(unittest.TestCase):
         self.assertEqual(len(Update.objects.stalled()), 0)
 
 
-
-class Dates(unittest.TestCase):
+class Dates(TestCase):
     def testSundaysBetween(self):
         # First charts release week ending 20/02/2005
         d = date
@@ -121,3 +120,55 @@ class Dates(unittest.TestCase):
         expected = range(0, ldates.first_sunday_on_or_after(date(years[-1]+1, 1, 1)))
         self.assertEqual(indices, expected)
 
+
+class ChartTests(TransactionTestCase):
+    def setUp(self):
+        self.user = User.objects.create(username="test-charts", registered=date(2004, 2, 2),
+                        last_updated=date.today(), image="http://www.example.com")
+        self.user2 = User.objects.create(username="test-charts-2", registered=date(2005, 2, 2),
+                        last_updated=date.today(), image="http://www.example.com")
+        # Test artists
+        self.a = Artist.objects.create(name='a')
+        self.b = Artist.objects.create(name='b')
+        self.c = Artist.objects.create(name='c')
+        self.d = Artist.objects.create(name='d')
+
+        # Artist and weekly plays for user 1
+        artists_and_plays = (
+            (self.a, (1, 1, 1, 1, 1)),
+            (self.b, (None, None, None, 1, 1)),
+            (self.c, (1, 2, 3, 4, 5)))
+        for artist, weekplays in artists_and_plays:
+            week = 0
+            for plays in weekplays:
+                if plays is not None:
+                    WeekData.objects.create(user=self.user, week_idx=week, artist=artist, plays=plays, rank=1)
+                week += 1
+
+        # User 2 only plays artist d
+        WeekData.objects.create(user=self.user2, week_idx=4, artist=self.d, plays=10, rank=1)
+        WeekData.objects.create(user=self.user2, week_idx=5, artist=self.d, plays=10, rank=1)
+
+    def testFullChart(self):
+        c = chart.Chart(self.user, 0, 10)
+        expected = [(self.c, 15), (self.a, 5), (self.b, 2)]
+        self.assertSequenceEqual(expected, c)
+        self.assertEqual(15, c.max)
+
+    def testCount(self):
+        self.assertSequenceEqual([], chart.Chart(self.user, 0, 10, count=0))
+        self.assertSequenceEqual([(self.c, 15)], chart.Chart(self.user, 0, 10, count=1))
+        self.assertSequenceEqual([(self.c, 15), (self.a, 5)], chart.Chart(self.user, 0, 10, count=2))
+
+    def testExcludeBeforeStart(self):
+        c = chart.Chart(self.user, 3, 10)
+        c.set_exclude_before_start()
+        self.assertSequenceEqual([(self.b, 2)], c)
+
+    def testExcludeMonths(self):
+        # TODO: Alter test to set dates to last sunday--
+        pass
+
+    def testExcludeBeforeStartAndExcludeMonths(self):
+        # TODO: Alter test to set dates to last sunday--
+        pass

@@ -58,10 +58,10 @@
                 %h2 Top Artists
             .itemcontent
                 %ol
-                    - for artist, count, max in chart
+                    - for artist, count in chart
                         %li.barchart
                             <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
-                            <div class="barchart_item" style="width:{% widthratio count max 99 %}%;">
+                            <div class="barchart_item" style="width:{% widthratio count chart.max 99 %}%;">
                                 <span class='barchart_num'>{{ count }}</span>
                             </div>
 

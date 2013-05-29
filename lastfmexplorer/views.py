@@ -135,7 +135,7 @@ def poll_update_status(request):
 
 def staged(target_view, skip_date_shortcuts=False):
     def inner(fn):
-        @cache_page(twothreefall.settings.CACHE_USER_TIMEOUT)
+        #@cache_page(twothreefall.settings.CACHE_USER_TIMEOUT)
         def cleansed(request, username, year=None, start=None, end=None, monthsAgo=None, yearsAgo=None, **kwargs):
             """
             1. Does the user exist?
@@ -276,7 +276,7 @@ def overview(request, context):
     return { 'context' : context,
              'wpc_hist' : wpc_hist,
              'wpc_hist_step' : wpc_hist_step,
-             'chart' : chart.chart(),
+             'chart' : chart,
              'record_single_artist' : record_single_artist,
              'record_total_plays' : record_total_plays,
              'record_unique_artists' : record_unique_artists,
@@ -322,7 +322,7 @@ def user_chart(request, context):
 
     back = { 
         'context': context,
-        'chart' : chart.chart(),
+        'chart' : chart,
         'isWeek' : isWeek,
         'count' : count,
         'only_new': only_new,
