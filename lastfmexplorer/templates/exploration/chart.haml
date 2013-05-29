@@ -1,0 +1,7 @@
+%ol
+    - for artist, count in chart
+        %li.barchart
+            <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
+            <div class="barchart_item" style="width:{% widthratio count chart.max 99 %}%;">
+                <span class='barchart_num'><a href="http://www.last.fm/user/{{ context.user }}/library/music/{{ artist.name }}">{{ count }}</a></span>
+            </div>

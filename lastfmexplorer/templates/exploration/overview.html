@@ -79,16 +79,7 @@
                 <h2>Top Artists</h2>
             </div>
             <div class='itemcontent'>
-                <ol>
-                    {% for artist, count in chart %}
-                        <li class='barchart'>
-                            <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
-                            <div class="barchart_item" style="width:{% widthratio count chart.max 99 %}%;">
-                                <span class='barchart_num'>{{ count }}</span>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ol>
+                {% include 'exploration/chart.html' %}
             </div>
         </div>
     </div>
