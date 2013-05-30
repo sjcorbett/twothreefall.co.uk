@@ -348,15 +348,6 @@ def user_top_n_history(request, username):
     # return render_to_response('exploration/top-n-history.html', locals())
 
 
-@staged('exploration/who.html', skip_date_shortcuts=True)
-def who(request, context):
-    """
-    Recommends an artist user hasn't listened to in a while.
-    """
-    suggestions = WeekData.objects.who_shall_i_listen_to(context.get('user'))
-    return { 'context' : context, 'suggestions' : suggestions }
-
-
 @staged('exploration/user-data.html', skip_date_shortcuts=True)
 def user_data(request, context):
     """

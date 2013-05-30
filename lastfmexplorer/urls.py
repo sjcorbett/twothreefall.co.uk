@@ -32,9 +32,6 @@ urlpatterns = patterns('lastfmexplorer.views',
     # single week chart
     (__user_base + r'chart/week/(?P<start>\d*)/$', views.user_week_chart),
 
-    # suggest a listen
-    (__user_base + r'who/$', views.who),
-
     # user chart index
     (__user_base + 'index/$', 'user_data'),
 

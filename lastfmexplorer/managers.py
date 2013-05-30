@@ -293,9 +293,6 @@ class UserWeekDataManager(models.Manager):
         file = "img/%s-topnhist.png" % (user,)
         im.save(file, "PNG")
 
-    def who_shall_i_listen_to(self, username):
-        return m.Artist.objects.all()
-
 
 class UserArtistWeekDataManager(UserWeekDataManager):
     def user_weeks_between(self, user, artists, start, end):
