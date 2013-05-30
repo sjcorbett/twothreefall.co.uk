@@ -8,7 +8,17 @@
     margin-right: 10px;
 }
 #header {
-    margin: 22px 0 16px 0;
+    margin: 0 0 25px 0;
+    padding: 10px 0;
+    background-color: #094A90;
+    border-bottom: 10px solid #0b2744;
+}
+#header .row {
+    margin-bottom: 0;
+}
+#header h2 a {
+    color: #efefef;
+    letter-spacing: 2px;
 }
 .lex-red {
     color: #dd1303;
@@ -116,10 +126,6 @@ span#nextweek {
 
 li.barchart a:link, li.barchart a:visited {
     color: #000;
-}
-
-#weekly_js {
-    margin: 0 auto;
 }
 
 /******* ABOUT *****************************************************/

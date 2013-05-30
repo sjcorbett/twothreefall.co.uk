@@ -33,28 +33,29 @@
     </head>
     <body>
         <div id='wrap'>
-            <div class='container'>
-                <div id='header' class='row'>
-                    <div class='span10'>
-                        <h2>
-                            <a class='ttflink' href='/'>TWOTHREEFALL</a>
+            <div id='header'>
+                <div class='container'>
+                    <div class='row'>
+                        <h2 class='span12'>
+                            <a class='ttflink' href='/'>Two three fall</a>
                         </h2>
                     </div>
                 </div>
+            </div>
+            <div class='container'>
                 {% block body %}
                 {% endblock %}
             </div>
         </div>
         <div id='footer'>
             <div class='container'>
-                {% if not start %}
-                    <p class='muted credit'>
-                        Written by <a href="http://www.last.fm/user/aradnuk">Sam</a>, powered by really strong tea.
-                        <a href="{% url 'about' %}">About</a> /
-                        <a href="https://github.com/aradnuk/twothreefall.co.uk">Source</a>
-                    </p>
-                {% endif %}
+                <p class='muted credit'>
+                    Written by <a href="http://www.last.fm/user/aradnuk">Sam</a>, powered by really strong tea.
+                    <a href="{% url 'about' %}">About</a> /
+                    <a href="https://github.com/aradnuk/twothreefall.co.uk">Source</a>
+                </p>
             </div>
         </div>
     </body>
 </html>
+

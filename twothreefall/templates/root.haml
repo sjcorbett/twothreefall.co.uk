@@ -6,7 +6,6 @@
         %title
             - block ttle
                 Twothreefall
-        -# <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css" />
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/site/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.css" />
@@ -30,16 +29,16 @@
 
     %body
         #wrap
+            #header
+                .container
+                    .row
+                        %h2.span12
+                            %a.ttflink{'href':'/'} Two three fall
             .container
-                #header.row
-                    .span10
-                        %h2
-                            %a.ttflink{'href':'/'} TWOTHREEFALL
                 - block body
         #footer
             .container
-                - if not start
-                    %p.muted.credit
-                        Written by <a href="http://www.last.fm/user/aradnuk">Sam</a>, powered by really strong tea.
-                        <a href="{% url 'about' %}">About</a> /
-                        <a href="https://github.com/aradnuk/twothreefall.co.uk">Source</a>
+                %p.muted.credit
+                    Written by <a href="http://www.last.fm/user/aradnuk">Sam</a>, powered by really strong tea.
+                    <a href="{% url 'about' %}">About</a> /
+                    <a href="https://github.com/aradnuk/twothreefall.co.uk">Source</a>
