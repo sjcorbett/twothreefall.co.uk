@@ -1,12 +1,15 @@
 {% extends 'root.html' %}
 {% load staticfiles %}
-{% block css %}
-        <link rel="stylesheet" type="text/css" href="{% static "css/lex.css" %}" />
-{% endblock %}
 {% block ttle %}
     {% block lextitle %}
     {% endblock %}
     Last.fm Explorer
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/lex.css" %}" />
+{% endblock %}
+{% block javascript %}
+    <script data-main="{% static "js/lex.js" %}" src="{% static "js/vendor/require.js" %}"></script>
 {% endblock %}
 {% block body %}
     <div class='row'>

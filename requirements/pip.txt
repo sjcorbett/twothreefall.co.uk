@@ -7,6 +7,7 @@ nose>=1.1.2
 psycopg2==2.2.1
 fabric==1.6
 fabtools==0.13.0
+hamlpy==0.82.2
 
 # Django specific
 
@@ -15,7 +16,6 @@ South==0.7.6
 django-debug-toolbar==0.9.4
 django-cache-machine==0.6
 django-extensions==1.0.3
-hamlpy==0.82.2
 
 # Celery
 
