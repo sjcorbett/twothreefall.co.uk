@@ -1,4 +1,8 @@
 {% extends 'root.html' %}
+{% load staticfiles %}
+{% block css %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/lex.css" %}" />
+{% endblock %}
 {% block ttle %}
     {% block lextitle %}
     {% endblock %}

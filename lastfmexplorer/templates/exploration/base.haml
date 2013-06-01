@@ -1,12 +1,14 @@
 - extends 'root.html'
+{% load staticfiles %}
+
+- block css
+        <link rel="stylesheet" type="text/css" href="{% static "css/lex.css" %}" />
 
 - block ttle
     - block lextitle
     Last.fm Explorer
 
-
 - block body
-
     .row
         .span12
             .float-left

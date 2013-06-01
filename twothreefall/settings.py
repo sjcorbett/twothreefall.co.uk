@@ -93,13 +93,13 @@ if TEMPLATE_DEBUG:
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     INSTALLED_APPS += ('debug_toolbar',)
     DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS' : False
+        'INTERCEPT_REDIRECTS': False
     }
 
 ########## Template contexts ##################################################
 
 def basic_context(request):
-    return { 'MEDIA_URL' : MEDIA_URL, 'DEV' : DEV } 
+    return { 'MEDIA_URL': MEDIA_URL, 'DEV': DEV }
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -108,8 +108,8 @@ TEMPLATE_LOADERS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates/html'),
-    os.path.join(os.path.dirname(__file__), '../lastfmexplorer/templates/html'),
+    os.path.join(os.path.dirname(__file__), 'templates/'),
+    os.path.join(os.path.dirname(__file__), '../lastfmexplorer/templates/'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -117,6 +117,3 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.static',
 )
-
-
-

@@ -1,7 +1,11 @@
 - extends 'root.html'
+{% load staticfiles %}
 
 - block ttle
     Last.fm Explorer
+
+- block css
+        <link rel="stylesheet" type="text/css" href="{% static "css/lex.css" %}" />
 
 -#
     {% block javascript %}<script type="text/javascript" src="{{ STATIC_URL }}js/update-polling.js"></script>{% endblock %}

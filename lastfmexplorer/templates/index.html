@@ -1,6 +1,10 @@
 {% extends 'root.html' %}
+{% load staticfiles %}
 {% block ttle %}
     Last.fm Explorer
+{% endblock %}
+{% block css %}
+        <link rel="stylesheet" type="text/css" href="{% static "css/lex.css" %}" />
 {% endblock %}
 {% block body %}
     <br />
