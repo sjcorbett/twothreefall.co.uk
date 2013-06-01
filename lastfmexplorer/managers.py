@@ -1,7 +1,6 @@
 """
 Managers for some of the classes in models.py.
 """
-import re
 import logging
 
 from datetime import datetime, timedelta
@@ -13,20 +12,6 @@ import models as m
 from django.db import connection, models
 from django.db.models import Sum, Count, Min
 from django.core.cache import cache
-
-# TODO: Just assume trimmed input is acceptable
-USER_REGEX = r'(?P<username>[a-zA-Z0-9_-][a-zA-Z0-9_ -]{1,14})'
-
-class UserManager(models.Manager):
-    def known_user(self, name):
-        try:
-            self.get(username=name)
-            return True
-        except:
-            return False
-
-    def valid_username(self, name):
-        return re.match("^%s$" % (USER_REGEX,), name) is not None
 
 
 class UpdateManager(models.Manager):
@@ -51,6 +36,7 @@ class UpdateManager(models.Manager):
         """Returns any update that's IN_PROGRESS for more than an hour"""
         oneHourAgo = datetime.today() - timedelta(hours = 1)
         return self.filter(status=m.Update.IN_PROGRESS, requestedAt__lte=oneHourAgo)
+
 
 # TODO: Drop any filtering done if dates given are the_beginning and today.
 class UserWeekDataManager(models.Manager):
@@ -88,8 +74,7 @@ class UserWeekDataManager(models.Manager):
         Returns a generator of artists most played in a single week between
         start and end.
         """
-        query = self.user_weeks_between(user, start, end) \
-                     .order_by('-plays')[:num]
+        query = self.user_weeks_between(user, start, end).order_by('-plays')[:num]
         for week in query:
             date = ldates.date_of_index(week.week_idx)
             yield week, date
@@ -180,149 +165,17 @@ class UserWeekDataManager(models.Manager):
         last_avg = 0.0
         for date_idx, wpc in wpcs:
             n += 1
-            average  = last_avg + (( wpc - last_avg) / n )
+            average = last_avg + ((wpc - last_avg) / n)
             last_avg = average
             yield (ldates.js_timestamp_of_index(date_idx), wpc, average)
 
-    def top_n_history(self, user, start, end, count=200):
-
-        from PIL import Image, ImageDraw
-        import operator
-        import heapq
-        from collections import defaultdict
-
-        chart     = defaultdict(int)  # artist --> play count
-        last_week = {}                # artist --> (last coordinates tuple)
-
-        weeks_passed = 0
-
-        # all weekly plays, order by week start then by playcount
-        qs = self.user_weeks_between(user, ldates.the_beginning, end) \
-                 .order_by('-plays') \
-                 .order_by('week_idx')
-
-        height = count
-        width  = (end - start).days / 7
-        h_offset = 12
-        w_offset = 4.5
-
-        # (height * width)
-        size = (width * w_offset, height * h_offset)
-        logging.info(size)
-
-        # final triple initialises background colour
-        im = Image.new("RGB", size, (255, 255, 255))
-        dr = ImageDraw.Draw(im)
-
-        grey  = (200, 200, 200)
-        black = (0, 0, 0)
-
-        current_week = qs[0].week_idx
-
-        import time
-        start_week = time.time()
-
-        artists = set([m.Artist.objects.get(name="Fleet Foxes").id,
-                       m.Artist.objects.get(name="Squarepusher").id])
-
-        # drawn at least one week
-        drawn = False
-
-        # WeekData object
-        for week_data in qs:
-
-            # time has advanced; we've seen another week. draw to image.
-            if week_data.week_idx >= start and week_data.week_idx > current_week:
-
-                end_week = time.time()
-
-                logging.info(week_data.week_idx)
-
-                # take top n items from chart, drop playcounts, zip with chart position
-                topn  = {}
-                index = 1
-                for artist, _ in heapq.nlargest(count, chart.iteritems(), operator.itemgetter(1)):
-                    topn[artist] = index
-                    index += 1
-
-                set_topn = set(topn)
-                tracking = set(last_week)
-
-                y = weeks_passed * w_offset
-
-                # three sets:
-                # 1. artists in top n but not in last_week
-                #       -> draw from bottom of image to new position
-                for artist in set_topn - tracking:
-                    clr = black if artist in artists else grey
-                    x   = topn[artist] * h_offset
-                    fro = height * h_offset if drawn else x
-                    dr.line((y-1, fro, y, x), fill=clr)
-                    last_week[artist] = (y, x)
-
-                # 2. artists in top n and in last_week
-                #       -> draw from last week to this week
-                for artist in set_topn & tracking:
-                    clr = black if artist in artists else grey
-                    x = topn[artist] * h_offset
-                    dr.line(last_week[artist] + (y, x), fill=clr)
-                    last_week[artist] = (y, x)
-
-                # 3. artists in last_week but not in top n
-                #       -> no longer need to be tracked
-                for artist in tracking - set_topn:
-                    del last_week[artist]
-
-                # increment weeks passed and update current date
-                # last_week = this_week
-                weeks_passed += 1
-                current_week = week_data.week_idx
-                drawn = True
-
-                graphed = time.time()
-                logging.info('Collecting week data took %0.3f ms' % ((end_week-start_week)*1000.0))
-                logging.info('Imaging took %0.3f ms' % ((graphed-end_week)*1000.0))
-                start_week = time.time()
-
-            # update running chart with new data
-            # using week_data.artist here __really__ slows things down!
-            # (hello 25000 more queries.)
-            id = week_data.artist_id
-            chart[id] += week_data.plays
-
-        file = "img/%s-topnhist.png" % (user,)
-        im.save(file, "PNG")
-
-
-class UserArtistWeekDataManager(UserWeekDataManager):
-    def user_weeks_between(self, user, artists, start, end):
+    def user_weekly_plays_of_artists(self, user_id, artist_id, start, end):
         """
         Returns a basic query set of a user's data filtered to plays of
         particular artists, between start and end.
         """
-        base = self.filter(user=user.id).filter(artist__in=artists)
+        query = self.filter(user=user_id, artist=artist_id).order_by('week_idx')
         if start != ldates.idx_beginning or end != ldates.idx_last_sunday:
-            return base.filter(week_idx__range=(start, end))
-        else:
-            return base
+            query = query.filter(week_idx__range=(start, end))
 
-    def user_weekly_plays_of_artists(self, user, artists, start, end):
-
-        # initialise the results to a dictionary or artist -> week/playcount,
-        # with all playcounts set to zero.  means no need to handle missing 
-        # weeks in query set loop.
-        prelim_data = [0] * ((end+1) - start) #dict((ldates.js_timestamp_of_index(x), 0) for x in xrange(start, end+1))
-        dates = [ ldates.js_timestamp_of_index(idx) for idx in xrange(start, end+1) ]
-
-        results = dict((artist.id, prelim_data[:]) for artist in artists)
-
-        for artist_wd in self.user_weeks_between(user, artists, start, end):
-            # place in the appropriate slot in the result list (subtract start)
-            results[artist_wd.artist_id][artist_wd.week_idx - start] = artist_wd.plays
-
-        out = {}
-        for artist in artists:
-            out[artist] = zip(dates, results[artist.id])
-
-        return out
-
+        return [(week_data.week_idx, week_data.plays) for week_data in query]

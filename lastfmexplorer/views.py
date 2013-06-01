@@ -1,13 +1,13 @@
 from django.http import HttpResponse
 from django.http import Http404
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 
 import logging
-import anyjson
+import json
 
 import twothreefall.settings
 
@@ -23,7 +23,7 @@ def start(request):
     given = request.GET.get('username')
     if given:
         given = str(given).strip()
-        if User.validity.valid_username(given):
+        if User.valid_username(given):
             try:
                 u = tasks.get_or_add_user(given, _REQUESTER)
                 target = overview if (not ldates.sensible_to_update(u.last_updated)) else update
@@ -125,7 +125,7 @@ def poll_update_status(request):
     updates = {}
     for user, count in Update.objects.updating_users():
         updates[user.username] = count
-    return HttpResponse(anyjson.serialize(updates), mimetype="application/json")
+    return HttpResponse(json.dumps(updates), mimetype="application/json")
 
 
 ###############################################################################
@@ -338,16 +338,6 @@ def user_chart(request, context):
     return back
 
 
-def user_top_n_history(request, username):
-    """
-    Undecided.
-    """
-    raise Exception()
-    # f, start, end = formalities(request, username, start, end)
-    # WeekData.objects.top_n_history(f['user'], start, end)
-    # return render_to_response('exploration/top-n-history.html', locals())
-
-
 @staged('exploration/user-data.html', skip_date_shortcuts=True)
 def user_data(request, context):
     """
@@ -388,3 +378,10 @@ def status(request):
             'successful_requests': complete_count,
             'pending_requests': pending_count
         }, context_instance=RequestContext(request))
+
+
+def weekly_plays_of_artist(request, user_id, artist_id):
+    start = ldates.idx_beginning
+    end = ldates.idx_last_sunday
+    plays = WeekData.objects.user_weekly_plays_of_artists(user_id, artist_id, start, end)
+    return HttpResponse(json.dumps(plays), mimetype="application/json")

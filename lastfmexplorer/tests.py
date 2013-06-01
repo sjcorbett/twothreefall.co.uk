@@ -11,18 +11,21 @@ import chart
 from models import Artist, Update, User, WeekData
 
 
-class UsernameTests(TestCase):
-    """Check unusual usernames are considered valid"""
+def makeUser(name, registered=date(2004, 2, 2), last_updated=date.today(), image="http://www.example.com"):
+    return User.objects.create(username=name, registered=registered, last_updated=last_updated, image=image)
 
+
+class UserTests(TransactionTestCase):
+    """Check unusual usernames are considered valid"""
     def testValid(self):
         names = ["Mrs DNA", "392414", "_abc_"]
         for name in names:
-            self.assertTrue(User.validity.valid_username(name), "Failed on: '"+name+"'")
+            self.assertTrue(User.valid_username(name), "Failed on: '"+name+"'")
 
     def testInvalid(self):
         names = [" "]
         for name in names:
-            self.assertFalse(User.validity.valid_username(name), "Expected invalid name on: '"+name+"'")
+            self.assertFalse(User.valid_username(name), "Expected invalid name on: '"+name+"'")
 
 
 class XMLHandling(TestCase):
@@ -70,12 +73,9 @@ class WeeklyTrackDataHandling(TestCase):
 class Updates(TransactionTestCase):
     def setUp(self):
         # Create a test user
-        self.testUserA = User.objects.create(username="aradnuk", registered=date(2004, 2, 2),
-            last_updated=date.today(), image="http://www.example.com")
-        self.testUserB = User.objects.create(username="kibbls", registered=date(2006, 2, 2),
-            last_updated=date.today(), image="http://www.example.com")
-        self.testUserC = User.objects.create(username="mayric", registered=date(2008, 2, 2),
-            last_updated=date.today(), image="http://www.example.com")
+        self.testUserA = makeUser("aradnuk")
+        self.testUserB = makeUser("kibbls")
+        self.testUserC = makeUser("mayric")
 
         # User A has two updates in progress, B has one complete and C has one in progress
         Update.objects.create(user=self.testUserA, week_idx=1, type=Update.ARTIST)
@@ -123,10 +123,9 @@ class Dates(TestCase):
 
 class ChartTests(TransactionTestCase):
     def setUp(self):
-        self.user = User.objects.create(username="test-charts", registered=date(2004, 2, 2),
-                        last_updated=date.today(), image="http://www.example.com")
-        self.user2 = User.objects.create(username="test-charts-2", registered=date(2005, 2, 2),
-                        last_updated=date.today(), image="http://www.example.com")
+        self.user = makeUser("test-charts")
+        self.user2 = makeUser("test-charts-2")
+
         # Test artists
         self.a = Artist.objects.create(name='a')
         self.b = Artist.objects.create(name='b')
@@ -172,3 +171,27 @@ class ChartTests(TransactionTestCase):
     def testExcludeBeforeStartAndExcludeMonths(self):
         # TODO: Alter test to set dates to last sunday--
         pass
+
+
+class WeekDataTests(TransactionTestCase):
+    def setUp(self):
+        self.user = makeUser("test-charts")
+        self.a = Artist.objects.create(name='a')
+        self.b = Artist.objects.create(name='b')
+
+        # Artist and weekly plays for user 1
+        artists_and_plays = (
+            (self.a, (1, 2, 3, 4, 5)),
+            (self.b, (None, 2, None, 1, 1)))
+        for artist, weekplays in artists_and_plays:
+            week = 0
+            for plays in weekplays:
+                if plays is not None:
+                    WeekData.objects.create(user=self.user, week_idx=week, artist=artist, plays=plays, rank=1)
+                week += 1
+
+    def testUserWeeklyPlaysOfArtist(self):
+        playsOfA = WeekData.objects.user_weekly_plays_of_artists(self.user.id, self.a.id, 0, 10)
+        playsOfB = WeekData.objects.user_weekly_plays_of_artists(self.user.id, self.b.id, 0, 2)
+        self.assertEquals([(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)], playsOfA)
+        self.assertEquals([(1, 2)], playsOfB)

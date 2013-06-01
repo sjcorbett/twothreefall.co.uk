@@ -1,4 +1,5 @@
 import datetime as dt
+import re
 
 import caching.base
 
@@ -9,8 +10,12 @@ from django.db import models
 
 from south.modelsinspector import add_introspection_rules
 
-_LASTFM  = "http://www.last.fm"
+_LASTFM = "http://www.last.fm"
+# TODO: This has been deprecated
 _LASTFM_EXAMPLE_API_KEY = "b25b959554ed76058ac220b7b2e0a026"
+
+# TODO: Just assume trimmed input is acceptable
+USER_REGEX = r'(?P<username>[a-zA-Z0-9_-][a-zA-Z0-9_ -]{1,14})'
 
 ###############################################################################
 
@@ -82,7 +87,10 @@ class User(caching.base.CachingMixin, models.Model):
     image      = models.URLField()
 
     objects    = caching.base.CachingManager()
-    validity   = managers.UserManager()
+
+    class Meta:
+        ordering = ['username']
+        unique_together = ('username',)
 
     @models.permalink
     def get_absolute_url(self):
@@ -100,9 +108,9 @@ class User(caching.base.CachingMixin, models.Model):
         """Returns week index of first Sunday after user's registration"""
         return ldates.first_sunday_on_or_after(self.registered)
 
-    class Meta:
-        ordering = ['username']
-        unique_together = ('username',)
+    @staticmethod
+    def valid_username(name):
+        return re.match("^%s$" % (USER_REGEX,), name) is not None
 
 
 class Update(models.Model):
@@ -146,7 +154,6 @@ class WeekData(models.Model):
     rank   = models.PositiveIntegerField()
 
     objects = managers.UserWeekDataManager()
-    artists = managers.UserArtistWeekDataManager()
 
     def __unicode__(self):
         return "%s/%d/%s/%d" % \
