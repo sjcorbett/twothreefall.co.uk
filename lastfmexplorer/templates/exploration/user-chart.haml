@@ -54,7 +54,7 @@
                     },
                     success: function(response) {
                         var inline_chart = $(".inline-chart", self).show();
-                        fc.weekly_line(inline_chart, response, {{ context.start }}, {{ context.end }});
+                        fc.weekly_line(inline_chart, response, { "start": {{ context.start }}, "end": {{ context.end }} });
                     }
                 });
             });

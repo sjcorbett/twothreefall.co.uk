@@ -153,21 +153,6 @@ class UserWeekDataManager(models.Manager):
             hist[bucket] += wpc
         return hist
 
-    def weekly_play_counts_js(self, user, start, end):
-        wpcs = self.weekly_play_counts(user, start, end)
-        n = 0  # number of data points so far
-
-        # Cumulative average:
-        # CA_i+1 = CA_i + ((x_i+1 - CA_i) / i+1)
-        # where CA_i = last average,
-        #      x_i+1 = new entry's value.
-        last_avg = 0.0
-        for date_idx, wpc in wpcs:
-            n += 1
-            average = last_avg + ((wpc - last_avg) / n)
-            last_avg = average
-            yield (date_idx, wpc, average)
-
     def user_weekly_plays_of_artists(self, user_id, artist_id, start, end):
         """
         Returns a basic query set of a user's data filtered to plays of

@@ -68,6 +68,6 @@
             fc.weekly_hist("#weekly_counts_hist", {{ wpc_hist_step }}, {{ wpc_hist }});
 
             var weeklies = [
-                {% for dte, playcount, average in wpcjs %}[{{ dte }}, {{ playcount }}, {{ average }}]{% if not forloop.last %},{% endif %}{% endfor %}];
-            fc.weekly_line("#weekly_js", weeklies);
+                {% for dte, playcount in wpcs %}[{{ dte }}, {{ playcount }}]{% if not forloop.last %},{% endif %}{% endfor %}];
+            fc.weekly_line("#weekly_js", weeklies, { "show_averages": true });
         });

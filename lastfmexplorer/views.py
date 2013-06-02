@@ -1,20 +1,18 @@
-from django.http import HttpResponse
-from django.http import Http404
-from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.views.decorators.cache import cache_page
-
 import logging
 import json
 
-import twothreefall.settings
+from django.http import HttpResponse
+from django.http import Http404
+from django.shortcuts import render_to_response, redirect
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.template import RequestContext
 
 import tasks
 from models import *
 from chart import Chart
 import requester
+
 
 _REQUESTER = requester.LastFMRequester()
 
@@ -261,7 +259,7 @@ def overview(request, context):
         ]
 
     # weekly playcounts image and monthly playcounts bar chart
-    wpcjs = WeekData.objects.weekly_play_counts_js(user, start, end)
+    wpcs = WeekData.objects.weekly_play_counts(user, start, end)
     mcjs  = WeekData.objects.monthly_counts_js(user, start, end)
 
     # record weeks and overall chart
@@ -281,7 +279,7 @@ def overview(request, context):
              'record_total_plays' : record_total_plays,
              'record_unique_artists' : record_unique_artists,
              'mcjs' : mcjs,
-             'wpcjs' : wpcjs,
+             'wpcs': wpcs,
              'total_weeks' : total_weeks,
              'vitals' : vitals,
            }

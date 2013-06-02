@@ -78,26 +78,56 @@ define([
         bindTooltip(target);
     }
 
+    function cumulative_average() {
+        var current_average = 0,
+            num_points = 0,
+            averages = [];
+        return {
+            // Cumulative average:
+            // CA_i+1 = CA_i + ((x_i+1 - CA_i) / i+1)
+            // where CA_i = last average,
+            //      x_i+1 = new entry's value.
+            "update": function (timestamp, value) {
+                num_points += 1;
+                current_average = current_average + ((value - current_average) / num_points);
+                averages.push([timestamp, current_average]);
+            },
+            "get": function() {
+                return averages;
+            }
+        }
+    }
+    
     /** Expects weeklies to be a list of (week index, playcount, [average]) tuples */
-    function weekly_line(target, weeklies, start, end) {
+    function weekly_line(target, weeklies, config) {
+        var config = config || {},
+            start = config.start,
+            end = config.end,
+            show_averages = config.show_averages || false;
+
         var weekly_data = [],
-            averages = [],
+            averager = cumulative_average(),
             last_week = ((start === undefined) ? weeklies[0][0] : start) - 1;
 
         for (var i=0, len=weeklies.length; i<len; ++i) {
             var week      = weeklies[i][0],
                 playcount = weeklies[i][1],
-                average   = weeklies[i][2],
                 timestamp = Dates.timestamp_of_week(week);
 
             // fill in missing weeks at beginning or in the middle
             while (last_week != week-1) {
                 last_week += 1;
-                weekly_data.push([Dates.timestamp_of_week(last_week), 0]);
+                var missing_timestamp = Dates.timestamp_of_week(last_week);
+                weekly_data.push([missing_timestamp, 0]);
+                if (show_averages) {
+                    averager.update(missing_timestamp, 0);
+                }
             }
 
             weekly_data.push([timestamp, playcount]);
-            averages.push([timestamp, average]);
+            if (show_averages) {
+                averager.update(timestamp, playcount);
+            }
             last_week = week;
         }
 
@@ -105,14 +135,18 @@ define([
         if (end !== undefined) {
             while (last_week != end) {
                 last_week += 1;
-                weekly_data.push([Dates.timestamp_of_week(last_week), 0]);
+                timestamp = Dates.timestamp_of_week(last_week);
+                weekly_data.push([timestamp, 0]);
+                if (show_averages) {
+                    averager.update(timestamp, 0)
+                }
             }
         }
-
-        plot_line_chart(target, [
-            {data: weekly_data, color: "#00f"},
-            {data: averages, color: "#007f02"}
-        ]);
+        var charts = [{data: weekly_data, color: "#00f"}];
+        if (show_averages) {
+            charts.push({data: averager.get(), color: "#007f02"});
+        }
+        plot_line_chart(target, charts);
     }
 
     return {
