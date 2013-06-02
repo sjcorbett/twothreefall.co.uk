@@ -6,7 +6,6 @@
 }
 /******* BAR CHARTS ************************************************/
 li.barchart {
-    height: 3em;
     text-align: left;
 }
 
@@ -37,6 +36,13 @@ span#nextweek {
 
 li.barchart a:link, li.barchart a:visited {
     color: #000;
+}
+
+.inline-chart {
+    height: 75px;
+    width: 100%;
+    display: none;
+    margin-top: 5px;
 }
 
 /******* LEX START FORM ****************************************/

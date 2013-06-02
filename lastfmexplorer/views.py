@@ -381,7 +381,7 @@ def status(request):
 
 
 def weekly_plays_of_artist(request, user_id, artist_id):
-    start = ldates.idx_beginning
-    end = ldates.idx_last_sunday
+    start = request.GET.get("start", ldates.idx_beginning)
+    end = request.GET.get("end", ldates.idx_last_sunday)
     plays = WeekData.objects.user_weekly_plays_of_artists(user_id, artist_id, start, end)
     return HttpResponse(json.dumps(plays), mimetype="application/json")

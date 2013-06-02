@@ -87,7 +87,6 @@
 <script type='text/javascript'>
 // <![CDATA[
         require(["flot-charts"], function(fc) {
-            console.log('hello');
             var monthly_counts = {{ mcjs }};
             fc.monthly_counts("#monthly_js", monthly_counts);
             fc.weekly_hist("#weekly_counts_hist", {{ wpc_hist_step }}, {{ wpc_hist }});

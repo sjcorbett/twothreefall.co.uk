@@ -45,12 +45,28 @@
             {% include 'exploration/chart.html' %}
         </div>
     </div>
-{% endblock %}
-{% block javascript %}
 <script type='text/javascript'>
 // <![CDATA[
-        $(document).ready(function() {
-            $("#num_excluded").on("click", function(e) { e.preventDefault(); });
+        require(["flot-charts", "vendor/jquery"], function(fc) {
+            $(document).ready(function() {                $("#num_excluded").on("click", function(e) { e.preventDefault(); });            });
+            $(".barchart").on("click", function(event) {
+                var self = $(this);
+                self.unbind("click");
+                var artist = self.data("id");
+                if (artist === undefined) return;
+                $.ajax({
+                    url: "/lastfmexplorer/api/{{ context.user.id }}/artistplays/"+artist,
+                    dataType: "json",
+                    data: {
+                        "start": {{ context.start }},
+                        "end": {{ context.end }}
+                    },
+                    success: function(response) {
+                        var inline_chart = $(".inline-chart", self).show();
+                        fc.weekly_line(inline_chart, response, {{ context.start }}, {{ context.end }});
+                    }
+                });
+            });
         });
 // ]]>
 </script>

@@ -62,7 +62,6 @@
 
     :javascript
         require(["flot-charts"], function(fc) {
-            console.log('hello');
             var monthly_counts = {{ mcjs }};
 
             fc.monthly_counts("#monthly_js", monthly_counts);

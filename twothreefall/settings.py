@@ -84,7 +84,7 @@ INSTALLED_APPS = (
 
     'djcelery',
     'django_extensions',
-    'south'
+    'south',
 )
 
 ########## Dev options ########################################################

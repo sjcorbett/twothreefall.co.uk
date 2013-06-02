@@ -1,6 +1,6 @@
 define([
-    "jquery", "vendor/jquery.flot"
-], function ($) {
+    "jquery", "dates", "jquery.flot"
+], function ($, Dates) {
     function plot_line_chart(divid, data) {
         $.plot($(divid), data, {
             lines: { show: true },
@@ -78,16 +78,39 @@ define([
         bindTooltip(target);
     }
 
-    function weekly_line(target, weeklies) {
-        var weekly_data = [];
-        var averages = [];
+    /** Expects weeklies to be a list of (week index, playcount, [average]) tuples */
+    function weekly_line(target, weeklies, start, end) {
+        var weekly_data = [],
+            averages = [],
+            last_week = ((start === undefined) ? weeklies[0][0] : start) - 1;
 
         for (var i=0, len=weeklies.length; i<len; ++i) {
-            weekly_data.push([weeklies[i][0], weeklies[i][1]]);
-            averages.push([weeklies[i][0], weeklies[i][2]]);
+            var week      = weeklies[i][0],
+                playcount = weeklies[i][1],
+                average   = weeklies[i][2],
+                timestamp = Dates.timestamp_of_week(week);
+
+            // fill in missing weeks at beginning or in the middle
+            while (last_week != week-1) {
+                last_week += 1;
+                weekly_data.push([Dates.timestamp_of_week(last_week), 0]);
+            }
+
+            weekly_data.push([timestamp, playcount]);
+            averages.push([timestamp, average]);
+            last_week = week;
         }
+
+        // fill in missing weeks at end
+        if (end !== undefined) {
+            while (last_week != end) {
+                last_week += 1;
+                weekly_data.push([Dates.timestamp_of_week(last_week), 0]);
+            }
+        }
+
         plot_line_chart(target, [
-            {data : weekly_data, color: "#00f"},
+            {data: weekly_data, color: "#00f"},
             {data: averages, color: "#007f02"}
         ]);
     }

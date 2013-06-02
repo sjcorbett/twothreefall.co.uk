@@ -133,7 +133,6 @@ class UserWeekDataManager(models.Manager):
             # need to catch up.
             if not order_by_plays and index != (last_index + 1):
                 for idx in xrange(last_index+1, index):
-                    logging.info("0 plays on week " + str(ldates.date_of_index(idx)))
                     yield y(idx, 0)
             yield y(index, d['plays__sum'])
             last_index = index
@@ -167,7 +166,7 @@ class UserWeekDataManager(models.Manager):
             n += 1
             average = last_avg + ((wpc - last_avg) / n)
             last_avg = average
-            yield (ldates.js_timestamp_of_index(date_idx), wpc, average)
+            yield (date_idx, wpc, average)
 
     def user_weekly_plays_of_artists(self, user_id, artist_id, start, end):
         """

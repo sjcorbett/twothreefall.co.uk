@@ -1,10 +1,13 @@
 requirejs.config({
     baseUrl: '/static/js',
     paths:{
-        "jquery": "vendor/jquery"
+        "jquery": "vendor/jquery",
+        "excanvas": "vendor/excanvas",
+        "jquery.flot": "vendor/jquery.flot",
+        "moment": "vendor/moment"
     },
     "shim": {
-        "vendor/excanvas": ["vendor/jquery"],
-        "vendor/jquery.flot": ["jquery"]
+        "excanvas": ["jquery"],
+        "jquery.flot": ["jquery"]
     }
 });

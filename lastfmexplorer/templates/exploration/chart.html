@@ -1,10 +1,11 @@
 <ol>
     {% for artist, count in chart %}
-        <li class='barchart'>
+        <li class="barchart" data-id="{{ artist.id }}">
             <a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>
             <div class="barchart_item" style="width:{% widthratio count chart.max 99 %}%;">
                 <span class='barchart_num'><a href="http://www.last.fm/user/{{ context.user }}/library/music/{{ artist.name }}">{{ count }}</a></span>
             </div>
+            <div class="inline-chart"></div>
         </li>
     {% endfor %}
 </ol>
